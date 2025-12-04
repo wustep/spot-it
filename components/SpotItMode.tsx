@@ -92,57 +92,65 @@ export function SpotItMode() {
 		"counting" | "revealed" | "transitioning"
 	>("counting")
 	const countdownRef = useRef<NodeJS.Timeout | null>(null)
+	const isActiveRef = useRef(false)
 
-	// Single unified countdown effect
+	// Countdown effect - simpler interval-based approach
 	useEffect(() => {
 		const shouldPlay = spotItSubMode === "countdown" && isPlaying
 
-		// Cleanup function
-		const cleanup = () => {
+		if (!shouldPlay) {
 			if (countdownRef.current) {
-				clearTimeout(countdownRef.current)
+				clearInterval(countdownRef.current)
 				countdownRef.current = null
 			}
-		}
-
-		if (!shouldPlay) {
-			cleanup()
+			isActiveRef.current = false
 			return
 		}
 
-		// Run a single countdown cycle
-		const runCycle = (currentCount: number) => {
-			if (!isPlaying || spotItSubMode !== "countdown") return
+		// Initialize on start
+		if (!isActiveRef.current) {
+			isActiveRef.current = true
+			setCountdown(countdownInterval)
+			setCountdownPhase("counting")
+		}
 
-			if (currentCount > 0) {
-				// Still counting down
+		let currentCount = countdownInterval
+		let phase: "counting" | "revealed" | "transitioning" = "counting"
+
+		const tick = () => {
+			if (phase === "counting") {
+				if (currentCount > 1) {
+					// Still counting down, decrement
+					currentCount--
+					setCountdown(currentCount)
+				} else {
+					// Was showing 1, now reveal the match
+					phase = "revealed"
+					setCountdownPhase("revealed")
+					revealMatch()
+				}
+			} else if (phase === "revealed") {
+				// After 1 tick of showing, transition
+				phase = "transitioning"
+				setCountdownPhase("transitioning")
+			} else if (phase === "transitioning") {
+				// Go to next round
+				nextRound()
+				currentCount = countdownInterval
+				phase = "counting"
 				setCountdown(currentCount)
 				setCountdownPhase("counting")
-				countdownRef.current = setTimeout(() => {
-					runCycle(currentCount - 1)
-				}, 1000)
-			} else {
-				// Countdown finished - reveal match
-				setCountdownPhase("revealed")
-				revealMatch()
-
-				// After showing match, go to next round
-				countdownRef.current = setTimeout(() => {
-					setCountdownPhase("transitioning")
-
-					countdownRef.current = setTimeout(() => {
-						nextRound()
-						// Start new cycle
-						runCycle(countdownInterval)
-					}, 400)
-				}, 1200)
 			}
 		}
 
-		// Start the cycle
-		runCycle(countdownInterval)
+		countdownRef.current = setInterval(tick, 1000)
 
-		return cleanup
+		return () => {
+			if (countdownRef.current) {
+				clearInterval(countdownRef.current)
+				countdownRef.current = null
+			}
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [spotItSubMode, isPlaying, countdownInterval])
 
@@ -345,12 +353,12 @@ function PracticeMode({
 				)}
 				{feedback === "correct" && (
 					<h2 className="text-2xl font-bold tracking-tight text-green-500">
-						✓ Correct!
+						Correct!
 					</h2>
 				)}
 				{feedback === "wrong" && (
 					<h2 className="text-2xl font-bold tracking-tight text-red-500">
-						✗ Try again!
+						Try again!
 					</h2>
 				)}
 			</div>
@@ -359,18 +367,16 @@ function PracticeMode({
 			<div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 md:gap-8 px-4">
 				{/* Card 1 */}
 				<div className="flex flex-col items-center gap-2">
-					<span className="text-sm font-medium text-muted-foreground">
-						Card 1
-					</span>
 					<SpotCard
 						key={`card1-${card1.id}`}
 						card={card1}
 						symbols={deck.symbols}
-						isSelected={true}
+						isSelected={false}
 						sharedSymbol={revealedSymbol}
 						onSymbolClick={feedback === "none" ? handleSymbolClick : undefined}
 						size={cardSize}
 						hardMode={hardMode}
+						className="ring-2 ring-rose-500 scale-105"
 					/>
 				</div>
 
@@ -379,26 +385,24 @@ function PracticeMode({
 
 				{/* Card 2 */}
 				<div className="flex flex-col items-center gap-2">
-					<span className="text-sm font-medium text-muted-foreground">
-						Card 2
-					</span>
 					<SpotCard
 						key={`card2-${card2.id}`}
 						card={card2}
 						symbols={deck.symbols}
-						isSelected={true}
+						isSelected={false}
 						sharedSymbol={revealedSymbol}
 						onSymbolClick={feedback === "none" ? handleSymbolClick : undefined}
 						size={cardSize}
 						hardMode={hardMode}
+						className="ring-2 ring-sky-500 scale-105"
 					/>
 				</div>
 			</div>
 
 			{/* Actions */}
 			<div className="flex gap-3">
-				<Button onClick={pickRandomCards} variant="default">
-					🔀 New Cards
+				<Button onClick={pickRandomCards} variant="secondary">
+					New Cards
 				</Button>
 			</div>
 
@@ -441,8 +445,8 @@ function PracticeMode({
 								size={gridCardSize}
 								hardMode={hardMode}
 								className={cn(
-									isCard1 && "ring-2 ring-blue-500",
-									isCard2 && "ring-2 ring-green-500"
+									isCard1 && "ring-2 ring-rose-500",
+									isCard2 && "ring-2 ring-sky-500"
 								)}
 							/>
 						)
@@ -539,7 +543,7 @@ function GameMode({
 				)}
 
 				<Button onClick={startGame} size="lg" className="text-lg px-8">
-					▶️ Start
+					Start
 				</Button>
 			</div>
 		)
@@ -589,12 +593,12 @@ function GameMode({
 			<div className="h-10 flex items-center justify-center">
 				{feedbackState === "correct" && lastRoundTime !== null && (
 					<div className="text-green-500 font-bold text-xl animate-in fade-in zoom-in duration-200">
-						✓ {formatTime(lastRoundTime)}
+						{formatTime(lastRoundTime)}
 					</div>
 				)}
 				{feedbackState === "wrong" && (
 					<div className="text-red-500 font-bold text-xl animate-in fade-in shake duration-200">
-						✗ Wrong!
+						Wrong!
 					</div>
 				)}
 			</div>
@@ -633,7 +637,7 @@ function GameMode({
 
 			{/* Stop button */}
 			<Button onClick={stopGame} variant="outline" size="sm">
-				⏹️ Stop
+				Stop
 			</Button>
 		</div>
 	)
@@ -702,7 +706,7 @@ function CountdownMode({
 				</div>
 
 				<Button onClick={startGame} size="lg" className="text-lg px-8">
-					▶️ Start
+					Start
 				</Button>
 			</div>
 		)
@@ -716,9 +720,8 @@ function CountdownMode({
 			{/* Countdown display - fixed height to prevent shifts */}
 			<div className="h-24 flex flex-col items-center justify-center">
 				{isRevealed ? (
-					<div className="flex flex-col items-center animate-in fade-in zoom-in duration-300">
-						<div className="text-5xl font-bold text-green-500">✓</div>
-						<div className="text-lg font-medium text-green-500 mt-1">
+					<div className="flex items-center justify-center animate-in fade-in zoom-in duration-300">
+						<div className="text-7xl">
 							{deck.symbols[revealedSymbol!]?.label}
 						</div>
 					</div>
@@ -774,7 +777,7 @@ function CountdownMode({
 
 			{/* Stop button */}
 			<Button onClick={stopGame} variant="outline">
-				⏹️ Stop
+				Stop
 			</Button>
 		</div>
 	)

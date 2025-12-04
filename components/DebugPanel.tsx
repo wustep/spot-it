@@ -52,10 +52,10 @@ export function DebugPanel() {
 					>
 						<TabsList className="w-full">
 							<TabsTrigger value="spot-it" className="flex-1">
-								🎯 Spot It
+								Spot It
 							</TabsTrigger>
 							<TabsTrigger value="visualizer" className="flex-1">
-								📊 Visualizer
+								Visualizer
 							</TabsTrigger>
 						</TabsList>
 					</Tabs>
@@ -149,7 +149,7 @@ export function DebugPanel() {
 					spotItSubMode === "practice" &&
 					!isPlaying && (
 						<Button variant="outline" className="w-full" onClick={shuffleCards}>
-							🔀 Shuffle Deck
+							Shuffle Deck
 						</Button>
 					)}
 			</CardContent>

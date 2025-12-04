@@ -223,7 +223,7 @@ export function SpotCard({
 	return (
 		<div
 			className={cn(
-				"relative rounded-full bg-white dark:bg-zinc-900 border-2 flex items-center justify-center transition-all duration-200",
+				"relative rounded-full bg-white dark:bg-zinc-900 border-2 shadow-sm flex items-center justify-center transition-all duration-200",
 				onClick && "cursor-pointer",
 				isSelected
 					? "border-primary ring-2 ring-primary/30 scale-110"
@@ -270,9 +270,9 @@ export function SpotCard({
 							!hardMode && "transform -translate-x-1/2 -translate-y-1/2 p-0.5",
 							hardMode && "p-1",
 							sizeClass,
-							isShared && "scale-125 animate-pulse z-10",
+							isShared && "scale-125 animate-pulse",
 							isHighlighted &&
-								"scale-125 ring-2 ring-yellow-400 bg-yellow-100 dark:bg-yellow-900/50 z-10",
+								"scale-125 ring-2 ring-yellow-400 bg-yellow-100 dark:bg-yellow-900/50",
 							!isShared &&
 								!isHighlighted &&
 								onSymbolClick &&
