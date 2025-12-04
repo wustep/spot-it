@@ -35,7 +35,7 @@ export function DebugPanel() {
 
 	return (
 		<Card className="w-full max-w-sm bg-card/80 backdrop-blur-sm border-border/50">
-			<CardHeader className="pb-3">
+			<CardHeader>
 				<CardTitle className="text-lg font-semibold tracking-tight">
 					Control Panel
 				</CardTitle>

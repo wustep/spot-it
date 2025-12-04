@@ -130,15 +130,17 @@ export function SpotItMode() {
 					revealMatch()
 				}
 			} else if (phase === "revealed") {
-				// After 1 tick of showing, transition
+				// After 1 tick of showing, transition to next round
 				phase = "transitioning"
 				setCountdownPhase("transitioning")
-			} else if (phase === "transitioning") {
-				// Go to next round
-				nextRound()
+				// Reset countdown immediately so it doesn't flash "1" during transition
 				currentCount = countdownInterval
-				phase = "counting"
 				setCountdown(currentCount)
+				// Load next round
+				nextRound()
+			} else if (phase === "transitioning") {
+				// Start counting again
+				phase = "counting"
 				setCountdownPhase("counting")
 			}
 		}
@@ -216,7 +218,6 @@ export function SpotItMode() {
 					card1Index={card1Index}
 					card2Index={card2Index}
 					hardMode={hardMode}
-					selectCard1={selectCard1}
 					selectCard2={selectCard2}
 					pickRandomCards={pickRandomCards}
 				/>
@@ -271,7 +272,6 @@ function PracticeMode({
 	card1Index,
 	card2Index,
 	hardMode,
-	selectCard1,
 	selectCard2,
 	pickRandomCards,
 }: {
@@ -281,7 +281,6 @@ function PracticeMode({
 	card1Index: number | null
 	card2Index: number | null
 	hardMode: boolean
-	selectCard1: (index: number | null) => void
 	selectCard2: (index: number | null) => void
 	pickRandomCards: () => void
 }) {
@@ -289,10 +288,12 @@ function PracticeMode({
 	const [feedback, setFeedback] = useState<"none" | "correct" | "wrong">("none")
 	const [revealedSymbol, setRevealedSymbol] = useState<number | null>(null)
 
-	// Auto-select cards when deck changes or none selected
+	// Auto-select cards when deck changes or cards become null
 	useEffect(() => {
-		pickRandomCards()
-	}, [deck]) // eslint-disable-line react-hooks/exhaustive-deps
+		if (!card1 || !card2) {
+			pickRandomCards()
+		}
+	}, [deck, card1, card2]) // eslint-disable-line react-hooks/exhaustive-deps
 
 	// Find the shared symbol
 	const sharedSymbol =
@@ -430,15 +431,13 @@ function PracticeMode({
 								isSelected={isCard1 || isCard2}
 								onClick={() => {
 									if (isCard1) {
-										selectCard1(null)
+										// Already card1, do nothing (can't deselect)
+										return
 									} else if (isCard2) {
-										selectCard2(null)
-									} else if (card1Index === null) {
-										selectCard1(index)
-									} else if (card2Index === null) {
-										selectCard2(index)
+										// Already card2, do nothing (can't deselect)
+										return
 									} else {
-										// Both selected, replace card2
+										// Select this as card2 (replacing the current card2)
 										selectCard2(index)
 									}
 								}}
@@ -446,7 +445,7 @@ function PracticeMode({
 								hardMode={hardMode}
 								className={cn(
 									isCard1 && "ring-2 ring-rose-500",
-									isCard2 && "ring-2 ring-sky-500"
+									isCard2 && !isCard1 && "ring-2 ring-sky-500"
 								)}
 							/>
 						)

@@ -6,6 +6,26 @@ import { findCardsWithSymbol, getDeckStats } from "@/lib/deck"
 import { SpotCard } from "./SpotCard"
 import { cn } from "@/lib/utils"
 
+// Calculate binomial coefficient (n choose k)
+function binomial(n: number, k: number): number {
+	if (k > n) return 0
+	if (k === 0 || k === n) return 1
+	// Use the multiplicative formula to avoid huge intermediate values
+	let result = 1
+	for (let i = 0; i < k; i++) {
+		result = (result * (n - i)) / (i + 1)
+	}
+	return Math.round(result)
+}
+
+// Format large numbers with commas or scientific notation
+function formatBigNumber(n: number): string {
+	if (n >= 1e9) {
+		return n.toExponential(2)
+	}
+	return n.toLocaleString()
+}
+
 export function VisualizerMode() {
 	const {
 		deck,
@@ -57,7 +77,7 @@ export function VisualizerMode() {
 
 			{/* Incidence Matrix Explanation */}
 			<div className="bg-muted/30 rounded-lg p-4 max-w-2xl mx-auto">
-				<h3 className="font-semibold mb-2">📐 The Math Behind Spot It</h3>
+				<h3 className="font-semibold mb-2">About Spot It</h3>
 				<p className="text-sm text-muted-foreground">
 					Spot It is based on a <strong>finite projective plane</strong> of
 					order {stats.order}. This mathematical structure guarantees that:
@@ -74,7 +94,25 @@ export function VisualizerMode() {
 						There are exactly <strong>{stats.totalCards}</strong> cards and
 						symbols
 					</li>
+					<li>
+						With <strong>{stats.totalSymbols}</strong> symbols and{" "}
+						<strong>{stats.symbolsPerCard}</strong> per card, there are{" "}
+						<strong className="font-mono">
+							{formatBigNumber(
+								binomial(stats.totalSymbols, stats.symbolsPerCard)
+							)}
+						</strong>{" "}
+						possible card combinations, but we only use the ones in the
+						projective plane.
+					</li>
 				</ul>
+				{stats.order === 7 && (
+					<p className="text-sm text-muted-foreground mt-2">
+						<strong>Fun fact:</strong> The commercial Spot It game uses order 7
+						(57 cards) but only includes 55 cards in the box — they drop 2 cards
+						arbitrarily since the game still works!
+					</p>
+				)}
 			</div>
 
 			<div className="grid lg:grid-cols-2 gap-8">
