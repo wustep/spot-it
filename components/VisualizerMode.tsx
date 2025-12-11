@@ -40,10 +40,10 @@ export function VisualizerMode() {
 				<h2 className="text-2xl font-bold tracking-tight">Deck Visualizer</h2>
 				<p className="text-muted-foreground max-w-xl mx-auto">
 					Explore the mathematical structure of the Spot It deck. Hover over
-					symbols or cards to see connections.{" "}
-					<Link href="/article" className="text-primary hover:underline">
+					symbols or cards to see connections.
+					{/* <Link href="/article" className="text-primary hover:underline">
 						Learn more about the math
-					</Link>
+					</Link> */}
 				</p>
 			</div>
 
