@@ -30,13 +30,18 @@ export function Emoji({ emoji, className }: EmojiProps) {
 
 	// Use system emoji if selected or if OpenMoji failed to load
 	if (emojiStyle === "system" || failed) {
+		// For text emojis, we need to use the width as font-size since
+		// w-[1.4em] doesn't affect text size
 		return (
 			<span
 				className={cn(
-					"select-none inline-flex items-center justify-center",
-					className
+					"select-none inline-flex items-center justify-center leading-none",
+					// Remove w/h classes and apply as font-size instead
+					className?.replace(/[wh]-\[[\d.]+em\]/g, "")
 				)}
-				style={{ fontSize: "inherit" }}
+				style={{
+					fontSize: className?.match(/w-\[([\d.]+em)\]/)?.[1] || "1em",
+				}}
 			>
 				{emoji}
 			</span>
