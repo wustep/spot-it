@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { useGame } from "@/lib/store"
 import { cn } from "@/lib/utils"
 
@@ -25,9 +26,21 @@ function emojiToCodepoint(emoji: string): string {
 
 export function Emoji({ emoji, className }: EmojiProps) {
 	const { emojiStyle } = useGame()
+	const [failed, setFailed] = useState(false)
 
-	if (emojiStyle === "system") {
-		return <span className={cn("select-none", className)}>{emoji}</span>
+	// Use system emoji if selected or if OpenMoji failed to load
+	if (emojiStyle === "system" || failed) {
+		return (
+			<span
+				className={cn(
+					"select-none inline-flex items-center justify-center",
+					className
+				)}
+				style={{ fontSize: "inherit" }}
+			>
+				{emoji}
+			</span>
+		)
 	}
 
 	// OpenMoji CDN URL
@@ -40,15 +53,7 @@ export function Emoji({ emoji, className }: EmojiProps) {
 			alt={emoji}
 			className={cn("inline-block select-none", className)}
 			draggable={false}
-			// Fallback to system emoji on error
-			onError={(e) => {
-				const target = e.target as HTMLImageElement
-				target.style.display = "none"
-				const span = document.createElement("span")
-				span.textContent = emoji
-				span.className = className || ""
-				target.parentNode?.insertBefore(span, target)
-			}}
+			onError={() => setFailed(true)}
 		/>
 	)
 }
