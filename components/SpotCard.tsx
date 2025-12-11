@@ -21,23 +21,23 @@ interface SpotCardProps {
 const sizeConfig = {
 	sm: {
 		card: "w-24 h-24",
-		symbol: "text-2xl",
+		symbol: "text-xl",
 		symbolHard: ["text-lg", "text-xl", "text-3xl"],
 	},
 	md: {
 		card: "w-32 h-32",
-		symbol: "text-4xl",
-		symbolHard: ["text-xl", "text-2xl", "text-4xl"],
+		symbol: "text-2xl",
+		symbolHard: ["text-xl", "text-2xl", "text-3xl"],
 	},
 	lg: {
 		card: "w-44 h-44",
-		symbol: "text-5xl",
+		symbol: "text-3xl",
 		symbolHard: ["text-2xl", "text-3xl", "text-5xl"],
 	},
 	xl: {
 		card: "w-56 h-56",
-		symbol: "text-6xl",
-		symbolHard: ["text-3xl", "text-4xl", "text-6xl"],
+		symbol: "text-4xl",
+		symbolHard: ["text-3xl", "text-4xl", "text-5xl"],
 	},
 }
 
@@ -401,17 +401,13 @@ export function SpotCard({
 						{symbol?.emoji ? (
 							<Emoji
 								emoji={symbol.emoji}
-								className={cn(
-									"w-[1.4em] h-[1.4em]",
-									isShared && "drop-shadow-lg",
-									hardMode && "drop-shadow-sm"
-								)}
+								size="1.2em"
+								className={cn(isShared && "drop-shadow-lg")}
 							/>
 						) : (
 							<span
 								className={cn(
 									isShared && "drop-shadow-lg",
-									hardMode && "drop-shadow-sm",
 									"select-none leading-none"
 								)}
 							>

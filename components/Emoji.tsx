@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 
 interface EmojiProps {
 	emoji: string
+	size?: string // e.g., "1.4em", "24px", "2rem"
 	className?: string
 }
 
@@ -24,24 +25,21 @@ function emojiToCodepoint(emoji: string): string {
 	return codepoints.join("-")
 }
 
-export function Emoji({ emoji, className }: EmojiProps) {
+export function Emoji({ emoji, size = "1em", className }: EmojiProps) {
 	const { emojiStyle } = useGame()
 	const [failed, setFailed] = useState(false)
 
 	// Use system emoji if selected or if OpenMoji failed to load
+	// System emoji glyphs render smaller than their font-size box (~75-80%)
+	// Use calc() to increase font-size to compensate and match OpenMoji image sizing
 	if (emojiStyle === "system" || failed) {
-		// For text emojis, we need to use the width as font-size since
-		// w-[1.4em] doesn't affect text size
 		return (
 			<span
 				className={cn(
-					"select-none inline-flex items-center justify-center leading-none",
-					// Remove w/h classes and apply as font-size instead
-					className?.replace(/[wh]-\[[\d.]+em\]/g, "")
+					"select-none inline-flex items-center justify-center leading-none max-w-none",
+					className
 				)}
-				style={{
-					fontSize: className?.match(/w-\[([\d.]+em)\]/)?.[1] || "1em",
-				}}
+				style={{ fontSize: size }}
 			>
 				{emoji}
 			</span>
@@ -56,7 +54,8 @@ export function Emoji({ emoji, className }: EmojiProps) {
 		<img
 			src={openmojiUrl}
 			alt={emoji}
-			className={cn("inline-block select-none", className)}
+			className={cn("inline-block select-none max-w-none", className)}
+			style={{ width: size, height: size, scale: 1.2 }}
 			draggable={false}
 			onError={() => setFailed(true)}
 		/>

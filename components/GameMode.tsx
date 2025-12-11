@@ -12,6 +12,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select"
+import { Emoji } from "./Emoji"
 import { cn } from "@/lib/utils"
 
 export function GameMode() {
@@ -721,7 +722,14 @@ function CountdownMode({
 				{isRevealed ? (
 					<div className="flex items-center justify-center animate-in fade-in zoom-in duration-300">
 						<div className="text-7xl">
-							{deck.symbols[revealedSymbol!]?.label}
+							{deck.symbols[revealedSymbol!]?.emoji ? (
+								<Emoji
+									emoji={deck.symbols[revealedSymbol!].emoji!}
+									size="1em"
+								/>
+							) : (
+								deck.symbols[revealedSymbol!]?.label
+							)}
 						</div>
 					</div>
 				) : (
