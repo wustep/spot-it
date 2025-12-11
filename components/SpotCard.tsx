@@ -3,6 +3,7 @@
 import { useMemo } from "react"
 import { type Card as CardType, type SymbolMeta } from "@/lib/deck"
 import { cn } from "@/lib/utils"
+import { Emoji } from "./Emoji"
 
 interface SpotCardProps {
 	card: CardType
@@ -20,23 +21,23 @@ interface SpotCardProps {
 const sizeConfig = {
 	sm: {
 		card: "w-24 h-24",
-		symbol: "text-lg",
-		symbolHard: ["text-sm", "text-base", "text-xl"],
+		symbol: "text-2xl",
+		symbolHard: ["text-lg", "text-xl", "text-3xl"],
 	},
 	md: {
 		card: "w-32 h-32",
-		symbol: "text-2xl",
-		symbolHard: ["text-base", "text-lg", "text-2xl"],
+		symbol: "text-4xl",
+		symbolHard: ["text-xl", "text-2xl", "text-4xl"],
 	},
 	lg: {
 		card: "w-44 h-44",
-		symbol: "text-3xl",
-		symbolHard: ["text-lg", "text-xl", "text-3xl"],
+		symbol: "text-5xl",
+		symbolHard: ["text-2xl", "text-3xl", "text-5xl"],
 	},
 	xl: {
 		card: "w-56 h-56",
-		symbol: "text-4xl",
-		symbolHard: ["text-xl", "text-2xl", "text-4xl"],
+		symbol: "text-6xl",
+		symbolHard: ["text-3xl", "text-4xl", "text-6xl"],
 	},
 }
 
@@ -44,23 +45,23 @@ const sizeConfig = {
 const sizeConfigDense = {
 	sm: {
 		card: "w-24 h-24",
-		symbol: "text-base",
-		symbolHard: ["text-[10px]", "text-xs", "text-sm"],
+		symbol: "text-xl",
+		symbolHard: ["text-sm", "text-base", "text-lg"],
 	},
 	md: {
 		card: "w-32 h-32",
-		symbol: "text-xl",
-		symbolHard: ["text-xs", "text-sm", "text-base"],
+		symbol: "text-3xl",
+		symbolHard: ["text-base", "text-lg", "text-xl"],
 	},
 	lg: {
 		card: "w-44 h-44",
-		symbol: "text-2xl",
-		symbolHard: ["text-sm", "text-base", "text-lg"],
+		symbol: "text-4xl",
+		symbolHard: ["text-lg", "text-xl", "text-2xl"],
 	},
 	xl: {
 		card: "w-56 h-56",
-		symbol: "text-3xl",
-		symbolHard: ["text-base", "text-lg", "text-xl"],
+		symbol: "text-5xl",
+		symbolHard: ["text-xl", "text-2xl", "text-3xl"],
 	},
 }
 
@@ -68,23 +69,23 @@ const sizeConfigDense = {
 const sizeConfigExtraDense = {
 	sm: {
 		card: "w-24 h-24",
-		symbol: "text-sm",
-		symbolHard: ["text-[10px]", "text-xs", "text-sm"],
+		symbol: "text-lg",
+		symbolHard: ["text-sm", "text-base", "text-lg"],
 	},
 	md: {
 		card: "w-32 h-32",
-		symbol: "text-base",
-		symbolHard: ["text-xs", "text-sm", "text-base"],
+		symbol: "text-xl",
+		symbolHard: ["text-base", "text-lg", "text-xl"],
 	},
 	lg: {
 		card: "w-44 h-44",
-		symbol: "text-xl",
-		symbolHard: ["text-sm", "text-base", "text-lg"],
+		symbol: "text-3xl",
+		symbolHard: ["text-lg", "text-xl", "text-2xl"],
 	},
 	xl: {
 		card: "w-56 h-56",
-		symbol: "text-2xl",
-		symbolHard: ["text-base", "text-lg", "text-xl"],
+		symbol: "text-4xl",
+		symbolHard: ["text-xl", "text-2xl", "text-3xl"],
 	},
 }
 
@@ -397,15 +398,26 @@ export function SpotCard({
 						}}
 						disabled={!onSymbolClick}
 					>
-						<span
-							className={cn(
-								isShared && "drop-shadow-lg",
-								hardMode && "drop-shadow-sm",
-								"select-none leading-none"
-							)}
-						>
-							{symbol?.label ?? symbolId}
-						</span>
+						{symbol?.emoji ? (
+							<Emoji
+								emoji={symbol.emoji}
+								className={cn(
+									"w-[1.4em] h-[1.4em]",
+									isShared && "drop-shadow-lg",
+									hardMode && "drop-shadow-sm"
+								)}
+							/>
+						) : (
+							<span
+								className={cn(
+									isShared && "drop-shadow-lg",
+									hardMode && "drop-shadow-sm",
+									"select-none leading-none"
+								)}
+							>
+								{symbol?.label ?? symbolId}
+							</span>
+						)}
 					</button>
 				)
 			})}

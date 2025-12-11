@@ -4,6 +4,7 @@ import { useMemo } from "react"
 import { useGame } from "@/lib/store"
 import { findCardsWithSymbol, getDeckStats } from "@/lib/deck"
 import { SpotCard } from "./SpotCard"
+import { Emoji } from "./Emoji"
 import { cn } from "@/lib/utils"
 
 // Calculate binomial coefficient (n choose k)
@@ -154,7 +155,11 @@ export function VisualizerMode() {
 										)
 									}
 								>
-									{symbol.label}
+									{symbol.emoji ? (
+										<Emoji emoji={symbol.emoji} className="w-8 h-8" />
+									) : (
+										symbol.label
+									)}
 								</button>
 							)
 						})}
@@ -216,7 +221,11 @@ export function VisualizerMode() {
 									onMouseEnter={() => highlightSymbol(symbol.id)}
 									onMouseLeave={() => highlightSymbol(null)}
 								>
-									{symbol.label}
+									{symbol.emoji ? (
+										<Emoji emoji={symbol.emoji} className="w-6 h-6" />
+									) : (
+										symbol.label
+									)}
 								</div>
 							))}
 						</div>

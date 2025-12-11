@@ -6,6 +6,7 @@ import {
 	type GameState,
 	type GameStore,
 	type SymbolMode,
+	type EmojiStyle,
 	type ViewMode,
 	type SpotItSubMode,
 	createInitialState,
@@ -32,6 +33,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
 			highlightedSymbol: null,
 			highlightedCard: null,
 			stats: createInitialStats(),
+		}))
+	}, [])
+
+	const setEmojiStyle = useCallback((style: EmojiStyle) => {
+		setState((prev) => ({
+			...prev,
+			emojiStyle: style,
 		}))
 	}, [])
 
@@ -243,6 +251,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 		() => ({
 			...state,
 			setSymbolMode,
+			setEmojiStyle,
 			setOrder,
 			setViewMode,
 			setHardMode,
@@ -264,6 +273,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 		[
 			state,
 			setSymbolMode,
+			setEmojiStyle,
 			setOrder,
 			setViewMode,
 			setHardMode,

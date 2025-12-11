@@ -4,6 +4,7 @@ import { createContext, useContext } from "react"
 import { type Deck, type ValidOrder, generateDeck } from "./deck"
 
 export type SymbolMode = "emojis" | "numbers"
+export type EmojiStyle = "openmoji" | "system"
 export type ViewMode = "spot-it" | "visualizer"
 export type SpotItSubMode = "practice" | "game" | "countdown"
 
@@ -19,6 +20,7 @@ export interface GameStats {
 export interface GameState {
 	// Settings
 	symbolMode: SymbolMode
+	emojiStyle: EmojiStyle
 	order: ValidOrder
 	viewMode: ViewMode
 	hardMode: boolean // Harder card display with scattered symbols
@@ -46,6 +48,7 @@ export interface GameState {
 
 export interface GameActions {
 	setSymbolMode: (mode: SymbolMode) => void
+	setEmojiStyle: (style: EmojiStyle) => void
 	setOrder: (order: ValidOrder) => void
 	setViewMode: (mode: ViewMode) => void
 	setHardMode: (hard: boolean) => void
@@ -94,10 +97,12 @@ export function createInitialStats(): GameStats {
 
 export function createInitialState(
 	order: ValidOrder = 3,
-	symbolMode: SymbolMode = "emojis"
+	symbolMode: SymbolMode = "emojis",
+	emojiStyle: EmojiStyle = "openmoji"
 ): GameState {
 	return {
 		symbolMode,
+		emojiStyle,
 		order,
 		viewMode: "spot-it",
 		hardMode: false,

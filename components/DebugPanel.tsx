@@ -19,6 +19,8 @@ export function DebugPanel() {
 	const {
 		symbolMode,
 		setSymbolMode,
+		emojiStyle,
+		setEmojiStyle,
 		order,
 		setOrder,
 		viewMode,
@@ -75,6 +77,27 @@ export function DebugPanel() {
 					/>
 				</div>
 
+				{/* Emoji Style */}
+				{symbolMode === "emojis" && (
+					<div className="space-y-2">
+						<Label className="text-sm font-medium">
+							Emoji Style
+						</Label>
+						<Select
+							value={emojiStyle}
+							onValueChange={(v) => setEmojiStyle(v as "openmoji" | "system")}
+						>
+							<SelectTrigger>
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="openmoji">OpenMoji</SelectItem>
+								<SelectItem value="system">System</SelectItem>
+							</SelectContent>
+						</Select>
+					</div>
+				)}
+
 				{/* Hard Mode */}
 				{viewMode === "spot-it" && (
 					<div className="flex items-center justify-between">
@@ -96,7 +119,7 @@ export function DebugPanel() {
 
 				{/* Order Selection */}
 				<div className="space-y-2">
-					<Label className="text-sm font-medium text-muted-foreground">
+					<Label className="text-sm font-medium">
 						# of Symbols
 					</Label>
 					<Select

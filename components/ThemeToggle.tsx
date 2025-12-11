@@ -9,6 +9,7 @@ export function ThemeToggle() {
 	const [mounted, setMounted] = useState(false)
 
 	useEffect(() => {
+		// eslint-disable-next-line react-hooks/set-state-in-effect
 		setMounted(true)
 		// Check for saved preference or system preference
 		const saved = localStorage.getItem("theme")
