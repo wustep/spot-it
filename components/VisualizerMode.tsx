@@ -1,31 +1,13 @@
 "use client"
 
 import { useMemo } from "react"
+import Link from "next/link"
 import { useGame } from "@/lib/store"
 import { findCardsWithSymbol, getDeckStats } from "@/lib/deck"
 import { SpotCard } from "./SpotCard"
 import { Emoji } from "./Emoji"
+import { ProjectivePlane } from "./ProjectivePlane"
 import { cn } from "@/lib/utils"
-
-// Calculate binomial coefficient (n choose k)
-function binomial(n: number, k: number): number {
-	if (k > n) return 0
-	if (k === 0 || k === n) return 1
-	// Use the multiplicative formula to avoid huge intermediate values
-	let result = 1
-	for (let i = 0; i < k; i++) {
-		result = (result * (n - i)) / (i + 1)
-	}
-	return Math.round(result)
-}
-
-// Format large numbers with commas or scientific notation
-function formatBigNumber(n: number): string {
-	if (n >= 1e9) {
-		return n.toExponential(2)
-	}
-	return n.toLocaleString()
-}
 
 export function VisualizerMode() {
 	const {
@@ -59,7 +41,10 @@ export function VisualizerMode() {
 				<h2 className="text-2xl font-bold tracking-tight">Deck Visualizer</h2>
 				<p className="text-muted-foreground max-w-xl mx-auto">
 					Explore the mathematical structure of the Spot It deck. Hover over
-					symbols or cards to see connections.
+					symbols or cards to see connections.{" "}
+					<Link href="/article" className="text-primary hover:underline">
+						Learn more about the math
+					</Link>
 				</p>
 			</div>
 
@@ -74,46 +59,6 @@ export function VisualizerMode() {
 					value={`n² + n + 1 = ${stats.order}² + ${stats.order} + 1`}
 					wide
 				/>
-			</div>
-
-			{/* Incidence Matrix Explanation */}
-			<div className="bg-muted/30 rounded-lg p-4 max-w-2xl mx-auto">
-				<h3 className="font-semibold mb-2">About Spot It</h3>
-				<p className="text-sm text-muted-foreground">
-					Spot It is based on a <strong>finite projective plane</strong> of
-					order {stats.order}. This mathematical structure guarantees that:
-				</p>
-				<ul className="text-sm text-muted-foreground mt-2 space-y-1 list-disc list-inside">
-					<li>
-						Every pair of cards shares <strong>exactly one</strong> symbol
-					</li>
-					<li>
-						Every symbol appears on exactly{" "}
-						<strong>{stats.symbolsPerCard}</strong> cards
-					</li>
-					<li>
-						There are exactly <strong>{stats.totalCards}</strong> cards and
-						symbols
-					</li>
-					<li>
-						With <strong>{stats.totalSymbols}</strong> symbols and{" "}
-						<strong>{stats.symbolsPerCard}</strong> per card, there are{" "}
-						<strong className="font-mono">
-							{formatBigNumber(
-								binomial(stats.totalSymbols, stats.symbolsPerCard)
-							)}
-						</strong>{" "}
-						possible card combinations, but we only use the ones in the
-						projective plane.
-					</li>
-				</ul>
-				{stats.order === 7 && (
-					<p className="text-sm text-muted-foreground mt-2">
-						<strong>Fun fact:</strong> The commercial Spot It game uses order 7
-						(57 cards) but only includes 55 cards in the box — they drop 2 cards
-						arbitrarily since the game still works!
-					</p>
-				)}
 			</div>
 
 			<div className="grid lg:grid-cols-2 gap-8">
@@ -200,6 +145,16 @@ export function VisualizerMode() {
 						})}
 					</div>
 				</div>
+			</div>
+
+			{/* Projective Plane Diagram */}
+			<div>
+				<h3 className="text-lg font-semibold mb-4">Projective Plane Structure</h3>
+				<p className="text-sm text-muted-foreground mb-4">
+					Each cell represents a card (point). The colored dots show which line families
+					pass through each point. Hover to explore the structure.
+				</p>
+				<ProjectivePlane />
 			</div>
 
 			{/* Incidence Matrix (for decks up to n=7, which has 57 cards) */}

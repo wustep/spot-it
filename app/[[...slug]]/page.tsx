@@ -1,15 +1,23 @@
 "use client"
 
 import { Suspense } from "react"
+import Link from "next/link"
 import { GameProvider } from "@/components/GameProvider"
 import { DebugPanel } from "@/components/DebugPanel"
 import { GameMode } from "@/components/GameMode"
 import { VisualizerMode } from "@/components/VisualizerMode"
+import { ArticlePage } from "@/components/ArticlePage"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { useGame } from "@/lib/store"
+import { BookOpen } from "lucide-react"
 
 function MainContent() {
 	const { viewMode } = useGame()
+
+	// Article page has its own layout
+	if (viewMode === "article") {
+		return <ArticlePage />
+	}
 
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
@@ -23,7 +31,16 @@ function MainContent() {
 								Dobble Deck Visualizer
 							</p>
 						</div>
-						<ThemeToggle />
+						<div className="flex items-center gap-2">
+							<Link
+								href="/article"
+								className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-muted"
+							>
+								<BookOpen className="w-4 h-4" />
+								<span className="hidden sm:inline">Article</span>
+							</Link>
+							<ThemeToggle />
+						</div>
 					</div>
 				</div>
 			</header>

@@ -5,7 +5,7 @@ import { type Deck, type ValidOrder, generateDeck } from "./deck"
 
 export type SymbolMode = "emojis" | "numbers"
 export type EmojiStyle = "openmoji" | "system"
-export type ViewMode = "game" | "visualizer"
+export type ViewMode = "game" | "visualizer" | "article"
 export type GameSubMode = "practice" | "timed" | "countdown"
 
 export interface GameStats {
