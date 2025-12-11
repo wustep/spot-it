@@ -122,6 +122,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
 		setState((prev) => ({
 			...prev,
 			viewMode: mode,
+			// Reset deck to original order when switching to visualizer
+			deck:
+				mode === "visualizer"
+					? generateDeck(prev.order, prev.symbolMode === "emojis")
+					: prev.deck,
 			// Reset selections when changing view
 			isPlaying: false,
 			card1Index: null,
