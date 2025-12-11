@@ -1,6 +1,13 @@
 "use client"
 
-import { useState, useCallback, useMemo, type ReactNode } from "react"
+import {
+	useState,
+	useCallback,
+	useMemo,
+	useEffect,
+	type ReactNode,
+} from "react"
+import { usePathname } from "next/navigation"
 import {
 	GameContext,
 	type GameState,
@@ -8,16 +15,61 @@ import {
 	type SymbolMode,
 	type EmojiStyle,
 	type ViewMode,
-	type SpotItSubMode,
+	type GameSubMode,
 	createInitialState,
 	createInitialStats,
 } from "@/lib/store"
 import { generateDeck, findSharedSymbol, type ValidOrder } from "@/lib/deck"
 
+// Helper to update URL without navigation
+function updateURL(viewMode: ViewMode, gameSubMode: GameSubMode) {
+	let newURL = "/"
+	if (viewMode === "game") {
+		newURL = `/game/${gameSubMode}`
+	} else {
+		newURL = "/visualizer"
+	}
+	window.history.replaceState({}, "", newURL)
+}
+
+// Parse path to extract mode and submode
+function parsePathname(pathname: string): {
+	viewMode: ViewMode
+	gameSubMode: GameSubMode
+} {
+	const segments = pathname.split("/").filter(Boolean)
+
+	if (segments[0] === "visualizer") {
+		return { viewMode: "visualizer", gameSubMode: "practice" }
+	}
+
+	if (segments[0] === "game" && segments[1]) {
+		const submode = segments[1]
+		if (submode === "practice" || submode === "timed" || submode === "countdown") {
+			return { viewMode: "game", gameSubMode: submode }
+		}
+	}
+
+	// Default
+	return { viewMode: "game", gameSubMode: "practice" }
+}
+
 export function GameProvider({ children }: { children: ReactNode }) {
-	const [state, setState] = useState<GameState>(() =>
-		createInitialState(3, "emojis")
-	)
+	const pathname = usePathname()
+
+	// Initialize state from URL path
+	const [state, setState] = useState<GameState>(() => {
+		const initialState = createInitialState(3, "emojis")
+		const { viewMode, gameSubMode } = parsePathname(pathname)
+		initialState.viewMode = viewMode
+		initialState.gameSubMode = gameSubMode
+		return initialState
+	})
+
+	// Sync state to URL when viewMode or gameSubMode changes
+	useEffect(() => {
+		updateURL(state.viewMode, state.gameSubMode)
+	}, [state.viewMode, state.gameSubMode])
 
 	const setSymbolMode = useCallback((mode: SymbolMode) => {
 		setState((prev) => ({
@@ -82,10 +134,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
 		}))
 	}, [])
 
-	const setSpotItSubMode = useCallback((mode: SpotItSubMode) => {
+	const setGameSubMode = useCallback((mode: GameSubMode) => {
 		setState((prev) => ({
 			...prev,
-			spotItSubMode: mode,
+			gameSubMode: mode,
 			isPlaying: false,
 			card1Index: null,
 			card2Index: null,
@@ -255,7 +307,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 			setOrder,
 			setViewMode,
 			setHardMode,
-			setSpotItSubMode,
+			setGameSubMode,
 			startGame,
 			stopGame,
 			nextRound,
@@ -277,7 +329,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 			setOrder,
 			setViewMode,
 			setHardMode,
-			setSpotItSubMode,
+			setGameSubMode,
 			startGame,
 			stopGame,
 			nextRound,

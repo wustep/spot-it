@@ -5,8 +5,8 @@ import { type Deck, type ValidOrder, generateDeck } from "./deck"
 
 export type SymbolMode = "emojis" | "numbers"
 export type EmojiStyle = "openmoji" | "system"
-export type ViewMode = "spot-it" | "visualizer"
-export type SpotItSubMode = "practice" | "game" | "countdown"
+export type ViewMode = "game" | "visualizer"
+export type GameSubMode = "practice" | "timed" | "countdown"
 
 export interface GameStats {
 	correct: number
@@ -28,8 +28,8 @@ export interface GameState {
 	// Generated deck
 	deck: Deck
 
-	// Spot It mode state
-	spotItSubMode: SpotItSubMode
+	// Game mode state
+	gameSubMode: GameSubMode
 	isPlaying: boolean
 	card1Index: number | null
 	card2Index: number | null
@@ -53,8 +53,8 @@ export interface GameActions {
 	setViewMode: (mode: ViewMode) => void
 	setHardMode: (hard: boolean) => void
 
-	// Spot It actions
-	setSpotItSubMode: (mode: SpotItSubMode) => void
+	// Game mode actions
+	setGameSubMode: (mode: GameSubMode) => void
 	startGame: () => void
 	stopGame: () => void
 	nextRound: () => void
@@ -104,10 +104,10 @@ export function createInitialState(
 		symbolMode,
 		emojiStyle,
 		order,
-		viewMode: "spot-it",
+		viewMode: "game",
 		hardMode: false,
 		deck: generateDeck(order, symbolMode === "emojis"),
-		spotItSubMode: "practice",
+		gameSubMode: "practice",
 		isPlaying: false,
 		card1Index: null,
 		card2Index: null,

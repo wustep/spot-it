@@ -14,11 +14,11 @@ import {
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 
-export function SpotItMode() {
+export function GameMode() {
 	const {
 		deck,
-		spotItSubMode,
-		setSpotItSubMode,
+		gameSubMode,
+		setGameSubMode,
 		isPlaying,
 		card1Index,
 		card2Index,
@@ -49,7 +49,7 @@ export function SpotItMode() {
 
 	// Live timer for game mode (update every second)
 	useEffect(() => {
-		if (spotItSubMode !== "game" || !isPlaying || !roundStartTime) {
+		if (gameSubMode !== "timed" || !isPlaying || !roundStartTime) {
 			return
 		}
 
@@ -61,7 +61,7 @@ export function SpotItMode() {
 		}, 1000)
 
 		return () => clearInterval(interval)
-	}, [spotItSubMode, isPlaying, roundStartTime])
+	}, [gameSubMode, isPlaying, roundStartTime])
 
 	// Handle guess in game mode
 	const handleGuess = useCallback(
@@ -96,7 +96,7 @@ export function SpotItMode() {
 
 	// Countdown effect - simpler interval-based approach
 	useEffect(() => {
-		const shouldPlay = spotItSubMode === "countdown" && isPlaying
+		const shouldPlay = gameSubMode === "countdown" && isPlaying
 
 		if (!shouldPlay) {
 			if (countdownRef.current) {
@@ -154,7 +154,7 @@ export function SpotItMode() {
 			}
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [spotItSubMode, isPlaying, countdownInterval])
+	}, [gameSubMode, isPlaying, countdownInterval])
 
 	// Pick random cards for practice mode
 	const pickRandomCards = () => {
@@ -192,14 +192,14 @@ export function SpotItMode() {
 			{/* Sub-mode selector */}
 			<div className="w-full max-w-md">
 				<Tabs
-					value={spotItSubMode}
-					onValueChange={(v) => setSpotItSubMode(v as typeof spotItSubMode)}
+					value={gameSubMode}
+					onValueChange={(v) => setGameSubMode(v as typeof gameSubMode)}
 				>
 					<TabsList className="w-full">
 						<TabsTrigger value="practice" className="flex-1">
 							Practice
 						</TabsTrigger>
-						<TabsTrigger value="game" className="flex-1">
+						<TabsTrigger value="timed" className="flex-1">
 							Timed
 						</TabsTrigger>
 						<TabsTrigger value="countdown" className="flex-1">
@@ -210,7 +210,7 @@ export function SpotItMode() {
 			</div>
 
 			{/* Mode-specific content */}
-			{spotItSubMode === "practice" && (
+			{gameSubMode === "practice" && (
 				<PracticeMode
 					deck={deck}
 					card1={card1}
@@ -223,8 +223,8 @@ export function SpotItMode() {
 				/>
 			)}
 
-			{spotItSubMode === "game" && (
-				<GameMode
+			{gameSubMode === "timed" && (
+				<TimedMode
 					deck={deck}
 					card1={card1}
 					card2={card2}
@@ -244,7 +244,7 @@ export function SpotItMode() {
 				/>
 			)}
 
-			{spotItSubMode === "countdown" && (
+			{gameSubMode === "countdown" && (
 				<CountdownMode
 					deck={deck}
 					card1={card1}
@@ -456,8 +456,8 @@ function PracticeMode({
 	)
 }
 
-// Game Mode Component
-function GameMode({
+// Timed Mode Component
+function TimedMode({
 	deck,
 	card1,
 	card2,

@@ -1,8 +1,9 @@
 "use client"
 
+import { Suspense } from "react"
 import { GameProvider } from "@/components/GameProvider"
 import { DebugPanel } from "@/components/DebugPanel"
-import { SpotItMode } from "@/components/SpotItMode"
+import { GameMode } from "@/components/GameMode"
 import { VisualizerMode } from "@/components/VisualizerMode"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { useGame } from "@/lib/store"
@@ -39,7 +40,7 @@ function MainContent() {
 
 					{/* Main Content */}
 					<main className="flex-1 min-w-0">
-						{viewMode === "spot-it" ? <SpotItMode /> : <VisualizerMode />}
+						{viewMode === "game" ? <GameMode /> : <VisualizerMode />}
 					</main>
 				</div>
 			</div>
@@ -64,8 +65,10 @@ function MainContent() {
 
 export default function Home() {
 	return (
-		<GameProvider>
-			<MainContent />
-		</GameProvider>
+		<Suspense fallback={<div className="min-h-screen" />}>
+			<GameProvider>
+				<MainContent />
+			</GameProvider>
+		</Suspense>
 	)
 }

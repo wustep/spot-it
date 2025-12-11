@@ -29,7 +29,7 @@ export function DebugPanel() {
 		setHardMode,
 		deck,
 		shuffleCards,
-		spotItSubMode,
+		gameSubMode,
 		isPlaying,
 	} = useGame()
 
@@ -50,11 +50,11 @@ export function DebugPanel() {
 					</Label>
 					<Tabs
 						value={viewMode}
-						onValueChange={(v) => setViewMode(v as "spot-it" | "visualizer")}
+						onValueChange={(v) => setViewMode(v as "game" | "visualizer")}
 					>
 						<TabsList className="w-full">
-							<TabsTrigger value="spot-it" className="flex-1">
-								Spot It
+							<TabsTrigger value="game" className="flex-1">
+								Game
 							</TabsTrigger>
 							<TabsTrigger value="visualizer" className="flex-1">
 								Visualizer
@@ -99,7 +99,7 @@ export function DebugPanel() {
 				)}
 
 				{/* Hard Mode */}
-				{viewMode === "spot-it" && (
+				{viewMode === "game" && (
 					<div className="flex items-center justify-between">
 						<div>
 							<Label htmlFor="hard-mode" className="text-sm font-medium">
@@ -168,8 +168,8 @@ export function DebugPanel() {
 				</div>
 
 				{/* Actions */}
-				{viewMode === "spot-it" &&
-					spotItSubMode === "practice" &&
+				{viewMode === "game" &&
+					gameSubMode === "practice" &&
 					!isPlaying && (
 						<Button variant="outline" className="w-full" onClick={shuffleCards}>
 							Shuffle Deck
