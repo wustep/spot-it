@@ -7,7 +7,6 @@ import { ArrowLeft } from "lucide-react"
 import { useGame } from "@/lib/store"
 import { generateDeck, findSharedSymbol } from "@/lib/deck"
 import { SpotCard } from "./SpotCard"
-import { ProjectivePlane } from "./ProjectivePlane"
 
 // Calculate binomial coefficient (n choose k)
 function binomial(n: number, k: number): number {
@@ -150,20 +149,6 @@ export function ArticlePage() {
 							same number of symbols)
 						</li>
 					</ul>
-
-					<h2>Visualizing the Structure</h2>
-
-					<p>
-						Below is an interactive diagram of a projective plane. Each cell
-						represents a &ldquo;card&rdquo; (point), and the colored dots show
-						which &ldquo;line families&rdquo; pass through it. Hover over the dots
-						to see which cards share the same line:
-					</p>
-
-					{/* Projective Plane visualization */}
-					<div className="not-prose my-6 bg-muted/30 rounded-lg p-4">
-						<ProjectivePlane />
-					</div>
 
 					<h2>Why Only Certain Deck Sizes Exist</h2>
 

@@ -6,7 +6,6 @@ import { useGame } from "@/lib/store"
 import { findCardsWithSymbol, getDeckStats } from "@/lib/deck"
 import { SpotCard } from "./SpotCard"
 import { Emoji } from "./Emoji"
-import { ProjectivePlane } from "./ProjectivePlane"
 import { cn } from "@/lib/utils"
 
 export function VisualizerMode() {
@@ -145,16 +144,6 @@ export function VisualizerMode() {
 						})}
 					</div>
 				</div>
-			</div>
-
-			{/* Projective Plane Diagram */}
-			<div>
-				<h3 className="text-lg font-semibold mb-4">Projective Plane Structure</h3>
-				<p className="text-sm text-muted-foreground mb-4">
-					Each cell represents a card (point). The colored dots show which line families
-					pass through each point. Hover to explore the structure.
-				</p>
-				<ProjectivePlane />
 			</div>
 
 			{/* Incidence Matrix (for decks up to n=7, which has 57 cards) */}
