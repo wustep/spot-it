@@ -28,6 +28,8 @@ function updateURL(viewMode: ViewMode, gameSubMode: GameSubMode) {
 		newURL = `/game/${gameSubMode}`
 	} else if (viewMode === "article") {
 		newURL = "/article"
+	} else if (viewMode === "article-full") {
+		newURL = "/article/full"
 	} else {
 		newURL = "/visualizer"
 	}
@@ -46,6 +48,9 @@ function parsePathname(pathname: string): {
 	}
 
 	if (segments[0] === "article") {
+		if (segments[1] === "full") {
+			return { viewMode: "article-full", gameSubMode: "practice" }
+		}
 		return { viewMode: "article", gameSubMode: "practice" }
 	}
 

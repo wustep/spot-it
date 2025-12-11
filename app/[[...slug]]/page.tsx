@@ -14,9 +14,12 @@ import { BookOpen } from "lucide-react"
 function MainContent() {
 	const { viewMode } = useGame()
 
-	// Article page has its own layout
+	// Article pages have their own layout
 	if (viewMode === "article") {
-		return <ArticlePage />
+		return <ArticlePage showBackButton={true} />
+	}
+	if (viewMode === "article-full") {
+		return <ArticlePage showBackButton={false} />
 	}
 
 	return (

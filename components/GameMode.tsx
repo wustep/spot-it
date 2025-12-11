@@ -718,9 +718,12 @@ function CountdownMode({
 	return (
 		<div className="flex flex-col items-center gap-6">
 			{/* Countdown display - fixed height to prevent shifts */}
-			<div className="h-24 flex flex-col items-center justify-center">
+			<div className="h-24 flex flex-col items-center justify-center overflow-hidden">
 				{isRevealed ? (
-					<div className="flex items-center justify-center animate-in fade-in zoom-in duration-300">
+					<div
+						key="revealed"
+						className="flex items-center justify-center animate-in fade-in zoom-in duration-300"
+					>
 						<div className="text-7xl">
 							{deck.symbols[revealedSymbol!]?.emoji ? (
 								<Emoji
@@ -734,9 +737,12 @@ function CountdownMode({
 					</div>
 				) : (
 					<div
+						key={`countdown-${countdown}-${isTransitioning}`}
 						className={cn(
-							"flex flex-col items-center transition-all duration-300",
-							isTransitioning && "opacity-50 scale-95"
+							"flex flex-col items-center",
+							isTransitioning
+								? "animate-out fade-out duration-200"
+								: "animate-in fade-in duration-200"
 						)}
 					>
 						<div
