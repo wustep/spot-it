@@ -47,10 +47,10 @@ function MainContent() {
 
 			{/* Main Layout */}
 			<div className="container mx-auto px-4 py-6">
-				<div className="flex flex-col lg:flex-row gap-6">
-					{/* Debug Panel - Sidebar on large screens */}
-					<aside className="lg:w-80 flex-shrink-0">
-						<div className="lg:sticky lg:top-24">
+				<div className="flex flex-col lg:flex-row gap-6 lg:justify-center">
+					{/* Debug Panel - Sidebar on large screens, centered on mobile */}
+					<aside className="lg:w-80 flex-shrink-0 flex justify-center lg:justify-start">
+						<div className="lg:sticky lg:top-24 w-full max-w-sm">
 							<DebugPanel />
 						</div>
 					</aside>
