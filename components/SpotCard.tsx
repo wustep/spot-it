@@ -377,7 +377,7 @@ export function SpotCard({
 
 				return (
 					<button
-						key={symbolId}
+						key={`${card.id}-${index}`}
 						className={cn(
 							"absolute rounded-full",
 							!hardMode && "transform -translate-x-1/2 -translate-y-1/2 p-0.5",
