@@ -89,13 +89,10 @@ export function GameMode() {
 
 	// Countdown mode state
 	const [countdown, setCountdown] = useState(countdownInterval)
-	const [countdownPhase, setCountdownPhase] = useState<
-		"counting" | "revealed" | "transitioning"
-	>("counting")
+	const [isRevealed, setIsRevealed] = useState(false)
 	const countdownRef = useRef<NodeJS.Timeout | null>(null)
-	const isActiveRef = useRef(false)
 
-	// Countdown effect - simpler interval-based approach
+	// Countdown effect - clean interval-based approach
 	useEffect(() => {
 		const shouldPlay = gameSubMode === "countdown" && isPlaying
 
@@ -104,45 +101,37 @@ export function GameMode() {
 				clearInterval(countdownRef.current)
 				countdownRef.current = null
 			}
-			isActiveRef.current = false
+			setCountdown(countdownInterval)
+			setIsRevealed(false)
 			return
 		}
 
-		// Initialize on start
-		if (!isActiveRef.current) {
-			isActiveRef.current = true
-			setCountdown(countdownInterval)
-			setCountdownPhase("counting")
-		}
+		// Initialize
+		setCountdown(countdownInterval)
+		setIsRevealed(false)
 
 		let currentCount = countdownInterval
-		let phase: "counting" | "revealed" | "transitioning" = "counting"
+		let revealed = false
 
 		const tick = () => {
-			if (phase === "counting") {
+			if (!revealed) {
 				if (currentCount > 1) {
-					// Still counting down, decrement
+					// Still counting down
 					currentCount--
 					setCountdown(currentCount)
 				} else {
-					// Was showing 1, now reveal the match
-					phase = "revealed"
-					setCountdownPhase("revealed")
+					// Reached 0, reveal the match
+					revealed = true
+					setIsRevealed(true)
 					revealMatch()
 				}
-			} else if (phase === "revealed") {
-				// After 1 tick of showing, transition to next round
-				phase = "transitioning"
-				setCountdownPhase("transitioning")
-				// Reset countdown immediately so it doesn't flash "1" during transition
+			} else {
+				// After reveal, move to next round and reset
+				revealed = false
+				setIsRevealed(false)
 				currentCount = countdownInterval
 				setCountdown(currentCount)
-				// Load next round
 				nextRound()
-			} else if (phase === "transitioning") {
-				// Start counting again
-				phase = "counting"
-				setCountdownPhase("counting")
 			}
 		}
 
@@ -254,7 +243,7 @@ export function GameMode() {
 					revealedSymbol={revealedSymbol}
 					countdown={countdown}
 					countdownInterval={countdownInterval}
-					countdownPhase={countdownPhase}
+					isRevealed={isRevealed}
 					hardMode={hardMode}
 					setCountdownInterval={setCountdownInterval}
 					startGame={startGame}
@@ -652,7 +641,7 @@ function CountdownMode({
 	revealedSymbol,
 	countdown,
 	countdownInterval,
-	countdownPhase,
+	isRevealed,
 	hardMode,
 	setCountdownInterval,
 	startGame,
@@ -665,7 +654,7 @@ function CountdownMode({
 	revealedSymbol: number | null
 	countdown: number
 	countdownInterval: number
-	countdownPhase: "counting" | "revealed" | "transitioning"
+	isRevealed: boolean
 	hardMode: boolean
 	setCountdownInterval: (seconds: number) => void
 	startGame: () => void
@@ -696,8 +685,6 @@ function CountdownMode({
 							<SelectValue />
 						</SelectTrigger>
 						<SelectContent>
-							<SelectItem value="1">1 sec</SelectItem>
-							<SelectItem value="2">2 sec</SelectItem>
 							<SelectItem value="3">3 sec</SelectItem>
 							<SelectItem value="5">5 sec</SelectItem>
 							<SelectItem value="10">10 sec</SelectItem>
@@ -711,9 +698,6 @@ function CountdownMode({
 			</div>
 		)
 	}
-
-	const isRevealed = countdownPhase === "revealed"
-	const isTransitioning = countdownPhase === "transitioning"
 
 	return (
 		<div className="flex flex-col items-center gap-6">
@@ -737,13 +721,8 @@ function CountdownMode({
 					</div>
 				) : (
 					<div
-						key={`countdown-${countdown}-${isTransitioning}`}
-						className={cn(
-							"flex flex-col items-center",
-							isTransitioning
-								? "animate-out fade-out duration-200"
-								: "animate-in fade-in duration-200"
-						)}
+						key={`countdown-${countdown}`}
+						className="flex flex-col items-center animate-in fade-in duration-150"
 					>
 						<div
 							className={cn(
@@ -758,13 +737,8 @@ function CountdownMode({
 				)}
 			</div>
 
-			{/* Cards - fixed container to prevent shifts */}
-			<div
-				className={cn(
-					"flex flex-wrap items-center justify-center gap-4 sm:gap-6 md:gap-8 px-4 transition-opacity duration-300",
-					isTransitioning && "opacity-50"
-				)}
-			>
+			{/* Cards */}
+			<div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 md:gap-8 px-4">
 				{card1 && (
 					<SpotCard
 						card={card1}
