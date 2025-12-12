@@ -77,11 +77,11 @@ export function GameMode() {
 					setElapsedTime(0)
 					nextRound()
 					setFeedbackState("none")
-				}, 800)
+				}, 1000)
 			} else {
 				setTimeout(() => {
 					setFeedbackState("none")
-				}, 500)
+				}, 1000)
 			}
 		},
 		[guessSymbol, nextRound, roundStartTime]
