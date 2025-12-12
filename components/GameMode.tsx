@@ -582,7 +582,7 @@ function TimedMode({
 			<div className="h-10 flex items-center justify-center">
 				{feedbackState === "correct" && lastRoundTime !== null && (
 					<div className="text-green-500 font-bold text-xl animate-in fade-in zoom-in duration-200">
-						{formatTime(lastRoundTime)}
+						{formatTimeDecimal(lastRoundTime)}
 					</div>
 				)}
 				{feedbackState === "wrong" && (

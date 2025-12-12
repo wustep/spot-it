@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils"
 export function VisualizerMode() {
 	const {
 		deck,
+		hardMode,
 		highlightedSymbol,
 		highlightedCard,
 		highlightSymbol,
@@ -136,6 +137,7 @@ export function VisualizerMode() {
 										highlightCard(highlightedCard === card.id ? null : card.id)
 									}
 									size="sm"
+									hardMode={hardMode}
 									className={cn(
 										hasSymbol && !isHighlighted && "ring-2 ring-yellow-400/50"
 									)}
