@@ -1,6 +1,6 @@
-# Spot It
+# Spot it!
 
-A web-based implementation of the Spot It / Dobble card game, built with Next.js.
+A web-based implementation of the Spot it! / Dobble card game, built with Next.js.
 
 ## Features
 
@@ -19,9 +19,9 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) to play.
 
-## How Spot It Works
+## How Spot it! Works
 
-Spot It uses projective plane geometry to ensure that any two cards share exactly one symbol. For a deck of order `q`:
+Spot it! uses projective plane geometry to ensure that any two cards share exactly one symbol. For a deck of order `q`:
 - Total cards = q² + q + 1
 - Total symbols = q² + q + 1
 - Symbols per card = q + 1

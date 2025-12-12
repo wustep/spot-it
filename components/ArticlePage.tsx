@@ -4,7 +4,12 @@ import { useMemo, useState, useCallback } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
-import { generateDeck, findSharedSymbol, findCardsWithSymbol, type Deck } from "@/lib/deck"
+import {
+	generateDeck,
+	findSharedSymbol,
+	findCardsWithSymbol,
+	type Deck,
+} from "@/lib/deck"
 import { SpotCard } from "./SpotCard"
 import { Emoji } from "./Emoji"
 import { cn } from "@/lib/utils"
@@ -79,8 +84,7 @@ function SymbolGrid({
 							"border hover:scale-110",
 							isHighlighted &&
 								"bg-yellow-100 dark:bg-yellow-900/50 border-yellow-400 scale-110",
-							!isHighlighted &&
-								"bg-card border-border hover:border-primary/50"
+							!isHighlighted && "bg-card border-border hover:border-primary/50"
 						)}
 						onMouseEnter={() => setHighlightedSymbol(symbol.id)}
 						onMouseLeave={() => setHighlightedSymbol(null)}
@@ -124,9 +128,7 @@ function MiniCardGrid({
 						symbols={deck.symbols}
 						highlightedSymbol={highlightedSymbol}
 						size="sm"
-						className={cn(
-							hasSymbol && "ring-2 ring-yellow-400"
-						)}
+						className={cn(hasSymbol && "ring-2 ring-yellow-400")}
 					/>
 				)
 			})}
@@ -179,8 +181,7 @@ function IncidenceMatrix({
 						<div
 							className={cn(
 								"w-10 h-6 flex items-center justify-center text-xs font-mono text-muted-foreground cursor-pointer transition-colors",
-								highlightedCard === card.id &&
-									"bg-blue-100 dark:bg-blue-900/50"
+								highlightedCard === card.id && "bg-blue-100 dark:bg-blue-900/50"
 							)}
 							onMouseEnter={() => setHighlightedCard(card.id)}
 							onMouseLeave={() => setHighlightedCard(null)}
@@ -230,16 +231,10 @@ export function ArticlePage({ showBackButton = true }: ArticlePageProps) {
 	const possibleCombinations = binomial(totalSymbols, symbolsPerCard)
 
 	// Generate the main example deck (order 7) for interactive demo
-	const mainDeck = useMemo(
-		() => generateDeck(7, true),
-		[]
-	)
+	const mainDeck = useMemo(() => generateDeck(7, true), [])
 
 	// Generate a small example deck (order 3) for visualizer components
-	const smallDeck = useMemo(
-		() => generateDeck(3, true),
-		[]
-	)
+	const smallDeck = useMemo(() => generateDeck(3, true), [])
 
 	// Interactive card matching state
 	const [cardIndices, setCardIndices] = useState({ idx1: 0, idx2: 1 })
@@ -282,7 +277,9 @@ export function ArticlePage({ showBackButton = true }: ArticlePageProps) {
 	)
 
 	// State for visualizer exploration
-	const [highlightedSymbol, setHighlightedSymbol] = useState<number | null>(null)
+	const [highlightedSymbol, setHighlightedSymbol] = useState<number | null>(
+		null
+	)
 	const [highlightedCard, setHighlightedCard] = useState<number | null>(null)
 
 	// Find cards that contain the highlighted symbol
@@ -307,19 +304,23 @@ export function ArticlePage({ showBackButton = true }: ArticlePageProps) {
 				)}
 
 				<article className="prose prose-zinc dark:prose-invert max-w-none">
-					<h1 className="text-3xl font-bold">The Mathematics Behind Spot It</h1>
+					<h1 className="text-3xl font-bold">
+						The Mathematics Behind Spot it!
+					</h1>
 
 					<p className="lead text-lg text-muted-foreground">
-						Spot It (also known as Dobble) is a card game where every pair of
+						Spot it! (also known as Dobble) is a card game where every pair of
 						cards shares exactly one matching symbol. This seemingly simple
 						property is guaranteed by a beautiful mathematical structure called
 						a <strong>finite projective plane</strong>.
 					</p>
 
-					<h2 className="text-2xl font-semibold mt-10">Try It: Find the Match</h2>
+					<h2 className="text-2xl font-semibold mt-10">
+						Try It: Find the Match
+					</h2>
 
 					<p>
-						Pick any two cards from a Spot It deck — they will always share{" "}
+						Pick any two cards from a Spot it! deck — they will always share{" "}
 						<em>exactly one</em> symbol. Click the matching symbol below:
 					</p>
 
@@ -328,10 +329,14 @@ export function ArticlePage({ showBackButton = true }: ArticlePageProps) {
 						{/* Feedback */}
 						<div className="text-center mb-4 h-8">
 							{feedback === "correct" && (
-								<span className="text-xl font-bold text-green-500">Correct!</span>
+								<span className="text-xl font-bold text-green-500">
+									Correct!
+								</span>
 							)}
 							{feedback === "wrong" && (
-								<span className="text-xl font-bold text-red-500">Try again!</span>
+								<span className="text-xl font-bold text-red-500">
+									Try again!
+								</span>
 							)}
 							{feedback === "none" && (
 								<span className="text-sm text-muted-foreground">
@@ -345,7 +350,9 @@ export function ArticlePage({ showBackButton = true }: ArticlePageProps) {
 								card={card1}
 								symbols={mainDeck.symbols}
 								sharedSymbol={revealedSymbol}
-								onSymbolClick={feedback === "none" ? handleSymbolClick : undefined}
+								onSymbolClick={
+									feedback === "none" ? handleSymbolClick : undefined
+								}
 								size="lg"
 								className="ring-2 ring-rose-500"
 							/>
@@ -354,7 +361,9 @@ export function ArticlePage({ showBackButton = true }: ArticlePageProps) {
 								card={card2}
 								symbols={mainDeck.symbols}
 								sharedSymbol={revealedSymbol}
-								onSymbolClick={feedback === "none" ? handleSymbolClick : undefined}
+								onSymbolClick={
+									feedback === "none" ? handleSymbolClick : undefined
+								}
 								size="lg"
 								className="ring-2 ring-sky-500"
 							/>
@@ -362,7 +371,7 @@ export function ArticlePage({ showBackButton = true }: ArticlePageProps) {
 					</div>
 
 					<p>
-						In a standard Spot It deck (order 7), there are{" "}
+						In a standard Spot it! deck (order 7), there are{" "}
 						<strong>{totalCards} cards</strong> and{" "}
 						<strong>{totalSymbols} unique symbols</strong>. Each card displays
 						exactly <strong>{symbolsPerCard} symbols</strong>.
@@ -378,7 +387,9 @@ export function ArticlePage({ showBackButton = true }: ArticlePageProps) {
 						</div>
 					</div>
 
-					<h2 className="text-2xl font-semibold mt-10">Finite Projective Planes</h2>
+					<h2 className="text-2xl font-semibold mt-10">
+						Finite Projective Planes
+					</h2>
 
 					<p>
 						The structure that makes Spot It work is a{" "}
@@ -394,8 +405,8 @@ export function ArticlePage({ showBackButton = true }: ArticlePageProps) {
 							<strong>Lines</strong> are cards
 						</li>
 						<li>
-							Every two lines intersect at exactly one point (any two cards share
-							exactly one symbol)
+							Every two lines intersect at exactly one point (any two cards
+							share exactly one symbol)
 						</li>
 						<li>
 							Every two points lie on exactly one line (any two symbols appear
@@ -408,21 +419,29 @@ export function ArticlePage({ showBackButton = true }: ArticlePageProps) {
 					<div className="not-prose my-6 bg-muted/30 rounded-lg p-6">
 						<div className="grid sm:grid-cols-3 gap-4 text-center">
 							<div>
-								<div className="text-sm text-muted-foreground mb-1">Total Cards & Symbols</div>
+								<div className="text-sm text-muted-foreground mb-1">
+									Total Cards & Symbols
+								</div>
 								<div className="text-xl font-mono font-bold">n² + n + 1</div>
 							</div>
 							<div>
-								<div className="text-sm text-muted-foreground mb-1">Symbols per Card</div>
+								<div className="text-sm text-muted-foreground mb-1">
+									Symbols per Card
+								</div>
 								<div className="text-xl font-mono font-bold">n + 1</div>
 							</div>
 							<div>
-								<div className="text-sm text-muted-foreground mb-1">Cards per Symbol</div>
+								<div className="text-sm text-muted-foreground mb-1">
+									Cards per Symbol
+								</div>
 								<div className="text-xl font-mono font-bold">n + 1</div>
 							</div>
 						</div>
 					</div>
 
-					<h2 className="text-2xl font-semibold mt-10">Explore the Structure</h2>
+					<h2 className="text-2xl font-semibold mt-10">
+						Explore the Structure
+					</h2>
 
 					<p>
 						Below is a smaller deck (order 3) to help visualize the structure.
@@ -492,7 +511,9 @@ export function ArticlePage({ showBackButton = true }: ArticlePageProps) {
 						exactly one symbol!
 					</p>
 
-					<h2 className="text-2xl font-semibold mt-10">Why Only Certain Sizes Work</h2>
+					<h2 className="text-2xl font-semibold mt-10">
+						Why Only Certain Sizes Work
+					</h2>
 
 					<p>
 						Finite projective planes only exist when the order n is a{" "}
@@ -503,33 +524,37 @@ export function ArticlePage({ showBackButton = true }: ArticlePageProps) {
 					<div className="not-prose my-8">
 						<div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
 							{[2, 3, 4, 5, 7, 8, 9, 11].map((n) => (
-									<div
-										key={n}
-										className={cn(
-											"border rounded-lg p-3 text-center transition-colors",
-											n === 7 ? "bg-primary/10 border-primary" : "bg-card"
-										)}
-									>
-										<div className="text-xs text-muted-foreground">Order {n}</div>
-										<div className="font-bold">{n + 1} symbols/card</div>
-										<div className="text-sm text-muted-foreground">
-											{n * n + n + 1} cards
-										</div>
+								<div
+									key={n}
+									className={cn(
+										"border rounded-lg p-3 text-center transition-colors",
+										n === 7 ? "bg-primary/10 border-primary" : "bg-card"
+									)}
+								>
+									<div className="text-xs text-muted-foreground">Order {n}</div>
+									<div className="font-bold">{n + 1} symbols/card</div>
+									<div className="text-sm text-muted-foreground">
+										{n * n + n + 1} cards
 									</div>
+								</div>
 							))}
 						</div>
 					</div>
 
 					<p>
-						Notice that order 6 is missing — 6 is not a prime power (it&apos;s 2 ×
-						3), so a projective plane of order 6 doesn&apos;t exist. This means you{" "}
+						Notice that order 6 is missing — 6 is not a prime power (it&apos;s 2
+						× 3), so a projective plane of order 6 doesn&apos;t exist. This
+						means you{" "}
 						<strong>
-							cannot create a valid Spot It deck with 7 symbols per card
+							cannot create a valid Spot it! deck with 7 symbols per card
 						</strong>
-						! The jump from 6 to 8 symbols per card is mathematically unavoidable.
+						! The jump from 6 to 8 symbols per card is mathematically
+						unavoidable.
 					</p>
 
-					<h2 className="text-2xl font-semibold mt-10">The Combinatorial Miracle</h2>
+					<h2 className="text-2xl font-semibold mt-10">
+						The Combinatorial Miracle
+					</h2>
 
 					<p>
 						To appreciate how special this structure is, consider the
@@ -552,14 +577,15 @@ export function ArticlePage({ showBackButton = true }: ArticlePageProps) {
 					<p>
 						Yet the projective plane picks exactly <strong>{totalCards}</strong>{" "}
 						of these combinations that guarantee every pair shares exactly one
-						symbol. Finding such a set by trial and error would be computationally
-						infeasible — the mathematical structure gives it to us directly.
+						symbol. Finding such a set by trial and error would be
+						computationally infeasible — the mathematical structure gives it to
+						us directly.
 					</p>
 
 					<h2 className="text-2xl font-semibold mt-10">The Commercial Game</h2>
 
 					<p>
-						The commercial Spot It game uses order 7 ({symbolsPerCard} symbols
+						The commercial Spot it! game uses order 7 ({symbolsPerCard} symbols
 						per card), which should give {totalCards} cards. However, the actual
 						game only includes <strong>55 cards</strong> in the box — they
 						arbitrarily remove 2 cards for manufacturing reasons.
@@ -567,20 +593,26 @@ export function ArticlePage({ showBackButton = true }: ArticlePageProps) {
 
 					<p>
 						The game still works perfectly because any subset of a projective
-						plane maintains the &ldquo;exactly one shared symbol&rdquo; property!
-						You can remove cards, but you can never add new ones without breaking
-						the magic.
+						plane maintains the &ldquo;exactly one shared symbol&rdquo;
+						property! You can remove cards, but you can never add new ones
+						without breaking the magic.
 					</p>
 
 					<h2 className="text-2xl font-semibold mt-10">Try It Yourself</h2>
 
 					<p>
 						Use the{" "}
-						<Link href="/visualizer" className="text-primary hover:underline font-medium">
+						<Link
+							href="/visualizer"
+							className="text-primary hover:underline font-medium"
+						>
 							Visualizer
 						</Link>{" "}
 						to explore decks of different sizes interactively. Or jump into{" "}
-						<Link href="/game/practice" className="text-primary hover:underline font-medium">
+						<Link
+							href="/game/practice"
+							className="text-primary hover:underline font-medium"
+						>
 							Practice Mode
 						</Link>{" "}
 						to test your pattern recognition speed!
@@ -591,7 +623,9 @@ export function ArticlePage({ showBackButton = true }: ArticlePageProps) {
 							<Button size="lg">Play the Game</Button>
 						</Link>
 						<Link href="/visualizer">
-							<Button variant="outline" size="lg">Open Visualizer</Button>
+							<Button variant="outline" size="lg">
+								Open Visualizer
+							</Button>
 						</Link>
 					</div>
 				</article>

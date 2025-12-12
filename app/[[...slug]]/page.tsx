@@ -30,7 +30,7 @@ function MainContent() {
 				<div className="container mx-auto px-4 py-4">
 					<div className="flex items-center justify-between">
 						<div>
-							<h1 className="text-xl font-bold tracking-tight">Spot It!</h1>
+							<h1 className="text-xl font-bold tracking-tight">Spot it!</h1>
 							<p className="text-xs text-muted-foreground">
 								Dobble Deck Visualizer
 							</p>

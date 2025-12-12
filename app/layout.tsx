@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-	title: "Spot It",
+	title: "Spot it!",
 	description:
-		"Interactive visualization of the Spot It / Dobble card game based on finite projective planes",
+		"Interactive visualization of the Spot it! / Dobble card game based on finite projective planes",
 }
 
 export default function RootLayout({
