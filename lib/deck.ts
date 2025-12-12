@@ -22,7 +22,7 @@ export type Deck = {
 }
 
 // Full 130-Symbol Set (Distinct, Simple, Spot-It-Friendly)
-const MASTER_SYMBOLS = [
+export const MASTER_SYMBOLS = [
 	// Original 57 Spot-It symbols
 	"⚓",
 	"🍎",

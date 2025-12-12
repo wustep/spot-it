@@ -4,6 +4,7 @@ import { Suspense } from "react"
 import Link from "next/link"
 import { GameProvider } from "@/components/GameProvider"
 import { DebugPanel } from "@/components/DebugPanel"
+import { EmojiPreloader } from "@/components/EmojiPreloader"
 import { GameMode } from "@/components/GameMode"
 import { VisualizerMode } from "@/components/VisualizerMode"
 import { ArticlePage } from "@/components/ArticlePage"
@@ -87,6 +88,7 @@ export default function Home() {
 	return (
 		<Suspense fallback={<div className="min-h-screen" />}>
 			<GameProvider>
+				<EmojiPreloader />
 				<MainContent />
 			</GameProvider>
 		</Suspense>
