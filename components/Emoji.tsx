@@ -10,16 +10,27 @@ interface EmojiProps {
 	className?: string
 }
 
-// Convert emoji to OpenMoji codepoint format (e.g., "😀" → "1F600")
-function emojiToCodepoint(emoji: string): string {
+function emojiToCodepoint(
+	emoji: string,
+	options: {
+		stripVariationSelectors: boolean
+		uppercase: boolean
+	}
+): string {
 	const codepoints: string[] = []
 	for (const char of emoji) {
 		const code = char.codePointAt(0)
 		if (code !== undefined) {
-			// Skip variation selectors (FE0E, FE0F) for cleaner URLs
-			if (code !== 0xfe0e && code !== 0xfe0f) {
-				codepoints.push(code.toString(16).toUpperCase())
+			// Some CDNs include FE0F/FE0E in filenames; make it configurable.
+			if (
+				options.stripVariationSelectors &&
+				(code === 0xfe0e || code === 0xfe0f)
+			) {
+				continue
 			}
+
+			const hex = code.toString(16)
+			codepoints.push(options.uppercase ? hex.toUpperCase() : hex.toLowerCase())
 		}
 	}
 	return codepoints.join("-")
@@ -27,7 +38,12 @@ function emojiToCodepoint(emoji: string): string {
 
 export function Emoji({ emoji, size = "1em", className }: EmojiProps) {
 	const { emojiStyle } = useGame()
-	const [failed, setFailed] = useState(false)
+	const renderKey = `${emojiStyle}:${emoji}`
+	const [failState, setFailState] = useState<{ key: string; failed: boolean }>({
+		key: renderKey,
+		failed: false,
+	})
+	const failed = failState.key === renderKey ? failState.failed : false
 
 	// Use system emoji if selected or if OpenMoji failed to load
 	// System emoji glyphs render smaller than their font-size box (~75-80%)
@@ -46,18 +62,39 @@ export function Emoji({ emoji, size = "1em", className }: EmojiProps) {
 		)
 	}
 
-	// OpenMoji CDN URL
-	const codepoint = emojiToCodepoint(emoji)
-	const openmojiUrl = `https://openmoji.org/data/color/svg/${codepoint}.svg`
+	const url =
+		emojiStyle === "twemoji"
+			? (() => {
+					// Twemoji uses lowercase codepoints and generally includes variation selectors.
+					const codepoint = emojiToCodepoint(emoji, {
+						stripVariationSelectors: false,
+						uppercase: false,
+					})
+					return `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/${codepoint}.svg`
+			  })()
+			: (() => {
+					// OpenMoji filenames do not include FE0E/FE0F.
+					const codepoint = emojiToCodepoint(emoji, {
+						stripVariationSelectors: true,
+						uppercase: true,
+					})
+					return `https://openmoji.org/data/color/svg/${codepoint}.svg`
+			  })()
 
 	return (
 		<img
-			src={openmojiUrl}
+			src={url}
 			alt={emoji}
 			className={cn("inline-block select-none max-w-none", className)}
-			style={{ width: size, height: size, scale: 1.2 }}
+			style={{
+				width: size,
+				height: size,
+				// OpenMoji renders a bit small by default; scale it up slightly.
+				// Twemoji should be smaller and should not use scaling.
+				...(emojiStyle === "openmoji" ? { scale: 1.2 } : {}),
+			}}
 			draggable={false}
-			onError={() => setFailed(true)}
+			onError={() => setFailState({ key: renderKey, failed: true })}
 		/>
 	)
 }

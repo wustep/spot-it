@@ -83,13 +83,16 @@ export function DebugPanel() {
 						<Label className="text-sm font-medium">Emoji Style</Label>
 						<Select
 							value={emojiStyle}
-							onValueChange={(v) => setEmojiStyle(v as "openmoji" | "system")}
+							onValueChange={(v) =>
+								setEmojiStyle(v as "openmoji" | "twemoji" | "system")
+							}
 						>
 							<SelectTrigger className="w-40">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
 								<SelectItem value="openmoji">OpenMoji</SelectItem>
+								<SelectItem value="twemoji">Twemoji</SelectItem>
 								<SelectItem value="system">System</SelectItem>
 							</SelectContent>
 						</Select>

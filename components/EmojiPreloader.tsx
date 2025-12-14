@@ -4,45 +4,65 @@ import { useEffect, useState } from "react"
 import { MASTER_SYMBOLS } from "@/lib/deck"
 import { useGame } from "@/lib/store"
 
-// Convert emoji to OpenMoji codepoint format (e.g., "😀" → "1F600")
-function emojiToCodepoint(emoji: string): string {
+function emojiToCodepoint(
+	emoji: string,
+	options: { stripVariationSelectors: boolean; uppercase: boolean }
+): string {
 	const codepoints: string[] = []
 	for (const char of emoji) {
 		const code = char.codePointAt(0)
 		if (code !== undefined) {
-			// Skip variation selectors (FE0E, FE0F) for cleaner URLs
-			if (code !== 0xfe0e && code !== 0xfe0f) {
-				codepoints.push(code.toString(16).toUpperCase())
+			if (
+				options.stripVariationSelectors &&
+				(code === 0xfe0e || code === 0xfe0f)
+			) {
+				continue
 			}
+
+			const hex = code.toString(16)
+			codepoints.push(options.uppercase ? hex.toUpperCase() : hex.toLowerCase())
 		}
 	}
 	return codepoints.join("-")
 }
 
-// Get unique emojis and their OpenMoji URLs
-function getOpenMojiUrls(): string[] {
+function getAssetUrls(style: "openmoji" | "twemoji"): string[] {
 	const uniqueEmojis = [...new Set(MASTER_SYMBOLS)]
 	return uniqueEmojis.map((emoji) => {
-		const codepoint = emojiToCodepoint(emoji)
+		if (style === "twemoji") {
+			const codepoint = emojiToCodepoint(emoji, {
+				stripVariationSelectors: false,
+				uppercase: false,
+			})
+			return `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/${codepoint}.svg`
+		}
+
+		const codepoint = emojiToCodepoint(emoji, {
+			stripVariationSelectors: true,
+			uppercase: true,
+		})
 		return `https://openmoji.org/data/color/svg/${codepoint}.svg`
 	})
 }
 
 /**
- * Preloads all OpenMoji SVGs in the background.
- * This component renders nothing visible but ensures emojis are cached.
+ * Preloads selected emoji CDN SVGs in the background (OpenMoji / Twemoji).
+ * This component renders nothing visible but helps ensure emojis are cached.
  */
 export function EmojiPreloader() {
 	const { emojiStyle } = useGame()
-	const [preloaded, setPreloaded] = useState(false)
+	const [preloaded, setPreloaded] = useState({ openmoji: false, twemoji: false })
 
 	useEffect(() => {
-		// Only preload if using OpenMoji style and not already preloaded
-		if (emojiStyle !== "openmoji" || preloaded) {
+		if (emojiStyle !== "openmoji" && emojiStyle !== "twemoji") {
 			return
 		}
 
-		const urls = getOpenMojiUrls()
+		if (preloaded[emojiStyle]) {
+			return
+		}
+
+		const urls = getAssetUrls(emojiStyle)
 
 		// Preload images in batches to avoid overwhelming the browser
 		const preloadImage = (url: string): Promise<void> => {
@@ -64,7 +84,7 @@ export function EmojiPreloader() {
 				// Small delay between batches
 				setTimeout(() => loadBatch(startIndex + batchSize), 50)
 			} else {
-				setPreloaded(true)
+				setPreloaded((prev) => ({ ...prev, [emojiStyle]: true }))
 			}
 		}
 

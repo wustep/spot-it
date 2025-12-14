@@ -4,7 +4,7 @@ import { createContext, useContext } from "react"
 import { type Deck, type ValidOrder, generateDeck } from "./deck"
 
 export type SymbolMode = "emojis" | "numbers"
-export type EmojiStyle = "openmoji" | "system"
+export type EmojiStyle = "openmoji" | "twemoji" | "system"
 export type ViewMode = "game" | "visualizer" | "article" | "article-full"
 export type GameSubMode = "practice" | "timed" | "countdown"
 
