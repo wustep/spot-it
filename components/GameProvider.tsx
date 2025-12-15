@@ -199,24 +199,33 @@ export function GameProvider({ children }: { children: ReactNode }) {
 	// Sync state from URL when navigating (e.g. clicking Links)
 	useEffect(() => {
 		const { viewMode, gameSubMode } = parsePathname(pathname)
-		setState((prev) => ({
-			...prev,
-			viewMode,
-			gameSubMode,
-			// Reset selections when navigating
-			isPlaying: false,
-			card1Index: null,
-			card2Index: null,
-			selectedSymbol: null,
-			revealedSymbol: null,
-			highlightedSymbol: null,
-			highlightedCard: null,
-			roundStartTime: null,
-			deck:
-				viewMode === "visualizer"
-					? generateDeck(prev.order, prev.symbolStyle !== "numbers")
-					: prev.deck,
-		}))
+		// eslint-disable-next-line react-hooks/set-state-in-effect
+		setState((prev) => {
+			// On first load we already initialize from the pathname, so avoid
+			// clobbering state (and racing child effects) unless the mode changed.
+			if (prev.viewMode === viewMode && prev.gameSubMode === gameSubMode) {
+				return prev
+			}
+
+			return {
+				...prev,
+				viewMode,
+				gameSubMode,
+				// Reset selections when navigating
+				isPlaying: false,
+				card1Index: null,
+				card2Index: null,
+				selectedSymbol: null,
+				revealedSymbol: null,
+				highlightedSymbol: null,
+				highlightedCard: null,
+				roundStartTime: null,
+				deck:
+					viewMode === "visualizer"
+						? generateDeck(prev.order, prev.symbolStyle !== "numbers")
+						: prev.deck,
+			}
+		})
 	}, [pathname])
 
 	const setSymbolStyle = useCallback((style: SymbolStyle) => {

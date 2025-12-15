@@ -147,14 +147,21 @@ export function GameMode() {
 	}, [gameSubMode, isPlaying, countdownInterval])
 
 	// Pick random cards for practice mode
-	const pickRandomCards = () => {
+	const pickRandomCards = useCallback(() => {
+		// Safety: should never happen with valid decks, but prevents a stuck state
+		if (deck.cards.length < 2) {
+			selectCard1(null)
+			selectCard2(null)
+			return
+		}
+
 		const indices = deck.cards.map((_, i) => i)
 		const idx1 = Math.floor(Math.random() * indices.length)
 		indices.splice(idx1, 1)
 		const idx2 = Math.floor(Math.random() * indices.length)
 		selectCard1(idx1)
 		selectCard2(idx2 >= idx1 ? idx2 + 1 : idx2)
-	}
+	}, [deck.cards, selectCard1, selectCard2])
 
 	// Format time (whole seconds)
 	const formatTime = (ms: number) => {
@@ -280,10 +287,10 @@ function PracticeMode({
 
 	// Auto-select cards when deck changes or cards become null
 	useEffect(() => {
-		if (!card1 || !card2) {
+		if (deck.cards.length >= 2 && (!card1 || !card2)) {
 			pickRandomCards()
 		}
-	}, [deck, card1, card2]) // eslint-disable-line react-hooks/exhaustive-deps
+	}, [deck.cards.length, card1, card2, pickRandomCards])
 
 	// Find the shared symbol
 	const sharedSymbol =
