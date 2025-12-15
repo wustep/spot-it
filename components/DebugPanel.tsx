@@ -5,6 +5,13 @@ import { VALID_ORDERS, getOrderInfo } from "@/lib/deck"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
+import { Button } from "@/components/ui/button"
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip"
 import {
 	Select,
 	SelectContent,
@@ -13,6 +20,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select"
 import { Emoji } from "./Emoji"
+import { RotateCcw } from "lucide-react"
 
 export function DebugPanel() {
 	const {
@@ -25,12 +33,38 @@ export function DebugPanel() {
 		setHardMode,
 	} = useGame()
 
+	const handleResetToDefaults = () => {
+		setOrder(7)
+		setHardMode(true)
+		setSymbolStyle("twemoji")
+	}
+
 	return (
 		<Card className="w-full max-w-sm border-border/60 bg-card/90 shadow-sm backdrop-blur-sm supports-[backdrop-filter]:bg-card/70">
-			<CardHeader className="border-b border-border/50">
-				<CardTitle className="text-lg font-semibold tracking-tight">
-					Control Panel
-				</CardTitle>
+			<CardHeader className="border-b border-border/50 gap-0">
+				<div className="flex items-center justify-between">
+					<CardTitle className="text-lg font-semibold tracking-tight">
+						Control Panel
+					</CardTitle>
+					<TooltipProvider>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<Button
+									variant="ghost"
+									size="icon"
+									className="h-8 w-8"
+									onClick={handleResetToDefaults}
+								>
+									<RotateCcw className="h-4 w-4" />
+									<span className="sr-only">Reset to defaults</span>
+								</Button>
+							</TooltipTrigger>
+							<TooltipContent>
+								<p>Reset to defaults</p>
+							</TooltipContent>
+						</Tooltip>
+					</TooltipProvider>
+				</div>
 			</CardHeader>
 			<CardContent className="space-y-5">
 				{/* Order Selection */}
