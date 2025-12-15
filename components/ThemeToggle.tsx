@@ -2,11 +2,14 @@
 
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
+import { Emoji } from "@/components/Emoji"
+import { useGame } from "@/lib/store"
 import { Sun, Moon } from "lucide-react"
 
 export function ThemeToggle() {
 	const [theme, setTheme] = useState<"light" | "dark">("light")
 	const [mounted, setMounted] = useState(false)
+	const { symbolStyle } = useGame()
 
 	useEffect(() => {
 		// eslint-disable-next-line react-hooks/set-state-in-effect
@@ -40,10 +43,16 @@ export function ThemeToggle() {
 
 	return (
 		<Button variant="outline" size="icon" onClick={toggleTheme}>
-			{theme === "light" ? (
-				<Moon className="h-4 w-4" />
+			{symbolStyle === "numbers" ? (
+				theme === "light" ? (
+					<Moon className="h-4 w-4" />
+				) : (
+					<Sun className="h-4 w-4" />
+				)
+			) : theme === "light" ? (
+				<Emoji emoji="🌙" style={symbolStyle} size="1.1em" />
 			) : (
-				<Sun className="h-4 w-4" />
+				<Emoji emoji="☀️" style={symbolStyle} size="1.1em" />
 			)}
 		</Button>
 	)
