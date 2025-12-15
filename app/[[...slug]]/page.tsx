@@ -156,8 +156,7 @@ function Landing() {
 			{/* Decorative background elements */}
 			<div className="absolute inset-0 pointer-events-none overflow-hidden">
 				{/* Large gradient orb */}
-				<div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-primary/10 to-primary/5 rounded-full blur-3xl" />
-				<div className="absolute -bottom-32 -left-32 w-80 h-80 bg-gradient-to-tr from-primary/8 to-transparent rounded-full blur-3xl" />
+				<div className="absolute top-24 left-1/2 -translate-x-1/2 w-[28rem] h-[28rem] bg-gradient-to-b from-primary/30 to-primary/5 dark:from-primary/15 dark:to-primary/5 rounded-full blur-3xl" />
 				{/* Subtle grid pattern */}
 				<div
 					className="absolute inset-0 opacity-[0.015] dark:opacity-[0.03]"
