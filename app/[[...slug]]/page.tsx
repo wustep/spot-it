@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useEffect, useRef, useState } from "react"
+import { Suspense, useEffect, useRef, useState, useCallback } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { GameProvider } from "@/components/GameProvider"
@@ -22,7 +22,93 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select"
-import { Eye, Gamepad2, Timer } from "lucide-react"
+import { Eye, Gamepad2, Settings2, Timer } from "lucide-react"
+
+function ControlPanelButton() {
+	const [isOpen, setIsOpen] = useState(false)
+	const [isPinned, setIsPinned] = useState(false)
+	const timeoutRef = useRef<number | null>(null)
+	const containerRef = useRef<HTMLDivElement>(null)
+
+	const handleMouseEnter = useCallback(() => {
+		if (timeoutRef.current) {
+			window.clearTimeout(timeoutRef.current)
+			timeoutRef.current = null
+		}
+		if (!isPinned) {
+			setIsOpen(true)
+		}
+	}, [isPinned])
+
+	const handleMouseLeave = useCallback(() => {
+		if (!isPinned) {
+			timeoutRef.current = window.setTimeout(() => {
+				setIsOpen(false)
+			}, 150)
+		}
+	}, [isPinned])
+
+	const handleClick = useCallback(() => {
+		if (isPinned) {
+			// Unpinning - close the panel
+			setIsPinned(false)
+			setIsOpen(false)
+		} else {
+			// Pinning - keep it open
+			setIsPinned(true)
+			setIsOpen(true)
+		}
+	}, [isPinned])
+
+	useEffect(() => {
+		return () => {
+			if (timeoutRef.current) {
+				window.clearTimeout(timeoutRef.current)
+			}
+		}
+	}, [])
+
+	const showPanel = isOpen || isPinned
+
+	return (
+		<div
+			ref={containerRef}
+			className="relative"
+			onMouseEnter={handleMouseEnter}
+			onMouseLeave={handleMouseLeave}
+		>
+			<Button
+				variant="outline"
+				size="icon"
+				aria-expanded={showPanel}
+				onClick={handleClick}
+				className={`hover:bg-primary hover:text-primary-foreground hover:border-primary dark:hover:bg-primary dark:hover:text-primary-foreground dark:hover:border-primary ${
+					showPanel
+						? "bg-primary text-primary-foreground border-primary dark:bg-primary dark:text-primary-foreground dark:border-primary"
+						: ""
+				}`}
+			>
+				<Settings2 className="h-4 w-4" />
+				<span className="sr-only">Control Panel</span>
+			</Button>
+
+			{/* Dropdown Panel */}
+			<div
+				className={`
+					absolute right-0 top-full z-50 pt-2
+					transition-all duration-200 ease-out
+					${
+						showPanel
+							? "opacity-100 translate-y-0 pointer-events-auto"
+							: "opacity-0 -translate-y-2 pointer-events-none"
+					}
+				`}
+			>
+				<DebugPanel />
+			</div>
+		</div>
+	)
+}
 
 function Landing() {
 	const MODE_COPY = {
@@ -249,7 +335,8 @@ function MainContent() {
 							})()}
 						</div>
 
-						<div className="shrink-0">
+						<div className="shrink-0 flex items-center gap-2">
+							<ControlPanelButton />
 							<ThemeToggle />
 						</div>
 					</div>
@@ -260,19 +347,9 @@ function MainContent() {
 			<div className="flex-1 min-h-0 overflow-y-auto">
 				{/* Main Layout */}
 				<div className="container mx-auto px-4 py-6">
-					<div className="flex flex-col lg:flex-row gap-6 lg:justify-center min-h-0">
-						{/* Debug Panel - Sidebar on large screens, centered on mobile */}
-						<aside className="lg:w-80 flex-shrink-0 flex justify-center lg:justify-start">
-							<div className="lg:sticky lg:top-24 w-full max-w-sm">
-								<DebugPanel />
-							</div>
-						</aside>
-
-						{/* Main Content */}
-						<main className="flex-1 min-w-0">
-							{viewMode === "game" ? <GameMode /> : <VisualizerMode />}
-						</main>
-					</div>
+					<main className="flex justify-center min-h-0">
+						{viewMode === "game" ? <GameMode /> : <VisualizerMode />}
+					</main>
 				</div>
 
 				{/* Footer */}
