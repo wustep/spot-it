@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react"
 import { useGame } from "@/lib/store"
 import { SpotCard } from "./SpotCard"
 import { Button } from "@/components/ui/button"
+import { Shuffle } from "lucide-react"
 import {
 	Select,
 	SelectContent,
@@ -340,7 +341,7 @@ function PracticeMode({
 			</div>
 
 			{/* Comparison Area */}
-			<div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 md:gap-8 px-4">
+			<div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 md:gap-8 px-4">
 				{/* Card 1 */}
 				<div className="flex flex-col items-center gap-2">
 					<SpotCard
@@ -377,8 +378,14 @@ function PracticeMode({
 
 			{/* Actions */}
 			<div className="flex gap-3">
-				<Button onClick={pickRandomCards} variant="secondary">
-					New Cards
+				<Button
+					onClick={pickRandomCards}
+					variant="secondary"
+					size="icon"
+					className="w-24"
+					aria-label="New cards"
+				>
+					<Shuffle className="h-4 w-4" aria-hidden="true" />
 				</Button>
 			</div>
 
@@ -578,7 +585,7 @@ function TimedMode({
 			</div>
 
 			{/* Cards */}
-			<div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 md:gap-8 px-4">
+			<div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 md:gap-8 px-4">
 				{card1 && (
 					<SpotCard
 						card={card1}
@@ -723,7 +730,7 @@ function CountdownMode({
 			</div>
 
 			{/* Cards */}
-			<div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 md:gap-8 px-4">
+			<div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 md:gap-8 px-4">
 				{card1 && (
 					<SpotCard
 						card={card1}

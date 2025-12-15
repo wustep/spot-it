@@ -13,6 +13,13 @@ import { ThemeToggle } from "@/components/ThemeToggle"
 import { useGame } from "@/lib/store"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select"
 import { Eye, Gamepad2, Timer } from "lucide-react"
 
 function Landing() {
@@ -155,41 +162,85 @@ function MainContent() {
 		<div className="h-screen bg-gradient-to-br from-background via-background to-muted/30 flex flex-col">
 			{/* Header */}
 			<header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-				<div className="container mx-auto px-4 py-4">
-					<div className="grid grid-cols-3 items-center gap-3">
-						<div className="justify-self-start">
+				<div className="container mx-auto px-3 sm:px-4 py-4">
+					<div className="flex items-center gap-3">
+						<div className="min-w-0">
 							<Link href="/" className="inline-flex items-center">
-								<h1 className="text-xl font-bold tracking-tight">Spot it!</h1>
+								<h1 className="text-lg sm:text-xl font-bold tracking-tight whitespace-nowrap">
+									Spot it!
+								</h1>
 							</Link>
 						</div>
 
-						<div className="justify-self-center">
-							<Tabs
-								value={viewMode === "visualizer" ? "visualizer" : gameSubMode}
-								onValueChange={(v) => {
+						<div className="flex-1 min-w-0 flex justify-center">
+							{(() => {
+								const navValue =
+									viewMode === "visualizer" ? "visualizer" : gameSubMode
+
+								const navigateTo = (v: string) => {
 									if (v === "practice") router.push("/practice")
 									else if (v === "timed") router.push("/timed")
+									else if (v === "countdown") router.push("/countdown")
 									else if (v === "visualizer") router.push("/visualizer")
-								}}
-							>
-								<TabsList className="mx-auto">
-									<TabsTrigger value="practice" className="gap-2">
-										<Gamepad2 className="h-4 w-4" aria-hidden="true" />
-										Practice
-									</TabsTrigger>
-									<TabsTrigger value="timed" className="gap-2">
-										<Timer className="h-4 w-4" aria-hidden="true" />
-										Timed
-									</TabsTrigger>
-									<TabsTrigger value="visualizer" className="gap-2">
-										<Eye className="h-4 w-4" aria-hidden="true" />
-										Visualizer
-									</TabsTrigger>
-								</TabsList>
-							</Tabs>
+								}
+
+								return (
+									<>
+										{/* Desktop/tablet: tabs */}
+										<div className="hidden sm:block">
+											<Tabs value={navValue} onValueChange={navigateTo}>
+												<TabsList className="mx-auto">
+													<TabsTrigger value="practice" className="gap-2">
+														<Gamepad2 className="h-4 w-4" aria-hidden="true" />
+														Practice
+													</TabsTrigger>
+													<TabsTrigger value="timed" className="gap-2">
+														<Timer className="h-4 w-4" aria-hidden="true" />
+														Timed
+													</TabsTrigger>
+													<TabsTrigger value="visualizer" className="gap-2">
+														<Eye className="h-4 w-4" aria-hidden="true" />
+														Visualizer
+													</TabsTrigger>
+												</TabsList>
+											</Tabs>
+										</div>
+
+										{/* Mobile: compact select */}
+										<div className="sm:hidden w-full flex justify-center">
+											<Select value={navValue} onValueChange={navigateTo}>
+												<SelectTrigger
+													size="default"
+													aria-label="Select mode"
+													className="w-full max-w-[12rem]"
+												>
+													{navValue === "practice" && (
+														<Gamepad2 className="h-4 w-4" aria-hidden="true" />
+													)}
+													{navValue === "timed" && (
+														<Timer className="h-4 w-4" aria-hidden="true" />
+													)}
+													{navValue === "visualizer" && (
+														<Eye className="h-4 w-4" aria-hidden="true" />
+													)}
+													<SelectValue placeholder="Mode" />
+												</SelectTrigger>
+												<SelectContent align="center">
+													<SelectItem value="practice">Practice</SelectItem>
+													<SelectItem value="timed">Timed</SelectItem>
+													<SelectItem value="visualizer">Visualizer</SelectItem>
+													{navValue === "countdown" && (
+														<SelectItem value="countdown">Countdown</SelectItem>
+													)}
+												</SelectContent>
+											</Select>
+										</div>
+									</>
+								)
+							})()}
 						</div>
 
-						<div className="justify-self-end">
+						<div className="shrink-0">
 							<ThemeToggle />
 						</div>
 					</div>
