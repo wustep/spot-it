@@ -315,16 +315,19 @@ export function VisualizerMode() {
 					type="button"
 					onClick={scrollToMatrix}
 					className={cn(
-						"rounded-full border bg-card/80 backdrop-blur px-3 py-2 shadow-sm",
-						"hover:bg-card/95 hover:border-primary/50 transition-colors",
-						"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+						"rounded-full border bg-gradient-to-r from-card/90 to-card/80 backdrop-blur-md px-4 py-2.5",
+						"shadow-[0_2px_8px_rgba(0,0,0,0.08),0_4px_16px_rgba(0,0,0,0.04)]",
+						"dark:shadow-[0_2px_8px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)]",
+						"hover:bg-card hover:border-primary/60 hover:shadow-lg transition-all duration-200",
+						"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+						"group"
 					)}
 					aria-label="Scroll down to the incidence matrix"
 				>
-					<span className="flex items-center gap-2 text-sm text-muted-foreground">
-						<span>Matrix below</span>
+					<span className="flex items-center gap-2 text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+						<span>View Matrix</span>
 						<ChevronDown
-							className="h-4 w-4 relative top-px motion-safe:animate-bounce motion-reduce:animate-none"
+							className="h-4 w-4 relative top-px motion-safe:animate-bounce motion-reduce:animate-none group-hover:text-primary transition-colors"
 							aria-hidden="true"
 						/>
 					</span>
@@ -348,7 +351,9 @@ function StatBox({
 	const content = (
 		<div
 			className={cn(
-				"bg-card border rounded-lg px-4 py-3 text-center",
+				"bg-gradient-to-br from-card to-muted/30 border rounded-lg px-4 py-3 text-center",
+				"shadow-[0_1px_2px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.2)]",
+				"hover:shadow-md transition-shadow duration-200",
 				wide ? "min-w-[200px]" : "min-w-[100px]",
 				tooltip && "cursor-help"
 			)}

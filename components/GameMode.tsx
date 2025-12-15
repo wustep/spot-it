@@ -561,25 +561,25 @@ function TimedMode({
 	avgTime: number
 }) {
 	const cardSize = "xl"
-	
+
 	// Session storage stats - use lazy initializer to load from storage
 	const [sessionStats, setSessionStats] = useState<TimedSessionStats>(() =>
 		loadTimedSessionStats()
 	)
-	
+
 	// Track previous stats to detect changes
 	const prevStatsRef = useRef({ roundTimes: stats.roundTimes, isPlaying })
 
 	// Save session stats when game stops
 	useEffect(() => {
 		const wasPlaying = prevStatsRef.current.isPlaying
-		
+
 		// Detect transition from playing to not playing with new rounds
 		if (wasPlaying && !isPlaying && stats.roundTimes.length > 0) {
 			// Game just stopped, save the stats
 			const storedStats = loadTimedSessionStats()
 			const currentBestRound = Math.min(...stats.roundTimes)
-			
+
 			const newStats: TimedSessionStats = {
 				bestTime:
 					storedStats.bestTime === null
@@ -588,12 +588,12 @@ function TimedMode({
 				totalTime: storedStats.totalTime + stats.totalTime,
 				totalRounds: storedStats.totalRounds + stats.roundTimes.length,
 			}
-			
+
 			saveTimedSessionStats(newStats)
 			// Use a microtask to avoid synchronous setState in effect
 			queueMicrotask(() => setSessionStats(newStats))
 		}
-		
+
 		// Update ref
 		prevStatsRef.current = { roundTimes: stats.roundTimes, isPlaying }
 	}, [isPlaying, stats.roundTimes, stats.totalTime])
@@ -605,7 +605,7 @@ function TimedMode({
 		sessionStats.bestTime !== null && currentGameBest !== null
 			? Math.min(sessionStats.bestTime, currentGameBest)
 			: sessionStats.bestTime ?? currentGameBest
-	
+
 	// Calculate live average (stored + current game)
 	const liveAvgTime =
 		sessionStats.totalRounds + stats.roundTimes.length > 0

@@ -449,7 +449,9 @@ export function SpotCard({
 	return (
 		<div
 			className={cn(
-				"relative rounded-full bg-white dark:bg-zinc-900 border-2 shadow-sm flex items-center justify-center transition-all duration-200",
+				"relative rounded-full bg-gradient-to-br from-white to-zinc-50 dark:from-zinc-800 dark:to-zinc-900 border-2 shadow-sm flex items-center justify-center transition-all duration-200",
+				"shadow-[inset_0_2px_4px_rgba(0,0,0,0.02),inset_0_-1px_2px_rgba(255,255,255,0.5),0_1px_3px_rgba(0,0,0,0.1)]",
+				"dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.15),inset_0_-1px_2px_rgba(255,255,255,0.02),0_1px_3px_rgba(0,0,0,0.3)]",
 				onClick && "cursor-pointer",
 				isSelected
 					? "ring-2 ring-primary/30 scale-110"

@@ -149,11 +149,26 @@ function Landing() {
 	}, [])
 
 	const primaryHover =
-		"hover:bg-primary hover:text-primary-foreground hover:border-primary dark:hover:bg-primary dark:hover:text-primary-foreground dark:hover:border-primary"
+		"hover:bg-primary hover:text-primary-foreground hover:border-primary dark:hover:bg-primary dark:hover:text-primary-foreground dark:hover:border-primary transition-all duration-200 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
-			<div className="container mx-auto px-4 py-10">
+		<div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30 relative overflow-hidden">
+			{/* Decorative background elements */}
+			<div className="absolute inset-0 pointer-events-none overflow-hidden">
+				{/* Large gradient orb */}
+				<div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-primary/10 to-primary/5 rounded-full blur-3xl" />
+				<div className="absolute -bottom-32 -left-32 w-80 h-80 bg-gradient-to-tr from-primary/8 to-transparent rounded-full blur-3xl" />
+				{/* Subtle grid pattern */}
+				<div
+					className="absolute inset-0 opacity-[0.015] dark:opacity-[0.03]"
+					style={{
+						backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
+						backgroundSize: "32px 32px",
+					}}
+				/>
+			</div>
+
+			<div className="container mx-auto px-4 py-10 relative">
 				<div className="flex items-center justify-end">
 					<ThemeToggle />
 				</div>
@@ -163,7 +178,7 @@ function Landing() {
 						<Logo size={40} />
 						Spot it!
 					</h1>
-					<p className="mt-2 text-muted-foreground">
+					<p className="mt-2 text-muted-foreground h-6">
 						{highlightedMode
 							? MODE_COPY[highlightedMode].description
 							: "Choose a mode to get started."}
@@ -172,7 +187,7 @@ function Landing() {
 					<div className="mt-10 w-full max-w-xl grid gap-4">
 						<Link
 							href="/practice"
-							className="w-full"
+							className="w-full group"
 							onMouseEnter={() => scheduleHighlightMode("practice")}
 							onMouseLeave={() => scheduleHighlightMode(null)}
 							onFocus={() => scheduleHighlightMode("practice")}
@@ -183,14 +198,17 @@ function Landing() {
 								className={`w-full h-16 text-lg ${primaryHover}`}
 							>
 								<span className="inline-flex items-center justify-center gap-2">
-									<Gamepad2 className="h-5 w-5" aria-hidden="true" />
+									<Gamepad2
+										className="h-5 w-5 transition-transform group-hover:scale-110"
+										aria-hidden="true"
+									/>
 									Practice
 								</span>
 							</Button>
 						</Link>
 						<Link
 							href="/timed"
-							className="w-full"
+							className="w-full group"
 							onMouseEnter={() => scheduleHighlightMode("timed")}
 							onMouseLeave={() => scheduleHighlightMode(null)}
 							onFocus={() => scheduleHighlightMode("timed")}
@@ -201,14 +219,17 @@ function Landing() {
 								className={`w-full h-16 text-lg ${primaryHover}`}
 							>
 								<span className="inline-flex items-center justify-center gap-2">
-									<Timer className="h-5 w-5" aria-hidden="true" />
+									<Timer
+										className="h-5 w-5 transition-transform group-hover:scale-110"
+										aria-hidden="true"
+									/>
 									Timed
 								</span>
 							</Button>
 						</Link>
 						<Link
 							href="/visualizer"
-							className="w-full"
+							className="w-full group"
 							onMouseEnter={() => scheduleHighlightMode("visualizer")}
 							onMouseLeave={() => scheduleHighlightMode(null)}
 							onFocus={() => scheduleHighlightMode("visualizer")}
@@ -219,7 +240,10 @@ function Landing() {
 								className={`w-full h-16 text-lg ${primaryHover}`}
 							>
 								<span className="inline-flex items-center justify-center gap-2">
-									<Eye className="h-5 w-5" aria-hidden="true" />
+									<Eye
+										className="h-5 w-5 transition-transform group-hover:scale-110"
+										aria-hidden="true"
+									/>
 									Visualizer
 								</span>
 							</Button>
@@ -255,7 +279,7 @@ function MainContent() {
 	return (
 		<div className="h-screen bg-gradient-to-br from-background via-background to-muted/30 flex flex-col">
 			{/* Header */}
-			<header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+			<header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50 shadow-[0_1px_2px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.015)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.15),0_3px_8px_rgba(0,0,0,0.08)]">
 				<div className="container mx-auto px-3 sm:px-4 py-4">
 					<div className="flex items-center gap-3">
 						<div className="min-w-0">
