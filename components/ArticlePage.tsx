@@ -294,7 +294,7 @@ export function ArticlePage({ showBackButton = true }: ArticlePageProps) {
 			<div className="max-w-4xl mx-auto px-4 py-8">
 				{showBackButton && (
 					<div className="mb-8">
-						<Link href="/game/practice">
+						<Link href="/practice">
 							<Button variant="ghost" size="sm" className="gap-2">
 								<ArrowLeft className="w-4 h-4" />
 								Back
@@ -610,7 +610,7 @@ export function ArticlePage({ showBackButton = true }: ArticlePageProps) {
 						</Link>{" "}
 						to explore decks of different sizes interactively. Or jump into{" "}
 						<Link
-							href="/game/practice"
+							href="/practice"
 							className="text-primary hover:underline font-medium"
 						>
 							Practice Mode
@@ -619,7 +619,7 @@ export function ArticlePage({ showBackButton = true }: ArticlePageProps) {
 					</p>
 
 					<div className="not-prose mt-10 flex flex-wrap gap-4">
-						<Link href="/game/practice">
+						<Link href="/practice">
 							<Button size="lg">Play the Game</Button>
 						</Link>
 						<Link href="/visualizer">

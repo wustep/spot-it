@@ -31,7 +31,10 @@ function updateURL(viewMode: ViewMode, gameSubMode: GameSubMode) {
 	if (viewMode === "home") {
 		newURL = "/"
 	} else if (viewMode === "game") {
-		newURL = `/game/${gameSubMode}`
+		if (gameSubMode === "practice") newURL = "/practice"
+		else if (gameSubMode === "timed") newURL = "/timed"
+		else if (gameSubMode === "countdown") newURL = "/countdown"
+		else newURL = "/practice"
 	} else if (viewMode === "article") {
 		newURL = "/article"
 	} else if (viewMode === "article-full") {
@@ -53,6 +56,18 @@ function parsePathname(pathname: string): {
 		return { viewMode: "home", gameSubMode: "practice" }
 	}
 
+	// Top-level routes
+	if (segments[0] === "practice") {
+		return { viewMode: "game", gameSubMode: "practice" }
+	}
+	if (segments[0] === "timed") {
+		return { viewMode: "game", gameSubMode: "timed" }
+	}
+	// Hidden mode (no UI link), but still routable
+	if (segments[0] === "countdown") {
+		return { viewMode: "game", gameSubMode: "countdown" }
+	}
+
 	if (segments[0] === "visualizer") {
 		return { viewMode: "visualizer", gameSubMode: "practice" }
 	}
@@ -64,6 +79,7 @@ function parsePathname(pathname: string): {
 		return { viewMode: "article", gameSubMode: "practice" }
 	}
 
+	// Back-compat: old routes
 	if (segments[0] === "game" && segments[1]) {
 		const submode = segments[1]
 		if (

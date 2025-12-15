@@ -2,6 +2,7 @@
 
 import { Suspense } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { GameProvider } from "@/components/GameProvider"
 import { DebugPanel } from "@/components/DebugPanel"
 import { EmojiPreloader } from "@/components/EmojiPreloader"
@@ -11,7 +12,8 @@ import { ArticlePage } from "@/components/ArticlePage"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { useGame } from "@/lib/store"
 import { Button } from "@/components/ui/button"
-import { Eye, Gamepad2 } from "lucide-react"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Eye, Gamepad2, Timer } from "lucide-react"
 
 function Landing() {
 	return (
@@ -30,11 +32,19 @@ function Landing() {
 					</p>
 
 					<div className="mt-10 w-full max-w-xl grid gap-4">
-						<Link href="/game/practice" className="w-full">
+						<Link href="/practice" className="w-full">
 							<Button className="w-full h-16 text-lg">
 								<span className="inline-flex items-center justify-center gap-2">
 									<Gamepad2 className="h-5 w-5" aria-hidden="true" />
-									Game
+									Practice
+								</span>
+							</Button>
+						</Link>
+						<Link href="/timed" className="w-full">
+							<Button variant="outline" className="w-full h-16 text-lg">
+								<span className="inline-flex items-center justify-center gap-2">
+									<Timer className="h-5 w-5" aria-hidden="true" />
+									Timed
 								</span>
 							</Button>
 						</Link>
@@ -54,7 +64,8 @@ function Landing() {
 }
 
 function MainContent() {
-	const { viewMode } = useGame()
+	const router = useRouter()
+	const { viewMode, gameSubMode } = useGame()
 
 	if (viewMode === "home") {
 		return <Landing />
@@ -73,35 +84,40 @@ function MainContent() {
 			{/* Header */}
 			<header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
 				<div className="container mx-auto px-4 py-4">
-					<div className="flex items-center justify-between">
-						<div>
-							<h1 className="text-xl font-bold tracking-tight">Spot it!</h1>
+					<div className="grid grid-cols-3 items-center gap-3">
+						<div className="justify-self-start">
+							<Link href="/" className="inline-flex items-center">
+								<h1 className="text-xl font-bold tracking-tight">Spot it!</h1>
+							</Link>
 						</div>
-						<div className="flex items-center gap-2">
-							<nav className="flex items-center gap-2 mr-2">
-								<Link href="/game/practice">
-									<Button
-										variant={viewMode === "game" ? "default" : "outline"}
-										size="sm"
-									>
-										<span className="inline-flex items-center gap-2">
-											<Gamepad2 className="h-4 w-4" aria-hidden="true" />
-											Game
-										</span>
-									</Button>
-								</Link>
-								<Link href="/visualizer">
-									<Button
-										variant={viewMode === "visualizer" ? "default" : "outline"}
-										size="sm"
-									>
-										<span className="inline-flex items-center gap-2">
-											<Eye className="h-4 w-4" aria-hidden="true" />
-											Visualizer
-										</span>
-									</Button>
-								</Link>
-							</nav>
+
+						<div className="justify-self-center">
+							<Tabs
+								value={viewMode === "visualizer" ? "visualizer" : gameSubMode}
+								onValueChange={(v) => {
+									if (v === "practice") router.push("/practice")
+									else if (v === "timed") router.push("/timed")
+									else if (v === "visualizer") router.push("/visualizer")
+								}}
+							>
+								<TabsList className="mx-auto">
+									<TabsTrigger value="practice" className="gap-2">
+										<Gamepad2 className="h-4 w-4" aria-hidden="true" />
+										Practice
+									</TabsTrigger>
+									<TabsTrigger value="timed" className="gap-2">
+										<Timer className="h-4 w-4" aria-hidden="true" />
+										Timed
+									</TabsTrigger>
+									<TabsTrigger value="visualizer" className="gap-2">
+										<Eye className="h-4 w-4" aria-hidden="true" />
+										Visualizer
+									</TabsTrigger>
+								</TabsList>
+							</Tabs>
+						</div>
+
+						<div className="justify-self-end">
 							<ThemeToggle />
 						</div>
 					</div>

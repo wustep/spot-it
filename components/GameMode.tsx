@@ -4,7 +4,6 @@ import { useEffect, useRef, useState, useCallback } from "react"
 import { useGame } from "@/lib/store"
 import { SpotCard } from "./SpotCard"
 import { Button } from "@/components/ui/button"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
 	Select,
 	SelectContent,
@@ -19,7 +18,6 @@ export function GameMode() {
 	const {
 		deck,
 		gameSubMode,
-		setGameSubMode,
 		isPlaying,
 		card1Index,
 		card2Index,
@@ -186,26 +184,6 @@ export function GameMode() {
 
 	return (
 		<div className="flex flex-col items-center gap-6">
-			{/* Sub-mode selector */}
-			<div className="w-full max-w-md">
-				<Tabs
-					value={gameSubMode}
-					onValueChange={(v) => setGameSubMode(v as typeof gameSubMode)}
-				>
-					<TabsList className="w-full">
-						<TabsTrigger value="practice" className="flex-1">
-							Practice
-						</TabsTrigger>
-						<TabsTrigger value="timed" className="flex-1">
-							Timed
-						</TabsTrigger>
-						<TabsTrigger value="countdown" className="flex-1">
-							Countdown
-						</TabsTrigger>
-					</TabsList>
-				</Tabs>
-			</div>
-
 			{/* Mode-specific content */}
 			{gameSubMode === "practice" && (
 				<PracticeMode
