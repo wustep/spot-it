@@ -344,7 +344,10 @@ function MainContent() {
 			</header>
 
 			{/* Scrollable content area (keeps scrollbar out of the navbar) */}
-			<div className="flex-1 min-h-0 overflow-y-auto">
+			<div
+				className="flex-1 min-h-0 overflow-y-auto"
+				data-scroll-container="main"
+			>
 				{/* Main Layout */}
 				<div className="container mx-auto px-4 py-6">
 					<main className="flex justify-center min-h-0">

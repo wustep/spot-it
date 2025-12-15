@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useGame } from "@/lib/store"
 import { findCardsWithSymbol, getDeckStats } from "@/lib/deck"
 import { SpotCard } from "./SpotCard"
@@ -12,7 +12,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { Info } from "lucide-react"
+import { ChevronDown } from "lucide-react"
 
 export function VisualizerMode() {
 	const {
@@ -25,6 +25,134 @@ export function VisualizerMode() {
 	} = useGame()
 
 	const stats = getDeckStats(deck)
+
+	const matrixSectionRef = useRef<HTMLElement | null>(null)
+	const [isMatrixVisible, setIsMatrixVisible] = useState(false)
+	const [isHintDismissed, setIsHintDismissed] = useState(false)
+	const [isDismissStateLoaded, setIsDismissStateLoaded] = useState(false)
+
+	const dismissHint = useCallback(() => {
+		setIsHintDismissed(true)
+		setIsDismissStateLoaded(true)
+		try {
+			window.sessionStorage.setItem("visualizerMatrixHintDismissed", "1")
+		} catch {
+			// ignore
+		}
+	}, [])
+
+	// Load persisted dismissal state after mount.
+	// We intentionally hide the hint until this is loaded to avoid a "flash then disappear"
+	// when SSR renders the component without access to sessionStorage.
+	useEffect(() => {
+		let cancelled = false
+		const load = () => {
+			if (cancelled) return
+			let dismissed = false
+			try {
+				dismissed =
+					window.sessionStorage.getItem("visualizerMatrixHintDismissed") === "1"
+			} catch {
+				// ignore
+			}
+			if (cancelled) return
+			setIsHintDismissed(dismissed)
+			setIsDismissStateLoaded(true)
+		}
+		const raf = window.requestAnimationFrame(load)
+		return () => {
+			cancelled = true
+			window.cancelAnimationFrame(raf)
+		}
+	}, [])
+
+	useEffect(() => {
+		const el = matrixSectionRef.current
+		if (!el) return
+
+		const obs = new IntersectionObserver(
+			(entries) => {
+				const entry = entries[0]
+				setIsMatrixVisible(Boolean(entry?.isIntersecting))
+			},
+			{
+				threshold: 0.12,
+				// Give the header some breathing room and hide the hint a bit early
+				rootMargin: "-96px 0px -30% 0px",
+			}
+		)
+
+		obs.observe(el)
+		return () => obs.disconnect()
+	}, [])
+
+	const scrollToMatrix = useCallback(() => {
+		dismissHint()
+		matrixSectionRef.current?.scrollIntoView({
+			behavior: "smooth",
+			block: "start",
+		})
+	}, [dismissHint])
+
+	// Dismiss the hint after the first *manual* scroll intent (wheel/touch/keyboard).
+	// This is more reliable than relying on scrollTop deltas (and avoids dismissing due
+	// to scroll restoration).
+	useEffect(() => {
+		if (isHintDismissed) return
+
+		const container = document.querySelector<HTMLElement>(
+			'[data-scroll-container="main"]'
+		)
+
+		const onWheel = () => dismissHint()
+		const onTouchMove = () => dismissHint()
+
+		const onKeyDown = (e: KeyboardEvent) => {
+			// Don't dismiss when typing in inputs/textareas/contenteditable elements.
+			const el = e.target as HTMLElement | null
+			if (el) {
+				const tag = el.tagName
+				if (
+					tag === "INPUT" ||
+					tag === "TEXTAREA" ||
+					tag === "SELECT" ||
+					el.isContentEditable
+				) {
+					return
+				}
+			}
+
+			// Keys that commonly scroll the page.
+			if (
+				e.key === "ArrowDown" ||
+				e.key === "PageDown" ||
+				e.key === " " ||
+				e.key === "End"
+			) {
+				dismissHint()
+			}
+		}
+
+		if (container) {
+			container.addEventListener("wheel", onWheel, { passive: true })
+			container.addEventListener("touchmove", onTouchMove, { passive: true })
+		} else {
+			window.addEventListener("wheel", onWheel, { passive: true })
+			window.addEventListener("touchmove", onTouchMove, { passive: true })
+		}
+		window.addEventListener("keydown", onKeyDown)
+
+		return () => {
+			if (container) {
+				container.removeEventListener("wheel", onWheel)
+				container.removeEventListener("touchmove", onTouchMove)
+			} else {
+				window.removeEventListener("wheel", onWheel)
+				window.removeEventListener("touchmove", onTouchMove)
+			}
+			window.removeEventListener("keydown", onKeyDown)
+		}
+	}, [dismissHint, isHintDismissed])
 
 	// Find cards that contain the highlighted symbol
 	const cardsWithSymbol = useMemo(() => {
@@ -41,7 +169,7 @@ export function VisualizerMode() {
 	}, [deck, highlightedCard])
 
 	return (
-		<div className="flex flex-col gap-8 w-full max-w-full">
+		<div className="relative flex flex-col gap-8 w-full max-w-full">
 			{/* Header */}
 			<div className="text-center space-y-2">
 				<h2 className="text-2xl font-bold tracking-tight">Deck Visualizer</h2>
@@ -169,7 +297,39 @@ export function VisualizerMode() {
 			</div>
 
 			{/* Incidence Matrix (for decks up to n=7, which has 57 cards) */}
-			<IncidenceMatrix />
+			<section ref={matrixSectionRef} aria-label="Incidence matrix">
+				<IncidenceMatrix />
+			</section>
+
+			{/* Scroll hint (shown until the matrix enters view) */}
+			<div
+				className={cn(
+					"fixed left-1/2 -translate-x-1/2 bottom-5 z-40",
+					"transition-all duration-200 ease-out",
+					!isDismissStateLoaded || isMatrixVisible || isHintDismissed
+						? "opacity-0 pointer-events-none translate-y-2"
+						: "opacity-100 pointer-events-auto translate-y-0"
+				)}
+			>
+				<button
+					type="button"
+					onClick={scrollToMatrix}
+					className={cn(
+						"rounded-full border bg-card/80 backdrop-blur px-3 py-2 shadow-sm",
+						"hover:bg-card/95 hover:border-primary/50 transition-colors",
+						"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+					)}
+					aria-label="Scroll down to the incidence matrix"
+				>
+					<span className="flex items-center gap-2 text-sm text-muted-foreground">
+						<span>Matrix below</span>
+						<ChevronDown
+							className="h-4 w-4 relative top-px motion-safe:animate-bounce motion-reduce:animate-none"
+							aria-hidden="true"
+						/>
+					</span>
+				</button>
+			</div>
 		</div>
 	)
 }
