@@ -12,14 +12,18 @@ import {
 	GameContext,
 	type GameState,
 	type GameStore,
-	type SymbolMode,
-	type EmojiStyle,
+	type SymbolStyle,
 	type ViewMode,
 	type GameSubMode,
 	createInitialState,
 	createInitialStats,
 } from "@/lib/store"
-import { generateDeck, findSharedSymbol, type ValidOrder } from "@/lib/deck"
+import {
+	VALID_ORDERS,
+	generateDeck,
+	findSharedSymbol,
+	type ValidOrder,
+} from "@/lib/deck"
 
 // Helper to update URL without navigation
 function updateURL(viewMode: ViewMode, gameSubMode: GameSubMode) {
@@ -62,7 +66,11 @@ function parsePathname(pathname: string): {
 
 	if (segments[0] === "game" && segments[1]) {
 		const submode = segments[1]
-		if (submode === "practice" || submode === "timed" || submode === "countdown") {
+		if (
+			submode === "practice" ||
+			submode === "timed" ||
+			submode === "countdown"
+		) {
 			return { viewMode: "game", gameSubMode: submode }
 		}
 	}
@@ -71,17 +79,117 @@ function parsePathname(pathname: string): {
 	return { viewMode: "game", gameSubMode: "practice" }
 }
 
+const CONTROL_PANEL_STORAGE_KEY_V2 = "spotit:controlPanelSettings:v2"
+const CONTROL_PANEL_STORAGE_KEY_V1 = "spotit:controlPanelSettings:v1"
+
+type ControlPanelSettings = {
+	symbolStyle: SymbolStyle
+	order: ValidOrder
+	hardMode: boolean
+}
+
+function isValidOrder(n: unknown): n is ValidOrder {
+	return (
+		typeof n === "number" && (VALID_ORDERS as readonly number[]).includes(n)
+	)
+}
+
+function isValidSymbolStyle(v: unknown): v is SymbolStyle {
+	return (
+		v === "openmoji" || v === "twemoji" || v === "system" || v === "numbers"
+	)
+}
+
+function parseSettingsFromUnknown(
+	parsed: unknown
+): Partial<ControlPanelSettings> {
+	if (!parsed || typeof parsed !== "object") return {}
+	const obj = parsed as Record<string, unknown>
+	const out: Partial<ControlPanelSettings> = {}
+
+	if (isValidSymbolStyle(obj.symbolStyle)) out.symbolStyle = obj.symbolStyle
+	if (isValidOrder(obj.order)) out.order = obj.order
+	if (typeof obj.hardMode === "boolean") out.hardMode = obj.hardMode
+
+	return out
+}
+
+function loadControlPanelSettings(): Partial<ControlPanelSettings> {
+	if (typeof window === "undefined") return {}
+	try {
+		// Prefer v2
+		const rawV2 = window.localStorage.getItem(CONTROL_PANEL_STORAGE_KEY_V2)
+		if (rawV2) {
+			return parseSettingsFromUnknown(JSON.parse(rawV2))
+		}
+
+		// Migrate v1 -> v2 (symbolMode + emojiStyle)
+		const rawV1 = window.localStorage.getItem(CONTROL_PANEL_STORAGE_KEY_V1)
+		if (!rawV1) return {}
+		const parsedV1: unknown = JSON.parse(rawV1)
+		if (!parsedV1 || typeof parsedV1 !== "object") return {}
+		const obj = parsedV1 as Record<string, unknown>
+
+		const migrated: Partial<ControlPanelSettings> = {}
+		if (obj.symbolMode === "numbers") {
+			migrated.symbolStyle = "numbers"
+		} else if (
+			obj.emojiStyle === "openmoji" ||
+			obj.emojiStyle === "twemoji" ||
+			obj.emojiStyle === "system"
+		) {
+			migrated.symbolStyle = obj.emojiStyle
+		}
+		if (isValidOrder(obj.order)) migrated.order = obj.order
+		if (typeof obj.hardMode === "boolean") migrated.hardMode = obj.hardMode
+
+		// Best-effort write migrated value back as v2 (fill defaults)
+		saveControlPanelSettings({
+			symbolStyle: migrated.symbolStyle ?? "openmoji",
+			order: migrated.order ?? 7,
+			hardMode: migrated.hardMode ?? false,
+		})
+
+		return migrated
+	} catch {
+		return {}
+	}
+}
+
+function saveControlPanelSettings(settings: ControlPanelSettings) {
+	if (typeof window === "undefined") return
+	try {
+		window.localStorage.setItem(
+			CONTROL_PANEL_STORAGE_KEY_V2,
+			JSON.stringify(settings)
+		)
+	} catch {
+		// Ignore write errors (e.g. private mode / quota)
+	}
+}
+
 export function GameProvider({ children }: { children: ReactNode }) {
 	const pathname = usePathname()
 
 	// Initialize state from URL path
 	const [state, setState] = useState<GameState>(() => {
-		const initialState = createInitialState(3, "emojis")
+		const saved = loadControlPanelSettings()
+		const initialState = createInitialState(saved.order ?? 7, saved.symbolStyle)
+		initialState.hardMode = saved.hardMode ?? false
 		const { viewMode, gameSubMode } = parsePathname(pathname)
 		initialState.viewMode = viewMode
 		initialState.gameSubMode = gameSubMode
 		return initialState
 	})
+
+	// Persist Control Panel settings
+	useEffect(() => {
+		saveControlPanelSettings({
+			symbolStyle: state.symbolStyle,
+			order: state.order,
+			hardMode: state.hardMode,
+		})
+	}, [state.symbolStyle, state.order, state.hardMode])
 
 	// Sync state to URL when viewMode or gameSubMode changes
 	useEffect(() => {
@@ -106,17 +214,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
 			roundStartTime: null,
 			deck:
 				viewMode === "visualizer"
-					? generateDeck(prev.order, prev.symbolMode === "emojis")
+					? generateDeck(prev.order, prev.symbolStyle !== "numbers")
 					: prev.deck,
 		}))
 	}, [pathname])
 
-	const setSymbolMode = useCallback((mode: SymbolMode) => {
+	const setSymbolStyle = useCallback((style: SymbolStyle) => {
 		setState((prev) => ({
 			...prev,
-			symbolMode: mode,
-			deck: generateDeck(prev.order, mode === "emojis"),
-			// Reset selections when changing mode
+			symbolStyle: style,
+			deck: generateDeck(prev.order, style !== "numbers"),
+			// Reset selections when changing symbol style
 			isPlaying: false,
 			card1Index: null,
 			card2Index: null,
@@ -128,18 +236,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
 		}))
 	}, [])
 
-	const setEmojiStyle = useCallback((style: EmojiStyle) => {
-		setState((prev) => ({
-			...prev,
-			emojiStyle: style,
-		}))
-	}, [])
-
 	const setOrder = useCallback((order: ValidOrder) => {
 		setState((prev) => ({
 			...prev,
 			order,
-			deck: generateDeck(order, prev.symbolMode === "emojis"),
+			deck: generateDeck(order, prev.symbolStyle !== "numbers"),
 			// Reset selections when changing order
 			isPlaying: false,
 			card1Index: null,
@@ -159,7 +260,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 			// Reset deck to original order when switching to visualizer
 			deck:
 				mode === "visualizer"
-					? generateDeck(prev.order, prev.symbolMode === "emojis")
+					? generateDeck(prev.order, prev.symbolStyle !== "numbers")
 					: prev.deck,
 			// Reset selections when changing view
 			isPlaying: false,
@@ -347,8 +448,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 	const store: GameStore = useMemo(
 		() => ({
 			...state,
-			setSymbolMode,
-			setEmojiStyle,
+			setSymbolStyle,
 			setOrder,
 			setViewMode,
 			setHardMode,
@@ -369,8 +469,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 		}),
 		[
 			state,
-			setSymbolMode,
-			setEmojiStyle,
+			setSymbolStyle,
 			setOrder,
 			setViewMode,
 			setHardMode,

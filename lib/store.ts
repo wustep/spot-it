@@ -3,9 +3,13 @@
 import { createContext, useContext } from "react"
 import { type Deck, type ValidOrder, generateDeck } from "./deck"
 
-export type SymbolMode = "emojis" | "numbers"
-export type EmojiStyle = "openmoji" | "twemoji" | "system"
-export type ViewMode = "home" | "game" | "visualizer" | "article" | "article-full"
+export type SymbolStyle = "openmoji" | "twemoji" | "system" | "numbers"
+export type ViewMode =
+	| "home"
+	| "game"
+	| "visualizer"
+	| "article"
+	| "article-full"
 export type GameSubMode = "practice" | "timed" | "countdown"
 
 export interface GameStats {
@@ -19,8 +23,7 @@ export interface GameStats {
 
 export interface GameState {
 	// Settings
-	symbolMode: SymbolMode
-	emojiStyle: EmojiStyle
+	symbolStyle: SymbolStyle
 	order: ValidOrder
 	viewMode: ViewMode
 	hardMode: boolean // Harder card display with scattered symbols
@@ -47,8 +50,7 @@ export interface GameState {
 }
 
 export interface GameActions {
-	setSymbolMode: (mode: SymbolMode) => void
-	setEmojiStyle: (style: EmojiStyle) => void
+	setSymbolStyle: (style: SymbolStyle) => void
 	setOrder: (order: ValidOrder) => void
 	setViewMode: (mode: ViewMode) => void
 	setHardMode: (hard: boolean) => void
@@ -96,17 +98,15 @@ export function createInitialStats(): GameStats {
 }
 
 export function createInitialState(
-	order: ValidOrder = 3,
-	symbolMode: SymbolMode = "emojis",
-	emojiStyle: EmojiStyle = "openmoji"
+	order: ValidOrder = 7,
+	symbolStyle: SymbolStyle = "openmoji"
 ): GameState {
 	return {
-		symbolMode,
-		emojiStyle,
+		symbolStyle,
 		order,
 		viewMode: "game",
 		hardMode: false,
-		deck: generateDeck(order, symbolMode === "emojis"),
+		deck: generateDeck(order, symbolStyle !== "numbers"),
 		gameSubMode: "practice",
 		isPlaying: false,
 		card1Index: null,

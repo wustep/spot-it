@@ -37,7 +37,9 @@ function emojiToCodepoint(
 }
 
 export function Emoji({ emoji, size = "1em", className }: EmojiProps) {
-	const { emojiStyle } = useGame()
+	const { symbolStyle } = useGame()
+	const emojiStyle: "openmoji" | "twemoji" | "system" =
+		symbolStyle === "numbers" ? "system" : symbolStyle
 	const renderKey = `${emojiStyle}:${emoji}`
 	const [failState, setFailState] = useState<{ key: string; failed: boolean }>({
 		key: renderKey,

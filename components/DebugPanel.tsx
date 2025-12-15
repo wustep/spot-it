@@ -16,10 +16,8 @@ import { Button } from "@/components/ui/button"
 
 export function DebugPanel() {
 	const {
-		symbolMode,
-		setSymbolMode,
-		emojiStyle,
-		setEmojiStyle,
+		symbolStyle,
+		setSymbolStyle,
 		order,
 		setOrder,
 		viewMode,
@@ -37,41 +35,28 @@ export function DebugPanel() {
 				</CardTitle>
 			</CardHeader>
 			<CardContent className="space-y-5">
-				{/* Symbol Mode */}
-				<div className="flex items-center justify-between">
-					<Label htmlFor="symbol-mode" className="text-sm font-medium">
-						Use Emojis
-					</Label>
-					<Switch
-						id="symbol-mode"
-						checked={symbolMode === "emojis"}
-						onCheckedChange={(checked) =>
-							setSymbolMode(checked ? "emojis" : "numbers")
-						}
-					/>
+				{/* Order Selection */}
+				<div className="flex items-center justify-between gap-4">
+					<Label className="text-sm font-medium">Symbols per Card</Label>
+					<Select
+						value={String(order)}
+						onValueChange={(v) => setOrder(Number(v) as typeof order)}
+					>
+						<SelectTrigger className="w-20">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							{VALID_ORDERS.map((n) => {
+								const info = getOrderInfo(n)
+								return (
+									<SelectItem key={n} value={String(n)}>
+										{info.symbolsPerCard}
+									</SelectItem>
+								)
+							})}
+						</SelectContent>
+					</Select>
 				</div>
-
-				{/* Emoji Style */}
-				{symbolMode === "emojis" && (
-					<div className="flex items-center justify-between gap-4">
-						<Label className="text-sm font-medium">Emoji Style</Label>
-						<Select
-							value={emojiStyle}
-							onValueChange={(v) =>
-								setEmojiStyle(v as "openmoji" | "twemoji" | "system")
-							}
-						>
-							<SelectTrigger className="w-40">
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="openmoji">OpenMoji</SelectItem>
-								<SelectItem value="twemoji">Twemoji</SelectItem>
-								<SelectItem value="system">System</SelectItem>
-							</SelectContent>
-						</Select>
-					</div>
-				)}
 
 				{/* Hard Mode */}
 				{(viewMode === "game" || viewMode === "visualizer") && (
@@ -92,25 +77,23 @@ export function DebugPanel() {
 					</div>
 				)}
 
-				{/* Order Selection */}
+				{/* Symbol Style */}
 				<div className="flex items-center justify-between gap-4">
-					<Label className="text-sm font-medium">Symbols per Card</Label>
+					<Label className="text-sm font-medium">Symbol Style</Label>
 					<Select
-						value={String(order)}
-						onValueChange={(v) => setOrder(Number(v) as typeof order)}
+						value={symbolStyle}
+						onValueChange={(v) =>
+							setSymbolStyle(v as "openmoji" | "twemoji" | "system" | "numbers")
+						}
 					>
-						<SelectTrigger className="w-24">
+						<SelectTrigger className="w-40">
 							<SelectValue />
 						</SelectTrigger>
 						<SelectContent>
-							{VALID_ORDERS.map((n) => {
-								const info = getOrderInfo(n)
-								return (
-									<SelectItem key={n} value={String(n)}>
-										{info.symbolsPerCard}
-									</SelectItem>
-								)
-							})}
+							<SelectItem value="openmoji">OpenMoji</SelectItem>
+							<SelectItem value="twemoji">Twemoji</SelectItem>
+							<SelectItem value="system">System</SelectItem>
+							<SelectItem value="numbers">Numbers</SelectItem>
 						</SelectContent>
 					</Select>
 				</div>

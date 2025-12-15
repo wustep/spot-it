@@ -50,19 +50,22 @@ function getAssetUrls(style: "openmoji" | "twemoji"): string[] {
  * This component renders nothing visible but helps ensure emojis are cached.
  */
 export function EmojiPreloader() {
-	const { emojiStyle } = useGame()
-	const [preloaded, setPreloaded] = useState({ openmoji: false, twemoji: false })
+	const { symbolStyle } = useGame()
+	const [preloaded, setPreloaded] = useState({
+		openmoji: false,
+		twemoji: false,
+	})
 
 	useEffect(() => {
-		if (emojiStyle !== "openmoji" && emojiStyle !== "twemoji") {
+		if (symbolStyle !== "openmoji" && symbolStyle !== "twemoji") {
 			return
 		}
 
-		if (preloaded[emojiStyle]) {
+		if (preloaded[symbolStyle]) {
 			return
 		}
 
-		const urls = getAssetUrls(emojiStyle)
+		const urls = getAssetUrls(symbolStyle)
 
 		// Preload images in batches to avoid overwhelming the browser
 		const preloadImage = (url: string): Promise<void> => {
@@ -84,14 +87,13 @@ export function EmojiPreloader() {
 				// Small delay between batches
 				setTimeout(() => loadBatch(startIndex + batchSize), 50)
 			} else {
-				setPreloaded((prev) => ({ ...prev, [emojiStyle]: true }))
+				setPreloaded((prev) => ({ ...prev, [symbolStyle]: true }))
 			}
 		}
 
 		loadBatch(0)
-	}, [emojiStyle, preloaded])
+	}, [symbolStyle, preloaded])
 
 	// Render nothing - this is purely for preloading
 	return null
 }
-
