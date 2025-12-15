@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense } from "react"
+import { Suspense, useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { GameProvider } from "@/components/GameProvider"
@@ -16,6 +16,43 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Eye, Gamepad2, Timer } from "lucide-react"
 
 function Landing() {
+	const MODE_COPY = {
+		practice: {
+			description: "Pick cards freely and explore the deck.",
+		},
+		timed: {
+			description: "Race the clock and test your speed.",
+		},
+		visualizer: {
+			description: "Explore how the deck is constructed.",
+		},
+	} as const
+
+	const [highlightedMode, setHighlightedMode] = useState<
+		keyof typeof MODE_COPY | null
+	>(null)
+
+	const highlightTimeoutRef = useRef<number | null>(null)
+
+	const scheduleHighlightMode = useRef(
+		(mode: keyof typeof MODE_COPY | null) => {
+			if (highlightTimeoutRef.current !== null) {
+				window.clearTimeout(highlightTimeoutRef.current)
+			}
+			highlightTimeoutRef.current = window.setTimeout(() => {
+				setHighlightedMode(mode)
+			}, 140)
+		}
+	).current
+
+	useEffect(() => {
+		return () => {
+			if (highlightTimeoutRef.current !== null) {
+				window.clearTimeout(highlightTimeoutRef.current)
+			}
+		}
+	}, [])
+
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
 			<div className="container mx-auto px-4 py-10">
@@ -28,11 +65,20 @@ function Landing() {
 						Spot it!
 					</h1>
 					<p className="mt-2 text-muted-foreground">
-						Choose a mode to get started.
+						{highlightedMode
+							? MODE_COPY[highlightedMode].description
+							: "Choose a mode to get started."}
 					</p>
 
 					<div className="mt-10 w-full max-w-xl grid gap-4">
-						<Link href="/practice" className="w-full">
+						<Link
+							href="/practice"
+							className="w-full"
+							onMouseEnter={() => scheduleHighlightMode("practice")}
+							onMouseLeave={() => scheduleHighlightMode(null)}
+							onFocus={() => scheduleHighlightMode("practice")}
+							onBlur={() => scheduleHighlightMode(null)}
+						>
 							<Button className="w-full h-16 text-lg">
 								<span className="inline-flex items-center justify-center gap-2">
 									<Gamepad2 className="h-5 w-5" aria-hidden="true" />
@@ -40,7 +86,14 @@ function Landing() {
 								</span>
 							</Button>
 						</Link>
-						<Link href="/timed" className="w-full">
+						<Link
+							href="/timed"
+							className="w-full"
+							onMouseEnter={() => scheduleHighlightMode("timed")}
+							onMouseLeave={() => scheduleHighlightMode(null)}
+							onFocus={() => scheduleHighlightMode("timed")}
+							onBlur={() => scheduleHighlightMode(null)}
+						>
 							<Button variant="outline" className="w-full h-16 text-lg">
 								<span className="inline-flex items-center justify-center gap-2">
 									<Timer className="h-5 w-5" aria-hidden="true" />
@@ -48,7 +101,14 @@ function Landing() {
 								</span>
 							</Button>
 						</Link>
-						<Link href="/visualizer" className="w-full">
+						<Link
+							href="/visualizer"
+							className="w-full"
+							onMouseEnter={() => scheduleHighlightMode("visualizer")}
+							onMouseLeave={() => scheduleHighlightMode(null)}
+							onFocus={() => scheduleHighlightMode("visualizer")}
+							onBlur={() => scheduleHighlightMode(null)}
+						>
 							<Button variant="outline" className="w-full h-16 text-lg">
 								<span className="inline-flex items-center justify-center gap-2">
 									<Eye className="h-5 w-5" aria-hidden="true" />
@@ -80,7 +140,7 @@ function MainContent() {
 	}
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
+		<div className="h-screen bg-gradient-to-br from-background via-background to-muted/30 flex flex-col">
 			{/* Header */}
 			<header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
 				<div className="container mx-auto px-4 py-4">
@@ -124,37 +184,35 @@ function MainContent() {
 				</div>
 			</header>
 
-			{/* Main Layout */}
-			<div className="container mx-auto px-4 py-6">
-				<div className="flex flex-col lg:flex-row gap-6 lg:justify-center">
-					{/* Debug Panel - Sidebar on large screens, centered on mobile */}
-					<aside className="lg:w-80 flex-shrink-0 flex justify-center lg:justify-start">
-						<div className="lg:sticky lg:top-24 w-full max-w-sm">
-							<DebugPanel />
-						</div>
-					</aside>
+			{/* Scrollable content area (keeps scrollbar out of the navbar) */}
+			<div className="flex-1 min-h-0 overflow-y-auto">
+				{/* Main Layout */}
+				<div className="container mx-auto px-4 py-6">
+					<div className="flex flex-col lg:flex-row gap-6 lg:justify-center min-h-0">
+						{/* Debug Panel - Sidebar on large screens, centered on mobile */}
+						<aside className="lg:w-80 flex-shrink-0 flex justify-center lg:justify-start">
+							<div className="lg:sticky lg:top-24 w-full max-w-sm">
+								<DebugPanel />
+							</div>
+						</aside>
 
-					{/* Main Content */}
-					<main className="flex-1 min-w-0">
-						{viewMode === "game" ? <GameMode /> : <VisualizerMode />}
-					</main>
+						{/* Main Content */}
+						<main className="flex-1 min-w-0">
+							{viewMode === "game" ? <GameMode /> : <VisualizerMode />}
+						</main>
+					</div>
 				</div>
-			</div>
 
-			{/* Footer */}
-			<footer className="border-t mt-12 py-6 text-center text-sm text-muted-foreground">
-				<p>
-					Built with Next.js • Based on{" "}
-					<a
-						href="https://en.wikipedia.org/wiki/Projective_plane"
-						target="_blank"
-						rel="noopener noreferrer"
-						className="underline hover:text-foreground"
-					>
-						Finite Projective Planes
-					</a>
-				</p>
-			</footer>
+				{/* Footer */}
+				<footer className="border-t mt-12 py-6 text-center text-sm text-muted-foreground">
+					<p>
+						Built by{" "}
+						<Link href="https://wustep.me" target="_blank">
+							Stephen Wu
+						</Link>
+					</p>
+				</footer>
+			</div>
 		</div>
 	)
 }
