@@ -611,7 +611,7 @@ function TimedMode({
 			<div className="flex items-center gap-6 text-sm bg-muted/50 rounded-lg px-4 py-2">
 				<div className="flex items-center gap-2">
 					<span className="text-muted-foreground">Time:</span>
-					<span className="font-mono font-bold text-lg min-w-[60px]">
+					<span className="font-mono font-bold text-lg text-right">
 						{formatTime(elapsedTime)}
 					</span>
 				</div>
