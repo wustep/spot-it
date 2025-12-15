@@ -510,7 +510,8 @@ export function SpotCard({
 							!isShared &&
 								!isHighlighted &&
 								onSymbolClick &&
-								"hover:scale-125 transition-transform duration-150"
+								"hover:scale-125 transition-transform duration-150",
+							!onSymbolClick && "pointer-events-none"
 						)}
 						style={style}
 						onClick={(e) => {
