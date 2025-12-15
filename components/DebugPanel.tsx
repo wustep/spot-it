@@ -26,8 +26,8 @@ export function DebugPanel() {
 	} = useGame()
 
 	return (
-		<Card className="w-full max-w-sm bg-card/80 backdrop-blur-sm border-border/50">
-			<CardHeader>
+		<Card className="w-full max-w-sm border-border/60 bg-card/90 shadow-sm backdrop-blur-sm supports-[backdrop-filter]:bg-card/70">
+			<CardHeader className="border-b border-border/50">
 				<CardTitle className="text-lg font-semibold tracking-tight">
 					Control Panel
 				</CardTitle>
