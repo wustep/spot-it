@@ -15,16 +15,51 @@ import {
 import { ChevronDown } from "lucide-react"
 
 export function VisualizerMode() {
-	const {
-		deck,
-		hardMode,
-		highlightedSymbol,
-		highlightedCard,
-		highlightSymbol,
-		highlightCard,
-	} = useGame()
+	const { deck, hardMode, highlightSymbol, highlightCard } = useGame()
 
 	const stats = getDeckStats(deck)
+
+	// Track whether a selection is "pinned" (clicked) vs just hovering
+	const [pinnedSymbol, setPinnedSymbol] = useState<number | null>(null)
+	const [pinnedCard, setPinnedCard] = useState<number | null>(null)
+	// Track hover state separately
+	const [hoveredSymbol, setHoveredSymbol] = useState<number | null>(null)
+	const [hoveredCard, setHoveredCard] = useState<number | null>(null)
+
+	// The active highlight is pinned if available, otherwise hovered
+	const activeSymbol = pinnedSymbol ?? hoveredSymbol
+	const activeCard = pinnedCard ?? hoveredCard
+
+	// Sync to global state
+	useEffect(() => {
+		highlightSymbol(activeSymbol)
+	}, [activeSymbol, highlightSymbol])
+
+	useEffect(() => {
+		highlightCard(activeCard)
+	}, [activeCard, highlightCard])
+
+	// Clear all selections
+	const clearSelection = useCallback(() => {
+		setPinnedSymbol(null)
+		setPinnedCard(null)
+		setHoveredSymbol(null)
+		setHoveredCard(null)
+	}, [])
+
+	// Handle keyboard - Escape to clear selection
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (
+				e.key === "Escape" &&
+				(pinnedSymbol !== null || pinnedCard !== null)
+			) {
+				clearSelection()
+			}
+		}
+		window.addEventListener("keydown", handleKeyDown)
+		return () => window.removeEventListener("keydown", handleKeyDown)
+	}, [pinnedSymbol, pinnedCard, clearSelection])
 
 	const matrixSectionRef = useRef<HTMLElement | null>(null)
 	const [isMatrixVisible, setIsMatrixVisible] = useState(false)
@@ -156,17 +191,17 @@ export function VisualizerMode() {
 
 	// Find cards that contain the highlighted symbol
 	const cardsWithSymbol = useMemo(() => {
-		if (highlightedSymbol === null) return new Set<number>()
-		const cards = findCardsWithSymbol(deck, highlightedSymbol)
+		if (activeSymbol === null) return new Set<number>()
+		const cards = findCardsWithSymbol(deck, activeSymbol)
 		return new Set(cards.map((c) => c.id))
-	}, [deck, highlightedSymbol])
+	}, [deck, activeSymbol])
 
 	// Find symbols in the highlighted card
 	const symbolsInCard = useMemo(() => {
-		if (highlightedCard === null) return new Set<number>()
-		const card = deck.cards.find((c) => c.id === highlightedCard)
+		if (activeCard === null) return new Set<number>()
+		const card = deck.cards.find((c) => c.id === activeCard)
 		return new Set(card?.symbols ?? [])
-	}, [deck, highlightedCard])
+	}, [deck, activeCard])
 
 	return (
 		<div className="relative flex flex-col gap-8 w-full max-w-full">
@@ -174,11 +209,8 @@ export function VisualizerMode() {
 			<div className="text-center space-y-2">
 				<h2 className="text-2xl font-bold tracking-tight">Deck Visualizer</h2>
 				<p className="text-muted-foreground max-w-xl mx-auto">
-					Explore the mathematical structure of the Spot It deck. Hover over
-					symbols or cards to see connections.
-					{/* <Link href="/article" className="text-primary hover:underline">
-						Learn more about the math
-					</Link> */}
+					Explore the mathematical structure of the Spot It deck. Hover to
+					preview connections, click to pin a selection.
 				</p>
 			</div>
 
@@ -214,7 +246,7 @@ export function VisualizerMode() {
 				<div>
 					<h3 className="text-lg font-semibold mb-4">
 						Symbols ({deck.symbols.length})
-						{highlightedSymbol !== null && (
+						{activeSymbol !== null && (
 							<span className="ml-2 text-sm font-normal text-muted-foreground">
 								— appears on {cardsWithSymbol.size} cards
 							</span>
@@ -222,31 +254,38 @@ export function VisualizerMode() {
 					</h3>
 					<div className="flex flex-wrap gap-2">
 						{deck.symbols.map((symbol) => {
-							const isHighlighted = highlightedSymbol === symbol.id
+							const isActive = activeSymbol === symbol.id
+							const isPinned = pinnedSymbol === symbol.id
 							const isInCard = symbolsInCard.has(symbol.id)
 
 							return (
 								<button
 									key={symbol.id}
 									className={cn(
-										"w-10 h-10 rounded-lg flex items-center justify-center text-xl transition-all",
+										"relative w-10 h-10 rounded-lg flex items-center justify-center text-xl transition-all",
 										"border hover:scale-110",
-										isHighlighted &&
+										isActive &&
 											"bg-yellow-100 dark:bg-yellow-900/50 border-yellow-400 scale-110",
+										isPinned &&
+											"ring-2 ring-primary ring-offset-1 ring-offset-background",
 										isInCard &&
-											!isHighlighted &&
+											!isActive &&
 											"bg-blue-100 dark:bg-blue-900/50 border-blue-400",
-										!isHighlighted &&
+										!isActive &&
 											!isInCard &&
 											"bg-card border-border hover:border-primary/50"
 									)}
-									onMouseEnter={() => highlightSymbol(symbol.id)}
-									onMouseLeave={() => highlightSymbol(null)}
-									onClick={() =>
-										highlightSymbol(
-											highlightedSymbol === symbol.id ? null : symbol.id
-										)
-									}
+									onMouseEnter={() => setHoveredSymbol(symbol.id)}
+									onMouseLeave={() => setHoveredSymbol(null)}
+									onClick={() => {
+										// Toggle pin
+										if (pinnedSymbol === symbol.id) {
+											setPinnedSymbol(null)
+										} else {
+											setPinnedSymbol(symbol.id)
+											setPinnedCard(null) // Clear card pin when pinning a symbol
+										}
+									}}
 								>
 									{symbol.emoji ? (
 										<Emoji emoji={symbol.emoji} className="w-8 h-8" />
@@ -263,33 +302,48 @@ export function VisualizerMode() {
 				<div>
 					<h3 className="text-lg font-semibold mb-4">
 						Cards ({deck.cards.length})
-						{highlightedCard !== null && (
+						{activeCard !== null && (
 							<span className="ml-2 text-sm font-normal text-muted-foreground">
-								— Card #{highlightedCard} contains {symbolsInCard.size} symbols
+								— Card #{activeCard + 1} contains {symbolsInCard.size} symbols
 							</span>
 						)}
 					</h3>
 					<div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
 						{deck.cards.map((card) => {
-							const isHighlighted = highlightedCard === card.id
+							const isActive = activeCard === card.id
+							const isPinned = pinnedCard === card.id
 							const hasSymbol = cardsWithSymbol.has(card.id)
 
 							return (
-								<SpotCard
+								<div
 									key={card.id}
-									card={card}
-									symbols={deck.symbols}
-									isSelected={isHighlighted}
-									highlightedSymbol={highlightedSymbol}
-									onClick={() =>
-										highlightCard(highlightedCard === card.id ? null : card.id)
-									}
-									size="md"
-									hardMode={hardMode}
-									className={cn(
-										hasSymbol && !isHighlighted && "ring-2 ring-yellow-400/50"
-									)}
-								/>
+									className="relative"
+									onMouseEnter={() => setHoveredCard(card.id)}
+									onMouseLeave={() => setHoveredCard(null)}
+								>
+									<SpotCard
+										card={card}
+										symbols={deck.symbols}
+										isSelected={isActive}
+										highlightedSymbol={activeSymbol}
+										onClick={() => {
+											// Toggle pin
+											if (pinnedCard === card.id) {
+												setPinnedCard(null)
+											} else {
+												setPinnedCard(card.id)
+												setPinnedSymbol(null) // Clear symbol pin when pinning a card
+											}
+										}}
+										size="md"
+										hardMode={hardMode}
+										className={cn(
+											hasSymbol && !isActive && "ring-2 ring-yellow-400/50",
+											isPinned &&
+												"ring-2 ring-primary ring-offset-2 ring-offset-background"
+										)}
+									/>
+								</div>
 							)
 						})}
 					</div>
@@ -298,7 +352,30 @@ export function VisualizerMode() {
 
 			{/* Incidence Matrix (for decks up to n=7, which has 57 cards) */}
 			<section ref={matrixSectionRef} aria-label="Incidence matrix">
-				<IncidenceMatrix />
+				<IncidenceMatrix
+					pinnedSymbol={pinnedSymbol}
+					pinnedCard={pinnedCard}
+					hoveredSymbol={hoveredSymbol}
+					hoveredCard={hoveredCard}
+					onHoverSymbol={setHoveredSymbol}
+					onHoverCard={setHoveredCard}
+					onPinSymbol={(id) => {
+						if (pinnedSymbol === id) {
+							setPinnedSymbol(null)
+						} else {
+							setPinnedSymbol(id)
+							setPinnedCard(null)
+						}
+					}}
+					onPinCard={(id) => {
+						if (pinnedCard === id) {
+							setPinnedCard(null)
+						} else {
+							setPinnedCard(id)
+							setPinnedSymbol(null)
+						}
+					}}
+				/>
 			</section>
 
 			{/* Scroll hint (shown until the matrix enters view) */}

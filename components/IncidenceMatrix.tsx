@@ -8,37 +8,92 @@ import { cn } from "@/lib/utils"
 interface IncidenceMatrixProps {
 	showTitle?: boolean
 	className?: string
+	// When used from VisualizerMode, these props control selection state
+	pinnedSymbol?: number | null
+	pinnedCard?: number | null
+	hoveredSymbol?: number | null
+	hoveredCard?: number | null
+	onHoverSymbol?: (id: number | null) => void
+	onHoverCard?: (id: number | null) => void
+	onPinSymbol?: (id: number) => void
+	onPinCard?: (id: number) => void
 }
 
 export function IncidenceMatrix({
 	showTitle = true,
 	className,
+	pinnedSymbol: externalPinnedSymbol,
+	pinnedCard: externalPinnedCard,
+	hoveredSymbol: externalHoveredSymbol,
+	hoveredCard: externalHoveredCard,
+	onHoverSymbol,
+	onHoverCard,
+	onPinSymbol,
+	onPinCard,
 }: IncidenceMatrixProps) {
 	const {
 		deck,
 		symbolStyle,
-		highlightedSymbol,
-		highlightedCard,
-		highlightSymbol,
-		highlightCard,
+		highlightedSymbol: globalHighlightedSymbol,
+		highlightedCard: globalHighlightedCard,
+		highlightSymbol: globalHighlightSymbol,
+		highlightCard: globalHighlightCard,
 	} = useGame()
+
+	// Use external props if provided, otherwise fall back to global state
+	const isControlled = onHoverSymbol !== undefined
+	const activeSymbol = isControlled
+		? (externalPinnedSymbol ?? externalHoveredSymbol)
+		: globalHighlightedSymbol
+	const activeCard = isControlled
+		? (externalPinnedCard ?? externalHoveredCard)
+		: globalHighlightedCard
 
 	const [showMatrixLabels, setShowMatrixLabels] = useState(false)
 	const isEmojiMode = symbolStyle !== "numbers"
 
 	// Find cards that contain the highlighted symbol
 	const cardsWithSymbol = useMemo(() => {
-		if (highlightedSymbol === null) return new Set<number>()
-		const cards = deck.cards.filter((c) => c.symbols.includes(highlightedSymbol))
+		if (activeSymbol === null) return new Set<number>()
+		const cards = deck.cards.filter((c) => c.symbols.includes(activeSymbol))
 		return new Set(cards.map((c) => c.id))
-	}, [deck, highlightedSymbol])
+	}, [deck, activeSymbol])
 
 	// Find symbols in the highlighted card
 	const symbolsInCard = useMemo(() => {
-		if (highlightedCard === null) return new Set<number>()
-		const card = deck.cards.find((c) => c.id === highlightedCard)
+		if (activeCard === null) return new Set<number>()
+		const card = deck.cards.find((c) => c.id === activeCard)
 		return new Set(card?.symbols ?? [])
-	}, [deck, highlightedCard])
+	}, [deck, activeCard])
+
+	// Handlers that work in both controlled and uncontrolled modes
+	const handleSymbolHover = (id: number | null) => {
+		if (isControlled) {
+			onHoverSymbol?.(id)
+		} else {
+			globalHighlightSymbol(id)
+		}
+	}
+
+	const handleCardHover = (id: number | null) => {
+		if (isControlled) {
+			onHoverCard?.(id)
+		} else {
+			globalHighlightCard(id)
+		}
+	}
+
+	const handleSymbolClick = (id: number) => {
+		if (isControlled) {
+			onPinSymbol?.(id)
+		}
+	}
+
+	const handleCardClick = (id: number) => {
+		if (isControlled) {
+			onPinCard?.(id)
+		}
+	}
 
 	return (
 		<div className={className}>
@@ -46,14 +101,14 @@ export function IncidenceMatrix({
 				{showTitle && (
 					<h3 className="text-lg font-semibold">
 						Incidence Matrix
-						{highlightedSymbol !== null && (
+						{activeSymbol !== null && (
 							<span className="ml-2 text-sm font-normal text-muted-foreground">
 								— Symbol appears on {cardsWithSymbol.size} cards
 							</span>
 						)}
-						{highlightedCard !== null && (
+						{activeCard !== null && (
 							<span className="ml-2 text-sm font-normal text-muted-foreground">
-								— Card #{highlightedCard + 1} has {symbolsInCard.size} symbols
+								— Card #{activeCard + 1} has {symbolsInCard.size} symbols
 							</span>
 						)}
 					</h3>
@@ -100,88 +155,100 @@ export function IncidenceMatrix({
 					<div className="flex">
 						<div className="w-12 h-8" /> {/* Empty corner */}
 						<div className="flex bg-muted/50 rounded-t-md border-x border-t border-border/40">
-							{deck.symbols.map((symbol, index) => (
-								<div
-									key={symbol.id}
-									className={cn(
-										"w-8 h-8 flex items-center justify-center text-sm cursor-pointer transition-colors",
-										index !== 0 && "border-l border-border/30",
-										highlightedSymbol === symbol.id &&
-											"bg-yellow-200 dark:bg-yellow-900/70"
-									)}
-									onMouseEnter={() => highlightSymbol(symbol.id)}
-									onMouseLeave={() => highlightSymbol(null)}
-								>
-									{symbol.emoji ? (
-										<Emoji emoji={symbol.emoji} className="w-6 h-6" />
-									) : (
-										symbol.label
-									)}
-								</div>
-							))}
+							{deck.symbols.map((symbol, index) => {
+								const isActive = activeSymbol === symbol.id
+								const isPinned = isControlled && externalPinnedSymbol === symbol.id
+
+								return (
+									<div
+										key={symbol.id}
+										className={cn(
+											"relative w-8 h-8 flex items-center justify-center text-sm cursor-pointer transition-colors",
+											index !== 0 && "border-l border-border/30",
+											isActive && "bg-yellow-200 dark:bg-yellow-900/70",
+											isPinned && "ring-1 ring-inset ring-primary"
+										)}
+										onMouseEnter={() => handleSymbolHover(symbol.id)}
+										onMouseLeave={() => handleSymbolHover(null)}
+										onClick={() => handleSymbolClick(symbol.id)}
+									>
+										{symbol.emoji ? (
+											<Emoji emoji={symbol.emoji} className="w-6 h-6" />
+										) : (
+											symbol.label
+										)}
+									</div>
+								)
+							})}
 						</div>
 					</div>
 					{/* Card rows */}
-					{deck.cards.map((card, cardIndex) => (
-						<div key={card.id} className="flex">
-							<div
-								className={cn(
-									"w-12 h-8 flex items-center justify-center text-xs font-mono text-muted-foreground cursor-pointer transition-colors",
-									highlightedCard === card.id &&
-										"bg-blue-100 dark:bg-blue-900/50"
-								)}
-								onMouseEnter={() => highlightCard(card.id)}
-								onMouseLeave={() => highlightCard(null)}
-							>
-								#{card.id + 1}
-							</div>
-							<div
-								className={cn(
-									"flex border-x border-border/40 bg-muted/30",
-									cardIndex === deck.cards.length - 1 &&
-										"border-b rounded-b-md"
-								)}
-							>
-								{deck.symbols.map((symbol, index) => {
-									const hasSymbol = card.symbols.includes(symbol.id)
-									const isRowHighlighted = highlightedCard === card.id
-									const isColHighlighted = highlightedSymbol === symbol.id
+					{deck.cards.map((card, cardIndex) => {
+						const isCardActive = activeCard === card.id
+						const isCardPinned = isControlled && externalPinnedCard === card.id
 
-									return (
-										<div
-											key={symbol.id}
-											className={cn(
-												"w-8 h-8 flex items-center justify-center border-t border-border/30",
-												index !== 0 && "border-l border-border/30",
-												(isRowHighlighted || isColHighlighted) && "bg-muted/70",
-												isRowHighlighted && isColHighlighted && "bg-primary/20"
-											)}
-										>
-											{hasSymbol &&
-												(showMatrixLabels ? (
-													symbol.emoji ? (
-														<Emoji emoji={symbol.emoji} className="w-5 h-5" />
+						return (
+							<div key={card.id} className="flex">
+								<div
+									className={cn(
+										"relative w-12 h-8 flex items-center justify-center text-xs font-mono text-muted-foreground cursor-pointer transition-colors",
+										isCardActive && "bg-blue-100 dark:bg-blue-900/50",
+										isCardPinned && "ring-1 ring-inset ring-primary"
+									)}
+									onMouseEnter={() => handleCardHover(card.id)}
+									onMouseLeave={() => handleCardHover(null)}
+									onClick={() => handleCardClick(card.id)}
+								>
+									#{card.id + 1}
+								</div>
+								<div
+									className={cn(
+										"flex border-x border-border/40 bg-muted/30",
+										cardIndex === deck.cards.length - 1 &&
+											"border-b rounded-b-md"
+									)}
+								>
+									{deck.symbols.map((symbol, index) => {
+										const hasSymbol = card.symbols.includes(symbol.id)
+										const isRowHighlighted = isCardActive
+										const isColHighlighted = activeSymbol === symbol.id
+
+										return (
+											<div
+												key={symbol.id}
+												className={cn(
+													"w-8 h-8 flex items-center justify-center border-t border-border/30",
+													index !== 0 && "border-l border-border/30",
+													(isRowHighlighted || isColHighlighted) && "bg-muted/70",
+													isRowHighlighted && isColHighlighted && "bg-primary/20"
+												)}
+											>
+												{hasSymbol &&
+													(showMatrixLabels ? (
+														symbol.emoji ? (
+															<Emoji emoji={symbol.emoji} className="w-5 h-5" />
+														) : (
+															<span className="text-xs font-mono font-medium text-foreground/80">
+																{symbol.label}
+															</span>
+														)
 													) : (
-														<span className="text-xs font-mono font-medium text-foreground/80">
-															{symbol.label}
-														</span>
-													)
-												) : (
-													<div
-														className={cn(
-															"w-3 h-3 rounded-full",
-															isRowHighlighted && isColHighlighted
-																? "bg-primary"
-																: "bg-foreground/60"
-														)}
-													/>
-												))}
-										</div>
-									)
-								})}
+														<div
+															className={cn(
+																"w-3 h-3 rounded-full",
+																isRowHighlighted && isColHighlighted
+																	? "bg-primary"
+																	: "bg-foreground/60"
+															)}
+														/>
+													))}
+											</div>
+										)
+									})}
+								</div>
 							</div>
-						</div>
-					))}
+						)
+					})}
 				</div>
 			</div>
 		</div>
