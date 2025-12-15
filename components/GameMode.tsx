@@ -452,9 +452,7 @@ function PracticeMode({
 				<h3 className="text-lg font-semibold mb-4 text-center">
 					All Cards ({deck.cards.length})
 				</h3>
-				<div
-					className="grid gap-3 grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6"
-				>
+				<div className="grid gap-3 grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
 					{deck.cards.map((card, index) => {
 						const isCard1 = card1Index === index
 						const isCard2 = card2Index === index
@@ -536,7 +534,7 @@ function TimedMode({
 				<div className="text-center space-y-2">
 					<h2 className="text-2xl font-bold tracking-tight pb-2">Timed Mode</h2>
 					<p className="text-muted-foreground max-w-md">
-						Click the matching symbol as fast as you can! Track your accuracy
+						Click the mathching symbol as fast as you can! Track your accuracy
 						and speed.
 					</p>
 				</div>
@@ -665,11 +663,6 @@ function TimedMode({
 					/>
 				)}
 			</div>
-
-			{/* Instructions */}
-			<p className="text-muted-foreground text-sm">
-				Click the symbol that appears on both cards!
-			</p>
 
 			{/* Stop button */}
 			<Button onClick={stopGame} variant="outline" size="sm">
