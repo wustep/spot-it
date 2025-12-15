@@ -15,6 +15,39 @@ import {
 import { Emoji } from "./Emoji"
 import { cn } from "@/lib/utils"
 
+// Session storage keys for timed mode stats
+const TIMED_STATS_KEY = "spot-it-timed-stats"
+
+interface TimedSessionStats {
+	bestTime: number | null // Best single round time in ms
+	totalTime: number // Total time across all sessions
+	totalRounds: number // Total rounds across all sessions
+}
+
+function loadTimedSessionStats(): TimedSessionStats {
+	if (typeof window === "undefined") {
+		return { bestTime: null, totalTime: 0, totalRounds: 0 }
+	}
+	try {
+		const stored = sessionStorage.getItem(TIMED_STATS_KEY)
+		if (stored) {
+			return JSON.parse(stored)
+		}
+	} catch {
+		// Ignore parsing errors
+	}
+	return { bestTime: null, totalTime: 0, totalRounds: 0 }
+}
+
+function saveTimedSessionStats(stats: TimedSessionStats) {
+	if (typeof window === "undefined") return
+	try {
+		sessionStorage.setItem(TIMED_STATS_KEY, JSON.stringify(stats))
+	} catch {
+		// Ignore storage errors
+	}
+}
+
 export function GameMode() {
 	const {
 		deck,
@@ -528,6 +561,58 @@ function TimedMode({
 	avgTime: number
 }) {
 	const cardSize = "xl"
+	
+	// Session storage stats - use lazy initializer to load from storage
+	const [sessionStats, setSessionStats] = useState<TimedSessionStats>(() =>
+		loadTimedSessionStats()
+	)
+	
+	// Track previous stats to detect changes
+	const prevStatsRef = useRef({ roundTimes: stats.roundTimes, isPlaying })
+
+	// Save session stats when game stops
+	useEffect(() => {
+		const wasPlaying = prevStatsRef.current.isPlaying
+		
+		// Detect transition from playing to not playing with new rounds
+		if (wasPlaying && !isPlaying && stats.roundTimes.length > 0) {
+			// Game just stopped, save the stats
+			const storedStats = loadTimedSessionStats()
+			const currentBestRound = Math.min(...stats.roundTimes)
+			
+			const newStats: TimedSessionStats = {
+				bestTime:
+					storedStats.bestTime === null
+						? currentBestRound
+						: Math.min(storedStats.bestTime, currentBestRound),
+				totalTime: storedStats.totalTime + stats.totalTime,
+				totalRounds: storedStats.totalRounds + stats.roundTimes.length,
+			}
+			
+			saveTimedSessionStats(newStats)
+			// Use a microtask to avoid synchronous setState in effect
+			queueMicrotask(() => setSessionStats(newStats))
+		}
+		
+		// Update ref
+		prevStatsRef.current = { roundTimes: stats.roundTimes, isPlaying }
+	}, [isPlaying, stats.roundTimes, stats.totalTime])
+
+	// Calculate live best time (combining stored + current game)
+	const currentGameBest =
+		stats.roundTimes.length > 0 ? Math.min(...stats.roundTimes) : null
+	const liveBestTime =
+		sessionStats.bestTime !== null && currentGameBest !== null
+			? Math.min(sessionStats.bestTime, currentGameBest)
+			: sessionStats.bestTime ?? currentGameBest
+	
+	// Calculate live average (stored + current game)
+	const liveAvgTime =
+		sessionStats.totalRounds + stats.roundTimes.length > 0
+			? (sessionStats.totalTime + stats.totalTime) /
+			  (sessionStats.totalRounds + stats.roundTimes.length)
+			: 0
+
 	if (!isPlaying) {
 		return (
 			<div className="flex flex-col items-center gap-6">
@@ -539,11 +624,39 @@ function TimedMode({
 					</p>
 				</div>
 
-				{/* Previous stats */}
+				{/* Session best stats */}
+				{(sessionStats.bestTime !== null || sessionStats.totalRounds > 0) && (
+					<div className="bg-card border rounded-lg p-4 space-y-3 text-center min-w-[280px]">
+						<div className="text-sm text-muted-foreground font-medium">
+							Session Best
+						</div>
+						<div className="grid grid-cols-2 gap-4 text-sm">
+							<div>
+								<div className="text-2xl font-bold text-emerald-500">
+									{sessionStats.bestTime !== null
+										? formatTimeDecimal(sessionStats.bestTime)
+										: "—"}
+								</div>
+								<div className="text-muted-foreground">Best Time</div>
+							</div>
+							<div>
+								<div className="text-2xl font-bold text-blue-500">
+									{liveAvgTime > 0 ? formatTimeDecimal(liveAvgTime) : "—"}
+								</div>
+								<div className="text-muted-foreground">Avg Time</div>
+							</div>
+						</div>
+						<div className="text-xs text-muted-foreground pt-1">
+							{sessionStats.totalRounds} rounds played this session
+						</div>
+					</div>
+				)}
+
+				{/* Previous game stats */}
 				{stats.correct + stats.wrong > 0 && (
 					<div className="bg-card border rounded-lg p-4 space-y-3 text-center min-w-[280px]">
 						<div className="text-sm text-muted-foreground font-medium">
-							Last Session
+							Last Game
 						</div>
 						<div className="grid grid-cols-3 gap-4 text-sm">
 							<div>
@@ -606,7 +719,7 @@ function TimedMode({
 			</div>
 
 			{/* Timer and average */}
-			<div className="flex items-center gap-6 text-sm bg-muted/50 rounded-lg px-4 py-2">
+			<div className="flex items-center gap-4 text-sm bg-muted/50 rounded-lg px-4 py-2">
 				<div className="flex items-center gap-2">
 					<span className="text-muted-foreground">Time:</span>
 					<span className="font-mono font-bold text-lg text-right">
@@ -618,6 +731,14 @@ function TimedMode({
 						<span className="text-muted-foreground">Avg:</span>
 						<span className="font-mono font-medium">
 							{formatTimeDecimal(avgTime)}
+						</span>
+					</div>
+				)}
+				{liveBestTime !== null && (
+					<div className="flex items-center gap-2 border-l pl-4">
+						<span className="text-muted-foreground">Best:</span>
+						<span className="font-mono font-medium text-emerald-500">
+							{formatTimeDecimal(liveBestTime)}
 						</span>
 					</div>
 				)}
