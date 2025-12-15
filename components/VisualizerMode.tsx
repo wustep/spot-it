@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import Link from "next/link"
 import { useGame } from "@/lib/store"
 import { findCardsWithSymbol, getDeckStats } from "@/lib/deck"
@@ -12,11 +12,15 @@ export function VisualizerMode() {
 	const {
 		deck,
 		hardMode,
+		symbolStyle,
 		highlightedSymbol,
 		highlightedCard,
 		highlightSymbol,
 		highlightCard,
 	} = useGame()
+
+	const [showMatrixLabels, setShowMatrixLabels] = useState(false)
+	const isEmojiMode = symbolStyle !== "numbers"
 
 	const stats = getDeckStats(deck)
 
@@ -150,7 +154,44 @@ export function VisualizerMode() {
 
 			{/* Incidence Matrix (for decks up to n=7, which has 57 cards) */}
 			<div>
-				<h3 className="text-lg font-semibold mb-4">Incidence Matrix</h3>
+				<div className="flex items-center justify-between mb-4">
+					<h3 className="text-lg font-semibold">Incidence Matrix</h3>
+					<div className="flex items-center gap-1.5">
+						<div
+							className={cn(
+								"w-2.5 h-2.5 rounded-full transition-colors",
+								!showMatrixLabels ? "bg-primary" : "bg-muted-foreground/40"
+							)}
+						/>
+						<button
+							onClick={() => setShowMatrixLabels(!showMatrixLabels)}
+							className={cn(
+								"w-10 h-5 rounded-full transition-colors relative",
+								showMatrixLabels
+									? "bg-primary"
+									: "bg-muted-foreground/30"
+							)}
+							aria-label="Toggle symbol display in matrix"
+						>
+							<span
+								className={cn(
+									"absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform",
+									showMatrixLabels ? "left-5" : "left-0.5"
+								)}
+							/>
+						</button>
+						<span className={cn(
+							"transition-opacity flex items-center justify-center w-4 h-4",
+							showMatrixLabels ? "opacity-100" : "opacity-40"
+						)}>
+							{isEmojiMode ? (
+								<Emoji emoji="😀" className="w-4 h-4" />
+							) : (
+								<span className="text-xs font-mono font-bold">1</span>
+							)}
+						</span>
+					</div>
+				</div>
 				<div className="overflow-x-auto">
 					<div className="inline-block">
 						{/* Header row - symbols */}
@@ -204,14 +245,24 @@ export function VisualizerMode() {
 											)}
 										>
 											{hasSymbol && (
-												<div
-													className={cn(
-														"w-3 h-3 rounded-full",
-														isRowHighlighted && isColHighlighted
-															? "bg-primary"
-															: "bg-foreground/60"
-													)}
-												/>
+												showMatrixLabels ? (
+													symbol.emoji ? (
+														<Emoji emoji={symbol.emoji} className="w-5 h-5" />
+													) : (
+														<span className="text-xs font-mono font-medium text-foreground/80">
+															{symbol.label}
+														</span>
+													)
+												) : (
+													<div
+														className={cn(
+															"w-3 h-3 rounded-full",
+															isRowHighlighted && isColHighlighted
+																? "bg-primary"
+																: "bg-foreground/60"
+														)}
+													/>
+												)
 											)}
 										</div>
 									)

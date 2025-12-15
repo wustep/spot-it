@@ -72,9 +72,9 @@ export function Emoji({ emoji, size = "1em", style, className }: EmojiProps) {
 	const url =
 		emojiStyle === "twemoji"
 			? (() => {
-					// Twemoji uses lowercase codepoints and generally includes variation selectors.
+					// Twemoji filenames do not include variation selectors (FE0E/FE0F).
 					const codepoint = emojiToCodepoint(emoji, {
-						stripVariationSelectors: false,
+						stripVariationSelectors: true,
 						uppercase: false,
 					})
 					return `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/${codepoint}.svg`
