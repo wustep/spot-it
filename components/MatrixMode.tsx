@@ -1,43 +1,17 @@
 "use client"
 
-import { useMemo, useState } from "react"
 import Link from "next/link"
 import { useGame } from "@/lib/store"
-import { findCardsWithSymbol, getDeckStats } from "@/lib/deck"
-import { Emoji } from "./Emoji"
+import { getDeckStats } from "@/lib/deck"
 import { ThemeToggle } from "./ThemeToggle"
 import { DebugPanel } from "./DebugPanel"
-import { cn } from "@/lib/utils"
+import { IncidenceMatrix } from "./IncidenceMatrix"
 import { Logo } from "./Logo"
 
 export function MatrixMode() {
-	const {
-		deck,
-		symbolStyle,
-		highlightedSymbol,
-		highlightedCard,
-		highlightSymbol,
-		highlightCard,
-	} = useGame()
-
-	const [showMatrixLabels, setShowMatrixLabels] = useState(false)
-	const isEmojiMode = symbolStyle !== "numbers"
+	const { deck } = useGame()
 
 	const stats = getDeckStats(deck)
-
-	// Find cards that contain the highlighted symbol
-	const cardsWithSymbol = useMemo(() => {
-		if (highlightedSymbol === null) return new Set<number>()
-		const cards = findCardsWithSymbol(deck, highlightedSymbol)
-		return new Set(cards.map((c) => c.id))
-	}, [deck, highlightedSymbol])
-
-	// Find symbols in the highlighted card
-	const symbolsInCard = useMemo(() => {
-		if (highlightedCard === null) return new Set<number>()
-		const card = deck.cards.find((c) => c.id === highlightedCard)
-		return new Set(card?.symbols ?? [])
-	}, [deck, highlightedCard])
 
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30 flex flex-col">
@@ -151,27 +125,30 @@ export function MatrixMode() {
 									{/* Header row - symbols */}
 									<div className="flex">
 										<div className="w-12 h-8" /> {/* Empty corner */}
-										{deck.symbols.map((symbol) => (
-											<div
-												key={symbol.id}
-												className={cn(
-													"w-8 h-8 flex items-center justify-center text-sm cursor-pointer transition-colors",
-													highlightedSymbol === symbol.id &&
-														"bg-yellow-100 dark:bg-yellow-900/50"
-												)}
-												onMouseEnter={() => highlightSymbol(symbol.id)}
-												onMouseLeave={() => highlightSymbol(null)}
-											>
-												{symbol.emoji ? (
-													<Emoji emoji={symbol.emoji} className="w-6 h-6" />
-												) : (
-													symbol.label
-												)}
-											</div>
-										))}
+										<div className="flex bg-muted/50 rounded-t-md border-x border-t border-border/40">
+											{deck.symbols.map((symbol, index) => (
+												<div
+													key={symbol.id}
+													className={cn(
+														"w-8 h-8 flex items-center justify-center text-sm cursor-pointer transition-colors",
+														index !== 0 && "border-l border-border/30",
+														highlightedSymbol === symbol.id &&
+															"bg-yellow-200 dark:bg-yellow-900/70"
+													)}
+													onMouseEnter={() => highlightSymbol(symbol.id)}
+													onMouseLeave={() => highlightSymbol(null)}
+												>
+													{symbol.emoji ? (
+														<Emoji emoji={symbol.emoji} className="w-6 h-6" />
+													) : (
+														symbol.label
+													)}
+												</div>
+											))}
+										</div>
 									</div>
 									{/* Card rows */}
-									{deck.cards.map((card) => (
+									{deck.cards.map((card, cardIndex) => (
 										<div key={card.id} className="flex">
 											<div
 												className={cn(
@@ -184,48 +161,58 @@ export function MatrixMode() {
 											>
 												#{card.id + 1}
 											</div>
-											{deck.symbols.map((symbol) => {
-												const hasSymbol = card.symbols.includes(symbol.id)
-												const isRowHighlighted = highlightedCard === card.id
-												const isColHighlighted = highlightedSymbol === symbol.id
+											<div
+												className={cn(
+													"flex border-x border-border/40 bg-muted/30",
+													cardIndex === deck.cards.length - 1 &&
+														"border-b rounded-b-md"
+												)}
+											>
+												{deck.symbols.map((symbol, index) => {
+													const hasSymbol = card.symbols.includes(symbol.id)
+													const isRowHighlighted = highlightedCard === card.id
+													const isColHighlighted =
+														highlightedSymbol === symbol.id
 
-												return (
-													<div
-														key={symbol.id}
-														className={cn(
-															"w-8 h-8 flex items-center justify-center border-r border-b border-border/30",
-															(isRowHighlighted || isColHighlighted) &&
-																"bg-muted/50",
-															isRowHighlighted &&
-																isColHighlighted &&
-																"bg-primary/20"
-														)}
-													>
-														{hasSymbol &&
-															(showMatrixLabels ? (
-																symbol.emoji ? (
-																	<Emoji
-																		emoji={symbol.emoji}
-																		className="w-5 h-5"
-																	/>
+													return (
+														<div
+															key={symbol.id}
+															className={cn(
+																"w-8 h-8 flex items-center justify-center border-t border-border/30",
+																index !== 0 && "border-l border-border/30",
+																(isRowHighlighted || isColHighlighted) &&
+																	"bg-muted/70",
+																isRowHighlighted &&
+																	isColHighlighted &&
+																	"bg-primary/20"
+															)}
+														>
+															{hasSymbol &&
+																(showMatrixLabels ? (
+																	symbol.emoji ? (
+																		<Emoji
+																			emoji={symbol.emoji}
+																			className="w-5 h-5"
+																		/>
+																	) : (
+																		<span className="text-xs font-mono font-medium text-foreground/80">
+																			{symbol.label}
+																		</span>
+																	)
 																) : (
-																	<span className="text-xs font-mono font-medium text-foreground/80">
-																		{symbol.label}
-																	</span>
-																)
-															) : (
-																<div
-																	className={cn(
-																		"w-3 h-3 rounded-full",
-																		isRowHighlighted && isColHighlighted
-																			? "bg-primary"
-																			: "bg-foreground/60"
-																	)}
-																/>
-															))}
-													</div>
-												)
-											})}
+																	<div
+																		className={cn(
+																			"w-3 h-3 rounded-full",
+																			isRowHighlighted && isColHighlighted
+																				? "bg-primary"
+																				: "bg-foreground/60"
+																		)}
+																	/>
+																))}
+														</div>
+													)
+												})}
+											</div>
 										</div>
 									))}
 								</div>

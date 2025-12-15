@@ -1,26 +1,22 @@
 "use client"
 
-import { useMemo, useState } from "react"
-import Link from "next/link"
+import { useMemo } from "react"
 import { useGame } from "@/lib/store"
 import { findCardsWithSymbol, getDeckStats } from "@/lib/deck"
 import { SpotCard } from "./SpotCard"
 import { Emoji } from "./Emoji"
+import { IncidenceMatrix } from "./IncidenceMatrix"
 import { cn } from "@/lib/utils"
 
 export function VisualizerMode() {
 	const {
 		deck,
 		hardMode,
-		symbolStyle,
 		highlightedSymbol,
 		highlightedCard,
 		highlightSymbol,
 		highlightCard,
 	} = useGame()
-
-	const [showMatrixLabels, setShowMatrixLabels] = useState(false)
-	const isEmojiMode = symbolStyle !== "numbers"
 
 	const stats = getDeckStats(deck)
 
@@ -153,125 +149,7 @@ export function VisualizerMode() {
 			</div>
 
 			{/* Incidence Matrix (for decks up to n=7, which has 57 cards) */}
-			<div>
-				<div className="flex items-center justify-between mb-4">
-					<h3 className="text-lg font-semibold">Incidence Matrix</h3>
-					<div className="flex items-center gap-1.5">
-						<div
-							className={cn(
-								"w-2.5 h-2.5 rounded-full transition-colors",
-								!showMatrixLabels ? "bg-primary" : "bg-muted-foreground/40"
-							)}
-						/>
-						<button
-							onClick={() => setShowMatrixLabels(!showMatrixLabels)}
-							className={cn(
-								"w-10 h-5 rounded-full transition-colors relative",
-								showMatrixLabels
-									? "bg-primary"
-									: "bg-muted-foreground/30"
-							)}
-							aria-label="Toggle symbol display in matrix"
-						>
-							<span
-								className={cn(
-									"absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform",
-									showMatrixLabels ? "left-5" : "left-0.5"
-								)}
-							/>
-						</button>
-						<span className={cn(
-							"transition-opacity flex items-center justify-center w-4 h-4",
-							showMatrixLabels ? "opacity-100" : "opacity-40"
-						)}>
-							{isEmojiMode ? (
-								<Emoji emoji="😀" className="w-4 h-4" />
-							) : (
-								<span className="text-xs font-mono font-bold">1</span>
-							)}
-						</span>
-					</div>
-				</div>
-				<div className="overflow-x-auto">
-					<div className="inline-block">
-						{/* Header row - symbols */}
-						<div className="flex">
-							<div className="w-12 h-8" /> {/* Empty corner */}
-							{deck.symbols.map((symbol) => (
-								<div
-									key={symbol.id}
-									className={cn(
-										"w-8 h-8 flex items-center justify-center text-sm cursor-pointer transition-colors",
-										highlightedSymbol === symbol.id &&
-											"bg-yellow-100 dark:bg-yellow-900/50"
-									)}
-									onMouseEnter={() => highlightSymbol(symbol.id)}
-									onMouseLeave={() => highlightSymbol(null)}
-								>
-									{symbol.emoji ? (
-										<Emoji emoji={symbol.emoji} className="w-6 h-6" />
-									) : (
-										symbol.label
-									)}
-								</div>
-							))}
-						</div>
-						{/* Card rows */}
-						{deck.cards.map((card) => (
-							<div key={card.id} className="flex">
-								<div
-									className={cn(
-										"w-12 h-8 flex items-center justify-center text-xs font-mono text-muted-foreground cursor-pointer transition-colors",
-										highlightedCard === card.id &&
-											"bg-blue-100 dark:bg-blue-900/50"
-									)}
-									onMouseEnter={() => highlightCard(card.id)}
-									onMouseLeave={() => highlightCard(null)}
-								>
-									#{card.id}
-								</div>
-								{deck.symbols.map((symbol) => {
-									const hasSymbol = card.symbols.includes(symbol.id)
-									const isRowHighlighted = highlightedCard === card.id
-									const isColHighlighted = highlightedSymbol === symbol.id
-
-									return (
-										<div
-											key={symbol.id}
-											className={cn(
-												"w-8 h-8 flex items-center justify-center border-r border-b border-border/30",
-												(isRowHighlighted || isColHighlighted) && "bg-muted/50",
-												isRowHighlighted && isColHighlighted && "bg-primary/20"
-											)}
-										>
-											{hasSymbol && (
-												showMatrixLabels ? (
-													symbol.emoji ? (
-														<Emoji emoji={symbol.emoji} className="w-5 h-5" />
-													) : (
-														<span className="text-xs font-mono font-medium text-foreground/80">
-															{symbol.label}
-														</span>
-													)
-												) : (
-													<div
-														className={cn(
-															"w-3 h-3 rounded-full",
-															isRowHighlighted && isColHighlighted
-																? "bg-primary"
-																: "bg-foreground/60"
-														)}
-													/>
-												)
-											)}
-										</div>
-									)
-								})}
-							</div>
-						))}
-					</div>
-				</div>
-			</div>
+			<IncidenceMatrix />
 		</div>
 	)
 }
