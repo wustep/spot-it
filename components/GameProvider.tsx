@@ -41,6 +41,8 @@ function updateURL(viewMode: ViewMode, gameSubMode: GameSubMode) {
 		newURL = "/article/full"
 	} else if (viewMode === "visualizer") {
 		newURL = "/visualizer"
+	} else if (viewMode === "matrix") {
+		newURL = "/matrix"
 	}
 	window.history.replaceState({}, "", newURL)
 }
@@ -70,6 +72,10 @@ function parsePathname(pathname: string): {
 
 	if (segments[0] === "visualizer") {
 		return { viewMode: "visualizer", gameSubMode: "practice" }
+	}
+
+	if (segments[0] === "matrix") {
+		return { viewMode: "matrix", gameSubMode: "practice" }
 	}
 
 	if (segments[0] === "article") {
@@ -236,10 +242,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
 				highlightedSymbol: null,
 				highlightedCard: null,
 				roundStartTime: null,
-				deck:
-					viewMode === "visualizer"
-						? generateDeck(prev.order, prev.symbolStyle !== "numbers")
-						: prev.deck,
+			deck:
+				viewMode === "visualizer" || viewMode === "matrix"
+					? generateDeck(prev.order, prev.symbolStyle !== "numbers")
+					: prev.deck,
 			}
 		})
 	}, [pathname])
@@ -282,9 +288,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
 		setState((prev) => ({
 			...prev,
 			viewMode: mode,
-			// Reset deck to original order when switching to visualizer
+			// Reset deck to original order when switching to visualizer or matrix
 			deck:
-				mode === "visualizer"
+				mode === "visualizer" || mode === "matrix"
 					? generateDeck(prev.order, prev.symbolStyle !== "numbers")
 					: prev.deck,
 			// Reset selections when changing view

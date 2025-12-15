@@ -8,6 +8,7 @@ export type ViewMode =
 	| "home"
 	| "game"
 	| "visualizer"
+	| "matrix"
 	| "article"
 	| "article-full"
 export type GameSubMode = "practice" | "timed" | "countdown"

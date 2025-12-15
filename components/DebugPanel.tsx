@@ -140,8 +140,8 @@ export function DebugPanel() {
 								System
 							</SelectItem>
 							<SelectItem value="numbers">
-								<span className="mr-2 inline-flex w-[1em] items-center justify-center font-mono text-[0.95em] leading-none">
-									12
+								<span className="mr-2 inline-flex w-[1.25em] items-center justify-center font-mono text-[0.75em] leading-none">
+									123
 								</span>
 								Numbers
 							</SelectItem>

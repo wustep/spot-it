@@ -8,8 +8,10 @@ import { DebugPanel } from "@/components/DebugPanel"
 import { EmojiPreloader } from "@/components/EmojiPreloader"
 import { GameMode } from "@/components/GameMode"
 import { VisualizerMode } from "@/components/VisualizerMode"
+import { MatrixMode } from "@/components/MatrixMode"
 import { ArticlePage } from "@/components/ArticlePage"
 import { ThemeToggle } from "@/components/ThemeToggle"
+import { Logo } from "@/components/Logo"
 import { useGame } from "@/lib/store"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -71,7 +73,8 @@ function Landing() {
 				</div>
 
 				<div className="mt-10 flex flex-col items-center text-center">
-					<h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+					<h1 className="text-3xl sm:text-4xl font-bold tracking-tight flex items-center gap-2">
+						<Logo size={40} />
 						Spot it!
 					</h1>
 					<p className="mt-2 text-muted-foreground">
@@ -158,6 +161,11 @@ function MainContent() {
 		return <ArticlePage showBackButton={false} />
 	}
 
+	// Matrix mode has its own full-width layout
+	if (viewMode === "matrix") {
+		return <MatrixMode />
+	}
+
 	return (
 		<div className="h-screen bg-gradient-to-br from-background via-background to-muted/30 flex flex-col">
 			{/* Header */}
@@ -165,7 +173,8 @@ function MainContent() {
 				<div className="container mx-auto px-3 sm:px-4 py-4">
 					<div className="flex items-center gap-3">
 						<div className="min-w-0">
-							<Link href="/" className="inline-flex items-center">
+							<Link href="/" className="inline-flex items-center gap-2">
+								<Logo size={28} className="hidden min-[500px]:inline-block" />
 								<h1 className="text-lg sm:text-xl font-bold tracking-tight whitespace-nowrap">
 									Spot it!
 								</h1>
