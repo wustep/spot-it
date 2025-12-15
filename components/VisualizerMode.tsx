@@ -7,6 +7,12 @@ import { SpotCard } from "./SpotCard"
 import { Emoji } from "./Emoji"
 import { IncidenceMatrix } from "./IncidenceMatrix"
 import { cn } from "@/lib/utils"
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { Info } from "lucide-react"
 
 export function VisualizerMode() {
 	const {
@@ -50,15 +56,29 @@ export function VisualizerMode() {
 
 			{/* Stats Panel */}
 			<div className="flex flex-wrap justify-center gap-4">
-				<StatBox label="Order (n)" value={stats.order} />
-				<StatBox label="Total Cards" value={stats.totalCards} />
-				<StatBox label="Total Symbols" value={stats.totalSymbols} />
 				<StatBox label="Symbols/Card" value={stats.symbolsPerCard} />
+				<StatBox
+					label="Order (n)"
+					value={stats.order}
+					tooltip={
+						<>
+							<p className="font-semibold mb-1">Order = Symbols per Card − 1</p>
+							<p>
+								Spot It is based on a{" "}
+								<span className="font-medium">finite projective plane</span> of
+								order n. In projective geometry, each &ldquo;line&rdquo; (card)
+								contains n + 1 &ldquo;points&rdquo; (symbols), and any two lines
+								intersect at exactly one point, guaranteeing a match!
+							</p>
+						</>
+					}
+				/>
 				<StatBox
 					label="Formula"
 					value={`n² + n + 1 = ${stats.order}² + ${stats.order} + 1`}
 					wide
 				/>
+				<StatBox label="Total Cards & Symbols" value={stats.totalCards} />
 			</div>
 
 			<div className="grid lg:grid-cols-2 gap-8">
@@ -158,22 +178,38 @@ function StatBox({
 	label,
 	value,
 	wide = false,
+	tooltip,
 }: {
 	label: string
 	value: string | number
 	wide?: boolean
+	tooltip?: React.ReactNode
 }) {
-	return (
+	const content = (
 		<div
 			className={cn(
 				"bg-card border rounded-lg px-4 py-3 text-center",
-				wide ? "min-w-[200px]" : "min-w-[100px]"
+				wide ? "min-w-[200px]" : "min-w-[100px]",
+				tooltip && "cursor-help"
 			)}
 		>
-			<div className="text-xs text-muted-foreground uppercase tracking-wider">
+			<div className="text-xs text-muted-foreground uppercase tracking-wider flex items-center justify-center gap-1">
 				{label}
 			</div>
 			<div className="text-xl font-bold font-mono">{value}</div>
 		</div>
 	)
+
+	if (tooltip) {
+		return (
+			<Tooltip>
+				<TooltipTrigger asChild>{content}</TooltipTrigger>
+				<TooltipContent className="max-w-xs text-left">
+					{tooltip}
+				</TooltipContent>
+			</Tooltip>
+		)
+	}
+
+	return content
 }
