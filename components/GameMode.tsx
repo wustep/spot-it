@@ -194,6 +194,7 @@ export function GameMode() {
 					card1Index={card1Index}
 					card2Index={card2Index}
 					hardMode={hardMode}
+					selectCard1={selectCard1}
 					selectCard2={selectCard2}
 					pickRandomCards={pickRandomCards}
 				/>
@@ -248,6 +249,7 @@ function PracticeMode({
 	card1Index,
 	card2Index,
 	hardMode,
+	selectCard1,
 	selectCard2,
 	pickRandomCards,
 }: {
@@ -257,12 +259,15 @@ function PracticeMode({
 	card1Index: number | null
 	card2Index: number | null
 	hardMode: boolean
+	selectCard1: (index: number | null) => void
 	selectCard2: (index: number | null) => void
 	pickRandomCards: () => void
 }) {
 	// Feedback state for symbol clicks
 	const [feedback, setFeedback] = useState<"none" | "correct" | "wrong">("none")
 	const [revealedSymbol, setRevealedSymbol] = useState<number | null>(null)
+	// Track which card to set next when clicking in the grid (alternates)
+	const [nextCardToSet, setNextCardToSet] = useState<1 | 2>(2)
 
 	// Auto-select cards when deck changes or cards become null
 	useEffect(() => {
@@ -308,10 +313,69 @@ function PracticeMode({
 	const cardSize = "xl"
 	const gridCardSize = "md"
 
-	// If cards not yet selected, show loading
+	// If cards not yet selected, show loading skeleton
 	if (!card1 || !card2) {
+		// Generate spiral positions for skeleton dots (like actual cards use)
+		const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5))
+		const skeletonPositions = [...Array(7)].map((_, i) => {
+			const angle = GOLDEN_ANGLE * i
+			const normalizedIndex = (i + 0.5) / 7
+			const r = Math.sqrt(normalizedIndex) * 38
+			return {
+				x: 50 + r * Math.cos(angle),
+				y: 50 + r * Math.sin(angle),
+				size: i === 0 ? 14 : i < 3 ? 10 : 8, // Vary sizes like real cards
+			}
+		})
+
 		return (
-			<div className="text-center text-muted-foreground">Loading cards...</div>
+			<div className="flex flex-col items-center gap-6">
+				<div className="text-center">
+					<h2 className="text-2xl font-bold tracking-tight">Practice Mode</h2>
+				</div>
+				<div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 md:gap-8 px-4">
+					{/* Skeleton Card 1 */}
+					<div className="w-56 h-56 rounded-full bg-gradient-to-br from-muted to-muted/50 ring-2 ring-rose-500/30 relative overflow-hidden">
+						{skeletonPositions.map((pos, i) => (
+							<div
+								key={i}
+								className="absolute rounded-full bg-muted-foreground/20 animate-pulse"
+								style={{
+									left: `${pos.x}%`,
+									top: `${pos.y}%`,
+									width: `${pos.size}%`,
+									height: `${pos.size}%`,
+									transform: "translate(-50%, -50%)",
+									animationDelay: `${i * 150}ms`,
+								}}
+							/>
+						))}
+					</div>
+
+					<div className="text-3xl font-bold text-muted-foreground/30">vs</div>
+
+					{/* Skeleton Card 2 */}
+					<div className="w-56 h-56 rounded-full bg-gradient-to-br from-muted to-muted/50 ring-2 ring-sky-500/30 relative overflow-hidden">
+						{skeletonPositions.map((pos, i) => (
+							<div
+								key={i}
+								className="absolute rounded-full bg-muted-foreground/20 animate-pulse"
+								style={{
+									left: `${100 - pos.x}%`, // Mirror for variety
+									top: `${pos.y}%`,
+									width: `${pos.size}%`,
+									height: `${pos.size}%`,
+									transform: "translate(-50%, -50%)",
+									animationDelay: `${i * 150 + 75}ms`,
+								}}
+							/>
+						))}
+					</div>
+				</div>
+				<p className="text-muted-foreground text-sm animate-pulse">
+					Shuffling cards...
+				</p>
+			</div>
 		)
 	}
 
@@ -401,15 +465,17 @@ function PracticeMode({
 								symbols={deck.symbols}
 								isSelected={isCard1 || isCard2}
 								onClick={() => {
-									if (isCard1) {
-										// Already card1, do nothing (can't deselect)
+									if (isCard1 || isCard2) {
+										// Already selected, do nothing
 										return
-									} else if (isCard2) {
-										// Already card2, do nothing (can't deselect)
-										return
+									}
+									// Alternate between setting card1 and card2
+									if (nextCardToSet === 1) {
+										selectCard1(index)
+										setNextCardToSet(2)
 									} else {
-										// Select this as card2 (replacing the current card2)
 										selectCard2(index)
+										setNextCardToSet(1)
 									}
 								}}
 								size={gridCardSize}
