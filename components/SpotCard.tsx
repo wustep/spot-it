@@ -349,8 +349,10 @@ export function SpotCard({
 						)}
 						style={style}
 						onClick={(e) => {
-							e.stopPropagation()
-							onSymbolClick?.(symbolId)
+							if (onSymbolClick) {
+								e.stopPropagation()
+								onSymbolClick(symbolId)
+							}
 						}}
 						disabled={!onSymbolClick}
 					>

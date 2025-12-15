@@ -39,7 +39,7 @@ export function VisualizerMode() {
 	}, [deck, highlightedCard])
 
 	return (
-		<div className="flex flex-col gap-8">
+		<div className="flex flex-col gap-8 w-full max-w-full">
 			{/* Header */}
 			<div className="text-center space-y-2">
 				<h2 className="text-2xl font-bold tracking-tight">Deck Visualizer</h2>
