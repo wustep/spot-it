@@ -53,6 +53,9 @@ function Landing() {
 		}
 	}, [])
 
+	const primaryHover =
+		"hover:bg-primary hover:text-primary-foreground hover:border-primary dark:hover:bg-primary dark:hover:text-primary-foreground dark:hover:border-primary"
+
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
 			<div className="container mx-auto px-4 py-10">
@@ -79,7 +82,10 @@ function Landing() {
 							onFocus={() => scheduleHighlightMode("practice")}
 							onBlur={() => scheduleHighlightMode(null)}
 						>
-							<Button className="w-full h-16 text-lg">
+							<Button
+								variant="outline"
+								className={`w-full h-16 text-lg ${primaryHover}`}
+							>
 								<span className="inline-flex items-center justify-center gap-2">
 									<Gamepad2 className="h-5 w-5" aria-hidden="true" />
 									Practice
@@ -94,7 +100,10 @@ function Landing() {
 							onFocus={() => scheduleHighlightMode("timed")}
 							onBlur={() => scheduleHighlightMode(null)}
 						>
-							<Button variant="outline" className="w-full h-16 text-lg">
+							<Button
+								variant="outline"
+								className={`w-full h-16 text-lg ${primaryHover}`}
+							>
 								<span className="inline-flex items-center justify-center gap-2">
 									<Timer className="h-5 w-5" aria-hidden="true" />
 									Timed
@@ -109,7 +118,10 @@ function Landing() {
 							onFocus={() => scheduleHighlightMode("visualizer")}
 							onBlur={() => scheduleHighlightMode(null)}
 						>
-							<Button variant="outline" className="w-full h-16 text-lg">
+							<Button
+								variant="outline"
+								className={`w-full h-16 text-lg ${primaryHover}`}
+							>
 								<span className="inline-flex items-center justify-center gap-2">
 									<Eye className="h-5 w-5" aria-hidden="true" />
 									Visualizer
@@ -207,7 +219,12 @@ function MainContent() {
 				<footer className="border-t mt-12 py-6 text-center text-sm text-muted-foreground">
 					<p>
 						Built by{" "}
-						<Link href="https://wustep.me" target="_blank">
+						<Link
+							href="https://wustep.me"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="text-primary"
+						>
 							Stephen Wu
 						</Link>
 					</p>

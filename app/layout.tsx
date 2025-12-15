@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+import { Geist_Mono, Figtree } from "next/font/google"
 import "./globals.css"
 
-const geistSans = Geist({
-	variable: "--font-geist-sans",
+const figtree = Figtree({
 	subsets: ["latin"],
+	variable: "--font-fig-tree-sans",
 })
 
 const geistMono = Geist_Mono({
@@ -14,8 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
 	title: "Spot it!",
-	description:
-		"Interactive visualization of the Spot it! / Dobble card game based on finite projective planes",
+	description: "Interactive visualization of the Spot it!",
 }
 
 export default function RootLayout({
@@ -41,9 +40,7 @@ export default function RootLayout({
 					}}
 				/>
 			</head>
-			<body
-				className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
-			>
+			<body className={`${figtree.variable} ${geistMono.variable} antialiased`}>
 				{children}
 			</body>
 		</html>
