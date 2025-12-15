@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { useGame } from "@/lib/store"
 import { VALID_ORDERS, getOrderInfo } from "@/lib/deck"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -23,6 +24,7 @@ import { Emoji } from "./Emoji"
 import { RotateCcw } from "lucide-react"
 
 export function DebugPanel() {
+	const [spinKey, setSpinKey] = useState(0)
 	const {
 		symbolStyle,
 		setSymbolStyle,
@@ -34,13 +36,14 @@ export function DebugPanel() {
 	} = useGame()
 
 	const handleResetToDefaults = () => {
+		setSpinKey((k) => k + 1)
 		setOrder(7)
 		setHardMode(true)
 		setSymbolStyle("twemoji")
 	}
 
 	return (
-		<Card className="w-full max-w-sm border-border/60 bg-card/90 shadow-sm backdrop-blur-sm supports-[backdrop-filter]:bg-card/70">
+		<Card className="w-full max-w-sm border-border/60 bg-card shadow-lg">
 			<CardHeader className="border-b border-border/50 gap-0">
 				<div className="flex items-center justify-between">
 					<CardTitle className="text-lg font-semibold tracking-tight">
@@ -55,7 +58,10 @@ export function DebugPanel() {
 									className="h-8 w-8"
 									onClick={handleResetToDefaults}
 								>
-									<RotateCcw className="h-4 w-4" />
+									<RotateCcw
+										key={spinKey}
+										className="h-4 w-4 animate-spin-once"
+									/>
 									<span className="sr-only">Reset to defaults</span>
 								</Button>
 							</TooltipTrigger>

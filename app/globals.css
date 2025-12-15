@@ -121,7 +121,20 @@
 	}
 	body {
 		@apply bg-background text-foreground;
-		/* Make the default font explicit (don’t rely on utilities being generated/used) */
+		/* Make the default font explicit (don't rely on utilities being generated/used) */
 		font-family: var(--font-fig-tree);
 	}
+}
+
+@keyframes spin-once {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(-360deg);
+	}
+}
+
+.animate-spin-once {
+	animation: spin-once 0.5s ease-out;
 }
