@@ -43,10 +43,10 @@ export function IncidenceMatrix({
 	// Use external props if provided, otherwise fall back to global state
 	const isControlled = onHoverSymbol !== undefined
 	const activeSymbol = isControlled
-		? (externalPinnedSymbol ?? externalHoveredSymbol)
+		? externalPinnedSymbol ?? externalHoveredSymbol
 		: globalHighlightedSymbol
 	const activeCard = isControlled
-		? (externalPinnedCard ?? externalHoveredCard)
+		? externalPinnedCard ?? externalHoveredCard
 		: globalHighlightedCard
 
 	const [showMatrixLabels, setShowMatrixLabels] = useState(false)
@@ -55,7 +55,9 @@ export function IncidenceMatrix({
 	// Find cards that contain the highlighted symbol
 	const cardsWithSymbol = useMemo(() => {
 		if (activeSymbol === null) return new Set<number>()
-		const cards = deck.cards.filter((c) => c.symbols.includes(activeSymbol))
+		const cards = deck.cards.filter((c) =>
+			c.symbols.includes(activeSymbol ?? 0)
+		)
 		return new Set(cards.map((c) => c.id))
 	}, [deck, activeSymbol])
 
@@ -108,7 +110,7 @@ export function IncidenceMatrix({
 						)}
 						{activeCard !== null && (
 							<span className="ml-2 text-sm font-normal text-muted-foreground">
-								— Card #{activeCard + 1} has {symbolsInCard.size} symbols
+								— Card #{activeCard ?? 0 + 1} has {symbolsInCard.size} symbols
 							</span>
 						)}
 					</h3>
@@ -157,7 +159,8 @@ export function IncidenceMatrix({
 						<div className="flex bg-muted/50 rounded-t-md border-x border-t border-border/40">
 							{deck.symbols.map((symbol, index) => {
 								const isActive = activeSymbol === symbol.id
-								const isPinned = isControlled && externalPinnedSymbol === symbol.id
+								const isPinned =
+									isControlled && externalPinnedSymbol === symbol.id
 
 								return (
 									<div
@@ -219,8 +222,11 @@ export function IncidenceMatrix({
 												className={cn(
 													"w-8 h-8 flex items-center justify-center border-t border-border/30",
 													index !== 0 && "border-l border-border/30",
-													(isRowHighlighted || isColHighlighted) && "bg-muted/70",
-													isRowHighlighted && isColHighlighted && "bg-primary/20"
+													(isRowHighlighted || isColHighlighted) &&
+														"bg-muted/70",
+													isRowHighlighted &&
+														isColHighlighted &&
+														"bg-primary/20"
 												)}
 											>
 												{hasSymbol &&
@@ -254,4 +260,3 @@ export function IncidenceMatrix({
 		</div>
 	)
 }
-
