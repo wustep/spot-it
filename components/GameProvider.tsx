@@ -5,6 +5,7 @@ import {
 	useCallback,
 	useMemo,
 	useEffect,
+	useRef,
 	type ReactNode,
 } from "react"
 import { usePathname } from "next/navigation"
@@ -193,19 +194,58 @@ function saveControlPanelSettings(settings: ControlPanelSettings) {
 export function GameProvider({ children }: { children: ReactNode }) {
 	const pathname = usePathname()
 
-	// Initialize state from URL path
+	// Track if we've completed initial hydration - don't save to localStorage until then
+	const hasMountedRef = useRef(false)
+
+	// Initialize state from URL path (runs on server with no localStorage access)
 	const [state, setState] = useState<GameState>(() => {
 		const saved = loadControlPanelSettings()
 		const initialState = createInitialState(saved.order ?? 7, saved.symbolStyle)
-		initialState.hardMode = saved.hardMode ?? false
+		// Use saved value if available, otherwise keep createInitialState's default (true)
+		if (typeof saved.hardMode === "boolean") {
+			initialState.hardMode = saved.hardMode
+		}
 		const { viewMode, gameSubMode } = parsePathname(pathname)
 		initialState.viewMode = viewMode
 		initialState.gameSubMode = gameSubMode
 		return initialState
 	})
 
-	// Persist Control Panel settings
+	// After hydration, sync state from localStorage (client-side only)
+	// This ensures we pick up the correct saved values that weren't available during SSR
 	useEffect(() => {
+		const saved = loadControlPanelSettings()
+		setState((prev) => {
+			let needsUpdate = false
+			const updates: Partial<GameState> = {}
+
+			if (typeof saved.hardMode === "boolean" && saved.hardMode !== prev.hardMode) {
+				updates.hardMode = saved.hardMode
+				needsUpdate = true
+			}
+			if (saved.order && saved.order !== prev.order) {
+				updates.order = saved.order
+				updates.deck = generateDeck(saved.order, prev.symbolStyle !== "numbers")
+				needsUpdate = true
+			}
+			if (saved.symbolStyle && saved.symbolStyle !== prev.symbolStyle) {
+				updates.symbolStyle = saved.symbolStyle
+				updates.deck = generateDeck(prev.order, saved.symbolStyle !== "numbers")
+				needsUpdate = true
+			}
+
+			if (needsUpdate) {
+				return { ...prev, ...updates }
+			}
+			return prev
+		})
+		hasMountedRef.current = true
+	}, [])
+
+	// Persist Control Panel settings - but only after initial mount to avoid
+	// overwriting saved values with SSR defaults
+	useEffect(() => {
+		if (!hasMountedRef.current) return
 		saveControlPanelSettings({
 			symbolStyle: state.symbolStyle,
 			order: state.order,

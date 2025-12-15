@@ -27,63 +27,36 @@ import { Eye, Gamepad2, Settings2, Timer } from "lucide-react"
 function ControlPanelButton() {
 	const [isOpen, setIsOpen] = useState(false)
 	const [isPinned, setIsPinned] = useState(false)
-	// Track if pointer events should be disabled (delayed after close transition)
-	const [isPointerEventsDisabled, setIsPointerEventsDisabled] = useState(true)
-	// Track if a dropdown inside the panel is open
-	const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 	const timeoutRef = useRef<number | null>(null)
-	const pointerEventsTimeoutRef = useRef<number | null>(null)
 	const containerRef = useRef<HTMLDivElement>(null)
-
-	const showPanel = isOpen || isPinned
 
 	const handleMouseEnter = useCallback(() => {
 		if (timeoutRef.current) {
 			window.clearTimeout(timeoutRef.current)
 			timeoutRef.current = null
 		}
-		// Cancel any pending pointer-events disable when re-entering
-		if (pointerEventsTimeoutRef.current) {
-			window.clearTimeout(pointerEventsTimeoutRef.current)
-			pointerEventsTimeoutRef.current = null
-		}
 		if (!isPinned) {
 			setIsOpen(true)
-			setIsPointerEventsDisabled(false) // Immediately enable when opening
 		}
 	}, [isPinned])
 
 	const handleMouseLeave = useCallback(() => {
-		if (!isPinned && !isDropdownOpen) {
+		if (!isPinned) {
 			timeoutRef.current = window.setTimeout(() => {
 				setIsOpen(false)
-				// Delay disabling pointer events until after the 200ms close transition
-				pointerEventsTimeoutRef.current = window.setTimeout(() => {
-					setIsPointerEventsDisabled(true)
-				}, 200)
 			}, 150)
 		}
-	}, [isPinned, isDropdownOpen])
+	}, [isPinned])
 
 	const handleClick = useCallback(() => {
-		// Cancel any pending pointer-events disable
-		if (pointerEventsTimeoutRef.current) {
-			window.clearTimeout(pointerEventsTimeoutRef.current)
-			pointerEventsTimeoutRef.current = null
-		}
 		if (isPinned) {
 			// Unpinning - close the panel
 			setIsPinned(false)
 			setIsOpen(false)
-			// Delay disabling pointer events until after the 200ms close transition
-			pointerEventsTimeoutRef.current = window.setTimeout(() => {
-				setIsPointerEventsDisabled(true)
-			}, 200)
 		} else {
 			// Pinning - keep it open
 			setIsPinned(true)
 			setIsOpen(true)
-			setIsPointerEventsDisabled(false)
 		}
 	}, [isPinned])
 
@@ -92,11 +65,10 @@ function ControlPanelButton() {
 			if (timeoutRef.current) {
 				window.clearTimeout(timeoutRef.current)
 			}
-			if (pointerEventsTimeoutRef.current) {
-				window.clearTimeout(pointerEventsTimeoutRef.current)
-			}
 		}
 	}, [])
+
+	const showPanel = isOpen || isPinned
 
 	return (
 		<div
@@ -125,11 +97,14 @@ function ControlPanelButton() {
 				className={`
 					absolute right-0 top-full z-50 pt-2
 					transition-all duration-200 ease-out
-					${showPanel ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"}
-					${isPointerEventsDisabled ? "pointer-events-none" : "pointer-events-auto"}
+					${
+						showPanel
+							? "opacity-100 translate-y-0 pointer-events-auto"
+							: "opacity-0 -translate-y-2 pointer-events-none"
+					}
 				`}
 			>
-				<DebugPanel onDropdownOpenChange={setIsDropdownOpen} />
+				<DebugPanel />
 			</div>
 		</div>
 	)
@@ -138,13 +113,13 @@ function ControlPanelButton() {
 function Landing() {
 	const MODE_COPY = {
 		practice: {
-			description: "Pick cards freely and explore the deck.",
+			description: "Match cards freely and explore the deck.",
 		},
 		timed: {
 			description: "Race the clock and test your speed.",
 		},
 		visualizer: {
-			description: "Explore how the deck is constructed.",
+			description: "Visualize how the deck is constructed.",
 		},
 	} as const
 
