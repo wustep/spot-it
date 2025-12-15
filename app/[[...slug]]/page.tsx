@@ -10,10 +10,55 @@ import { VisualizerMode } from "@/components/VisualizerMode"
 import { ArticlePage } from "@/components/ArticlePage"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { useGame } from "@/lib/store"
-import { BookOpen } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Eye, Gamepad2 } from "lucide-react"
+
+function Landing() {
+	return (
+		<div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
+			<div className="container mx-auto px-4 py-10">
+				<div className="flex items-center justify-end">
+					<ThemeToggle />
+				</div>
+
+				<div className="mt-10 flex flex-col items-center text-center">
+					<h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+						Spot it!
+					</h1>
+					<p className="mt-2 text-muted-foreground">
+						Choose a mode to get started.
+					</p>
+
+					<div className="mt-10 w-full max-w-xl grid gap-4">
+						<Link href="/game/practice" className="w-full">
+							<Button className="w-full h-16 text-lg">
+								<span className="inline-flex items-center justify-center gap-2">
+									<Gamepad2 className="h-5 w-5" aria-hidden="true" />
+									Game
+								</span>
+							</Button>
+						</Link>
+						<Link href="/visualizer" className="w-full">
+							<Button variant="outline" className="w-full h-16 text-lg">
+								<span className="inline-flex items-center justify-center gap-2">
+									<Eye className="h-5 w-5" aria-hidden="true" />
+									Visualizer
+								</span>
+							</Button>
+						</Link>
+					</div>
+				</div>
+			</div>
+		</div>
+	)
+}
 
 function MainContent() {
 	const { viewMode } = useGame()
+
+	if (viewMode === "home") {
+		return <Landing />
+	}
 
 	// Article pages have their own layout
 	if (viewMode === "article") {
@@ -31,18 +76,32 @@ function MainContent() {
 					<div className="flex items-center justify-between">
 						<div>
 							<h1 className="text-xl font-bold tracking-tight">Spot it!</h1>
-							<p className="text-xs text-muted-foreground">
-								Dobble Deck Visualizer
-							</p>
 						</div>
 						<div className="flex items-center gap-2">
-							{/* <Link
-								href="/article"
-								className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-muted"
-							>
-								<BookOpen className="w-4 h-4" />
-								<span className="hidden sm:inline">Article</span>
-							</Link> */}
+							<nav className="flex items-center gap-2 mr-2">
+								<Link href="/game/practice">
+									<Button
+										variant={viewMode === "game" ? "default" : "outline"}
+										size="sm"
+									>
+										<span className="inline-flex items-center gap-2">
+											<Gamepad2 className="h-4 w-4" aria-hidden="true" />
+											Game
+										</span>
+									</Button>
+								</Link>
+								<Link href="/visualizer">
+									<Button
+										variant={viewMode === "visualizer" ? "default" : "outline"}
+										size="sm"
+									>
+										<span className="inline-flex items-center gap-2">
+											<Eye className="h-4 w-4" aria-hidden="true" />
+											Visualizer
+										</span>
+									</Button>
+								</Link>
+							</nav>
 							<ThemeToggle />
 						</div>
 					</div>

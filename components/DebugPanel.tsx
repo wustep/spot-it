@@ -12,7 +12,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 
 export function DebugPanel() {
@@ -24,16 +23,11 @@ export function DebugPanel() {
 		order,
 		setOrder,
 		viewMode,
-		setViewMode,
 		hardMode,
 		setHardMode,
-		deck,
-		shuffleCards,
 		gameSubMode,
 		isPlaying,
 	} = useGame()
-
-	const orderInfo = getOrderInfo(order)
 
 	return (
 		<Card className="w-full max-w-sm bg-card/80 backdrop-blur-sm border-border/50">
@@ -43,26 +37,6 @@ export function DebugPanel() {
 				</CardTitle>
 			</CardHeader>
 			<CardContent className="space-y-5">
-				{/* View Mode */}
-				<div className="space-y-2">
-					<Label className="text-sm font-medium text-muted-foreground">
-						Mode
-					</Label>
-					<Tabs
-						value={viewMode}
-						onValueChange={(v) => setViewMode(v as "game" | "visualizer")}
-					>
-						<TabsList className="w-full">
-							<TabsTrigger value="game" className="flex-1">
-								Game
-							</TabsTrigger>
-							<TabsTrigger value="visualizer" className="flex-1">
-								Visualizer
-							</TabsTrigger>
-						</TabsList>
-					</Tabs>
-				</div>
-
 				{/* Symbol Mode */}
 				<div className="flex items-center justify-between">
 					<Label htmlFor="symbol-mode" className="text-sm font-medium">
@@ -141,37 +115,7 @@ export function DebugPanel() {
 					</Select>
 				</div>
 
-				{/* Deck Stats */}
-				<div className="rounded-lg bg-muted/50 p-3 space-y-1">
-					<div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-						Deck Info
-					</div>
-					<div className="grid grid-cols-2 gap-2 text-sm">
-						<div>
-							<span className="text-muted-foreground">Cards:</span>{" "}
-							<span className="font-mono font-medium">{deck.cards.length}</span>
-						</div>
-						<div>
-							<span className="text-muted-foreground">Symbols:</span>{" "}
-							<span className="font-mono font-medium">
-								{deck.symbols.length}
-							</span>
-						</div>
-						<div className="col-span-2">
-							<span className="text-muted-foreground">Per Card:</span>{" "}
-							<span className="font-mono font-medium">
-								{orderInfo.symbolsPerCard}
-							</span>
-						</div>
-					</div>
-				</div>
-
 				{/* Actions */}
-				{viewMode === "game" && gameSubMode === "practice" && !isPlaying && (
-					<Button variant="outline" className="w-full" onClick={shuffleCards}>
-						Shuffle Deck
-					</Button>
-				)}
 			</CardContent>
 		</Card>
 	)

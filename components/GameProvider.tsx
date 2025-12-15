@@ -24,13 +24,15 @@ import { generateDeck, findSharedSymbol, type ValidOrder } from "@/lib/deck"
 // Helper to update URL without navigation
 function updateURL(viewMode: ViewMode, gameSubMode: GameSubMode) {
 	let newURL = "/"
-	if (viewMode === "game") {
+	if (viewMode === "home") {
+		newURL = "/"
+	} else if (viewMode === "game") {
 		newURL = `/game/${gameSubMode}`
 	} else if (viewMode === "article") {
 		newURL = "/article"
 	} else if (viewMode === "article-full") {
 		newURL = "/article/full"
-	} else {
+	} else if (viewMode === "visualizer") {
 		newURL = "/visualizer"
 	}
 	window.history.replaceState({}, "", newURL)
@@ -42,6 +44,10 @@ function parsePathname(pathname: string): {
 	gameSubMode: GameSubMode
 } {
 	const segments = pathname.split("/").filter(Boolean)
+
+	if (segments.length === 0) {
+		return { viewMode: "home", gameSubMode: "practice" }
+	}
 
 	if (segments[0] === "visualizer") {
 		return { viewMode: "visualizer", gameSubMode: "practice" }
@@ -81,6 +87,29 @@ export function GameProvider({ children }: { children: ReactNode }) {
 	useEffect(() => {
 		updateURL(state.viewMode, state.gameSubMode)
 	}, [state.viewMode, state.gameSubMode])
+
+	// Sync state from URL when navigating (e.g. clicking Links)
+	useEffect(() => {
+		const { viewMode, gameSubMode } = parsePathname(pathname)
+		setState((prev) => ({
+			...prev,
+			viewMode,
+			gameSubMode,
+			// Reset selections when navigating
+			isPlaying: false,
+			card1Index: null,
+			card2Index: null,
+			selectedSymbol: null,
+			revealedSymbol: null,
+			highlightedSymbol: null,
+			highlightedCard: null,
+			roundStartTime: null,
+			deck:
+				viewMode === "visualizer"
+					? generateDeck(prev.order, prev.symbolMode === "emojis")
+					: prev.deck,
+		}))
+	}, [pathname])
 
 	const setSymbolMode = useCallback((mode: SymbolMode) => {
 		setState((prev) => ({
