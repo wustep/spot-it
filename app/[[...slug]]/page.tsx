@@ -29,6 +29,8 @@ function ControlPanelButton() {
 	const [isPinned, setIsPinned] = useState(false)
 	// Track if pointer events should be disabled (delayed after close transition)
 	const [isPointerEventsDisabled, setIsPointerEventsDisabled] = useState(true)
+	// Track if a dropdown inside the panel is open
+	const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 	const timeoutRef = useRef<number | null>(null)
 	const pointerEventsTimeoutRef = useRef<number | null>(null)
 	const containerRef = useRef<HTMLDivElement>(null)
@@ -52,7 +54,7 @@ function ControlPanelButton() {
 	}, [isPinned])
 
 	const handleMouseLeave = useCallback(() => {
-		if (!isPinned) {
+		if (!isPinned && !isDropdownOpen) {
 			timeoutRef.current = window.setTimeout(() => {
 				setIsOpen(false)
 				// Delay disabling pointer events until after the 200ms close transition
@@ -61,7 +63,7 @@ function ControlPanelButton() {
 				}, 200)
 			}, 150)
 		}
-	}, [isPinned])
+	}, [isPinned, isDropdownOpen])
 
 	const handleClick = useCallback(() => {
 		// Cancel any pending pointer-events disable
@@ -127,7 +129,7 @@ function ControlPanelButton() {
 					${isPointerEventsDisabled ? "pointer-events-none" : "pointer-events-auto"}
 				`}
 			>
-				<DebugPanel />
+				<DebugPanel onDropdownOpenChange={setIsDropdownOpen} />
 			</div>
 		</div>
 	)

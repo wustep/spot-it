@@ -23,8 +23,21 @@ import {
 import { Emoji } from "./Emoji"
 import { RotateCcw } from "lucide-react"
 
-export function DebugPanel() {
+interface DebugPanelProps {
+	onDropdownOpenChange?: (isOpen: boolean) => void
+}
+
+export function DebugPanel({ onDropdownOpenChange }: DebugPanelProps) {
 	const [spinKey, setSpinKey] = useState(0)
+	const [openDropdowns, setOpenDropdowns] = useState(0)
+
+	const handleDropdownOpenChange = (isOpen: boolean) => {
+		setOpenDropdowns((prev) => {
+			const newCount = isOpen ? prev + 1 : prev - 1
+			onDropdownOpenChange?.(newCount > 0)
+			return newCount
+		})
+	}
 	const {
 		symbolStyle,
 		setSymbolStyle,
@@ -79,6 +92,7 @@ export function DebugPanel() {
 					<Select
 						value={String(order)}
 						onValueChange={(v) => setOrder(Number(v) as typeof order)}
+						onOpenChange={handleDropdownOpenChange}
 					>
 						<SelectTrigger className="w-20">
 							<SelectValue />
@@ -123,6 +137,7 @@ export function DebugPanel() {
 						onValueChange={(v) =>
 							setSymbolStyle(v as "openmoji" | "twemoji" | "system" | "numbers")
 						}
+						onOpenChange={handleDropdownOpenChange}
 					>
 						<SelectTrigger className="w-40">
 							<SelectValue />
