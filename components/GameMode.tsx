@@ -304,15 +304,9 @@ function PracticeMode({
 		}
 	}
 
-	// Determine card size based on symbols per card
-	const symbolsPerCard = deck.cards[0]?.symbols.length ?? 4
-	const getCardSize = () => {
-		if (symbolsPerCard >= 12) return "xl" // n=11
-		if (symbolsPerCard >= 8) return hardMode ? "xl" : "lg" // n=7
-		return hardMode ? "xl" : "lg"
-	}
-	const cardSize = getCardSize()
-	const gridCardSize = hardMode ? "md" : "sm"
+	// Card size is always xl
+	const cardSize = "xl"
+	const gridCardSize = "md"
 
 	// If cards not yet selected, show loading
 	if (!card1 || !card2) {
@@ -395,12 +389,7 @@ function PracticeMode({
 					All Cards ({deck.cards.length})
 				</h3>
 				<div
-					className={cn(
-						"grid gap-3",
-						hardMode
-							? "grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6"
-							: "grid-cols-4 sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-9"
-					)}
+					className="grid gap-3 grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6"
 				>
 					{deck.cards.map((card, index) => {
 						const isCard1 = card1Index === index
@@ -474,7 +463,7 @@ function TimedMode({
 	formatTimeDecimal: (ms: number) => string
 	avgTime: number
 }) {
-	const cardSize = hardMode ? "xl" : "lg"
+	const cardSize = "xl"
 	if (!isPlaying) {
 		return (
 			<div className="flex flex-col items-center gap-6">
@@ -652,7 +641,7 @@ function CountdownMode({
 	startGame: () => void
 	stopGame: () => void
 }) {
-	const cardSize = hardMode ? "xl" : "lg"
+	const cardSize = "xl"
 	if (!isPlaying) {
 		return (
 			<div className="flex flex-col items-center gap-6">

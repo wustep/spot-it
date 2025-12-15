@@ -121,7 +121,7 @@ export function VisualizerMode() {
 							</span>
 						)}
 					</h3>
-					<div className="grid grid-cols-4 sm:grid-cols-5 gap-3">
+					<div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
 						{deck.cards.map((card) => {
 							const isHighlighted = highlightedCard === card.id
 							const hasSymbol = cardsWithSymbol.has(card.id)
@@ -136,7 +136,7 @@ export function VisualizerMode() {
 									onClick={() =>
 										highlightCard(highlightedCard === card.id ? null : card.id)
 									}
-									size="sm"
+									size="md"
 									hardMode={hardMode}
 									className={cn(
 										hasSymbol && !isHighlighted && "ring-2 ring-yellow-400/50"

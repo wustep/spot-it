@@ -206,9 +206,11 @@ export function isPrime(n: number): boolean {
 
 /**
  * Check if a number is a prime power and return [prime, exponent] or null
+ * Special case: n=1 returns [1, 1] to support the trivial projective plane
  */
 export function getPrimePower(n: number): [number, number] | null {
-	if (n < 2) return null
+	if (n < 1) return null
+	if (n === 1) return [1, 1] // Special case for trivial projective plane
 
 	for (let p = 2; p * p <= n; p++) {
 		if (!isPrime(p)) continue
@@ -501,7 +503,7 @@ export function getDeckStats(deck: Deck) {
  * Valid orders for Spot It decks (prime powers only)
  * Note: 6 and 10 are not prime powers, so no projective plane exists
  */
-export const VALID_ORDERS = [2, 3, 4, 5, 7, 8, 9, 11] as const
+export const VALID_ORDERS = [1, 2, 3, 4, 5, 7, 8, 9] as const
 export type ValidOrder = (typeof VALID_ORDERS)[number]
 
 /**
@@ -518,6 +520,6 @@ export function getOrderInfo(n: ValidOrder) {
 		totalSymbols,
 		symbolsPerCard,
 		description: `${totalSymbols} cards, ${symbolsPerCard} symbols each`,
-		note: isPrimeOrder ? undefined : `(${pp![0]}^${pp![1]})`,
+		note: isPrimeOrder ? undefined : pp ? `(${pp[0]}^${pp[1]})` : undefined,
 	}
 }

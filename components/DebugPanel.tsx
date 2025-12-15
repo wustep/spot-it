@@ -64,7 +64,7 @@ export function DebugPanel() {
 								Hard Mode
 							</Label>
 							<p className="text-xs text-muted-foreground">
-								Scattered symbols, varied sizes
+								More like the real game
 							</p>
 						</div>
 						<Switch

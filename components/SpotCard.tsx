@@ -41,51 +41,27 @@ const sizeConfig = {
 	},
 }
 
-// Smaller sizes for cards with many symbols (n>=7 has 8 symbols, n>=11 has 12 symbols)
+// Smaller sizes for cards with many symbols (n>=7 has 8 symbols, n>=9 has 10 symbols)
 const sizeConfigDense = {
 	sm: {
 		card: "w-24 h-24",
-		symbol: "text-xl",
-		symbolHard: ["text-sm", "text-base", "text-lg"],
-	},
-	md: {
-		card: "w-32 h-32",
-		symbol: "text-3xl",
+		symbol: "text-base",
 		symbolHard: ["text-base", "text-lg", "text-xl"],
-	},
-	lg: {
-		card: "w-44 h-44",
-		symbol: "text-4xl",
-		symbolHard: ["text-lg", "text-xl", "text-2xl"],
-	},
-	xl: {
-		card: "w-56 h-56",
-		symbol: "text-5xl",
-		symbolHard: ["text-xl", "text-2xl", "text-3xl"],
-	},
-}
-
-// Extra dense for 12+ symbols
-const sizeConfigExtraDense = {
-	sm: {
-		card: "w-24 h-24",
-		symbol: "text-lg",
-		symbolHard: ["text-sm", "text-base", "text-lg"],
 	},
 	md: {
 		card: "w-32 h-32",
 		symbol: "text-xl",
-		symbolHard: ["text-base", "text-lg", "text-xl"],
+		symbolHard: ["text-lg", "text-xl", "text-2xl"],
 	},
 	lg: {
 		card: "w-44 h-44",
-		symbol: "text-3xl",
-		symbolHard: ["text-lg", "text-xl", "text-2xl"],
+		symbol: "text-2xl",
+		symbolHard: ["text-xl", "text-2xl", "text-3xl"],
 	},
 	xl: {
 		card: "w-56 h-56",
-		symbol: "text-4xl",
-		symbolHard: ["text-xl", "text-2xl", "text-3xl"],
+		symbol: "text-3xl",
+		symbolHard: ["text-2xl", "text-3xl", "text-4xl"],
 	},
 }
 
@@ -110,7 +86,7 @@ function generateSpiralPositions(
 	const rotationOffset = seededRandom(cardId * 7) * Math.PI * 2
 
 	// Use more of the card area for dense cards
-	const maxRadius = symbolCount >= 12 ? 40 : symbolCount >= 8 ? 39 : 38
+	const maxRadius = symbolCount >= 8 ? 39 : 38
 
 	for (let i = 0; i < symbolCount; i++) {
 		// Fermat spiral: r = sqrt(i), theta = golden_angle * i
@@ -143,8 +119,7 @@ function generateScatteredPositions(
 
 	// Adjust sizes based on symbol count - smaller symbols for more packed cards
 	const getSizeRadii = () => {
-		if (symbolCount >= 12) return [4, 5.5, 7.5] // n=11: 12 symbols - tighter, more uniform
-		if (symbolCount >= 8) return [4.5, 6.5, 9] // n=7: 8 symbols
+		if (symbolCount >= 8) return [4.5, 6.5, 9] // n>=7: 8+ symbols
 		return [6, 10, 14] // smaller decks - more size variety
 	}
 	const sizeRadii = getSizeRadii()
@@ -152,21 +127,8 @@ function generateScatteredPositions(
 	// Determine sizes - for dense cards, use more uniform sizes
 	const sizes: number[] = []
 
-	if (symbolCount >= 12) {
-		// For 12+ symbols: mostly medium with a couple small and large
-		const largeCount = 1
-		const smallCount = 2
-		for (let i = 0; i < symbolCount; i++) {
-			if (i < largeCount) {
-				sizes.push(2) // Large
-			} else if (i < largeCount + smallCount) {
-				sizes.push(0) // Small
-			} else {
-				sizes.push(1) // Medium (majority)
-			}
-		}
-	} else if (symbolCount >= 8) {
-		// For 8 symbols: balanced distribution
+	if (symbolCount >= 8) {
+		// For 8+ symbols: balanced distribution
 		const largeCount = 1
 		const smallCount = 2
 		for (let i = 0; i < symbolCount; i++) {
@@ -204,8 +166,7 @@ function generateScatteredPositions(
 
 	// Jitter amount based on density
 	const getJitter = () => {
-		if (symbolCount >= 12) return 6 // Less jitter for dense cards
-		if (symbolCount >= 8) return 8
+		if (symbolCount >= 8) return 8 // Less jitter for dense cards
 		return 12 // More chaos for smaller decks
 	}
 	const jitterAmount = getJitter()
@@ -220,7 +181,7 @@ function generateScatteredPositions(
 		.map((item) => item.idx)
 
 	// Min gap between symbols
-	const minGap = symbolCount >= 12 ? 0.5 : symbolCount >= 8 ? 1 : 1.5
+	const minGap = symbolCount >= 8 ? 1 : 1.5
 
 	for (const i of sortedIndices) {
 		const seed = cardId * 100 + i
@@ -233,7 +194,7 @@ function generateScatteredPositions(
 		let bestScore = -Infinity
 
 		// Try positions around the base with jitter
-		const attempts = symbolCount >= 12 ? 80 : 60
+		const attempts = 60
 		for (let attempt = 0; attempt < attempts; attempt++) {
 			const attemptSeed = seed * 17 + attempt * 31
 
@@ -294,7 +255,7 @@ function generateScatteredPositions(
 		placedPositions.push({ x: bestX, y: bestY, radius: myRadius })
 
 		// Random rotation - less extreme for dense cards
-		const maxRotation = symbolCount >= 12 ? 40 : symbolCount >= 8 ? 50 : 60
+		const maxRotation = symbolCount >= 8 ? 50 : 60
 		const rotation = (seededRandom(seed + 2) - 0.5) * maxRotation
 
 		positions[i] = { x: bestX, y: bestY, rotation, sizeIndex }
@@ -317,12 +278,7 @@ export function SpotCard({
 }: SpotCardProps) {
 	// Use appropriate config based on symbol density
 	const symbolCount = card.symbols.length
-	const config =
-		symbolCount >= 12
-			? sizeConfigExtraDense[size]
-			: symbolCount >= 8
-			? sizeConfigDense[size]
-			: sizeConfig[size]
+	const config = symbolCount >= 8 ? sizeConfigDense[size] : sizeConfig[size]
 
 	// For hard mode, generate scattered positions
 	const scatteredPositions = useMemo(() => {

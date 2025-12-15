@@ -105,7 +105,7 @@ export function createInitialState(
 		symbolStyle,
 		order,
 		viewMode: "game",
-		hardMode: false,
+		hardMode: true,
 		deck: generateDeck(order, symbolStyle !== "numbers"),
 		gameSubMode: "practice",
 		isPlaying: false,
