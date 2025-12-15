@@ -619,7 +619,7 @@ function TimedMode({
 				<div className="text-center space-y-2">
 					<h2 className="text-2xl font-bold tracking-tight pb-2">Timed Mode</h2>
 					<p className="text-muted-foreground max-w-md">
-						Click the mathching symbol as fast as you can! Track your accuracy
+						Click the matching symbol as fast as you can! Track your accuracy
 						and speed.
 					</p>
 				</div>
