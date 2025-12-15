@@ -4,7 +4,7 @@ import "./globals.css"
 
 const figtree = Figtree({
 	subsets: ["latin"],
-	variable: "--font-fig-tree-sans",
+	variable: "--font-fig-tree",
 })
 
 const geistMono = Geist_Mono({
@@ -40,7 +40,9 @@ export default function RootLayout({
 					}}
 				/>
 			</head>
-			<body className={`${figtree.variable} ${geistMono.variable} antialiased`}>
+			<body
+				className={`${figtree.className} ${figtree.variable} ${geistMono.variable} antialiased`}
+			>
 				{children}
 			</body>
 		</html>

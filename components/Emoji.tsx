@@ -7,6 +7,11 @@ import { cn } from "@/lib/utils"
 interface EmojiProps {
 	emoji: string
 	size?: string // e.g., "1.4em", "24px", "2rem"
+	/**
+	 * Optional override for rendering a preview in a specific style,
+	 * regardless of the globally selected `symbolStyle`.
+	 */
+	style?: "openmoji" | "twemoji" | "system"
 	className?: string
 }
 
@@ -36,10 +41,10 @@ function emojiToCodepoint(
 	return codepoints.join("-")
 }
 
-export function Emoji({ emoji, size = "1em", className }: EmojiProps) {
+export function Emoji({ emoji, size = "1em", style, className }: EmojiProps) {
 	const { symbolStyle } = useGame()
 	const emojiStyle: "openmoji" | "twemoji" | "system" =
-		symbolStyle === "numbers" ? "system" : symbolStyle
+		style ?? (symbolStyle === "numbers" ? "system" : symbolStyle)
 	const renderKey = `${emojiStyle}:${emoji}`
 	const [failState, setFailState] = useState<{ key: string; failed: boolean }>({
 		key: renderKey,
@@ -93,7 +98,7 @@ export function Emoji({ emoji, size = "1em", className }: EmojiProps) {
 				height: size,
 				// OpenMoji renders a bit small by default; scale it up slightly.
 				// Twemoji should be smaller and should not use scaling.
-				...(emojiStyle === "openmoji" ? { scale: 1.2 } : {}),
+				...(emojiStyle === "openmoji" ? { scale: 1.3 } : {}),
 			}}
 			draggable={false}
 			onError={() => setFailState({ key: renderKey, failed: true })}

@@ -12,7 +12,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
+import { Emoji } from "./Emoji"
 
 export function DebugPanel() {
 	const {
@@ -23,8 +23,6 @@ export function DebugPanel() {
 		viewMode,
 		hardMode,
 		setHardMode,
-		gameSubMode,
-		isPlaying,
 	} = useGame()
 
 	return (
@@ -63,7 +61,7 @@ export function DebugPanel() {
 					<div className="flex items-center justify-between">
 						<div>
 							<Label htmlFor="hard-mode" className="text-sm font-medium">
-								Harder Cards
+								Hard Mode
 							</Label>
 							<p className="text-xs text-muted-foreground">
 								Scattered symbols, varied sizes
@@ -79,7 +77,7 @@ export function DebugPanel() {
 
 				{/* Symbol Style */}
 				<div className="flex items-center justify-between gap-4">
-					<Label className="text-sm font-medium">Symbol Style</Label>
+					<Label className="text-sm font-medium">Style</Label>
 					<Select
 						value={symbolStyle}
 						onValueChange={(v) =>
@@ -90,10 +88,29 @@ export function DebugPanel() {
 							<SelectValue />
 						</SelectTrigger>
 						<SelectContent>
-							<SelectItem value="openmoji">OpenMoji</SelectItem>
-							<SelectItem value="twemoji">Twemoji</SelectItem>
-							<SelectItem value="system">System</SelectItem>
-							<SelectItem value="numbers">Numbers</SelectItem>
+							<SelectItem value="openmoji">
+								<Emoji
+									emoji="😎"
+									style="openmoji"
+									size="1em"
+									className="mr-2"
+								/>
+								OpenMoji
+							</SelectItem>
+							<SelectItem value="twemoji">
+								<Emoji emoji="😎" style="twemoji" size="1em" className="mr-2" />
+								Twemoji
+							</SelectItem>
+							<SelectItem value="system">
+								<Emoji emoji="😎" style="system" size="1em" className="mr-2" />
+								System
+							</SelectItem>
+							<SelectItem value="numbers">
+								<span className="mr-2 inline-flex w-[1em] items-center justify-center font-mono text-[0.95em] leading-none">
+									12
+								</span>
+								Numbers
+							</SelectItem>
 						</SelectContent>
 					</Select>
 				</div>
