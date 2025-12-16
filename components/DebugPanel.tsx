@@ -39,7 +39,7 @@ export function DebugPanel() {
 		setSpinKey((k) => k + 1)
 		setOrder(7)
 		setHardMode(true)
-		setSymbolStyle("twemoji")
+		setSymbolStyle("openmoji")
 	}
 
 	return (

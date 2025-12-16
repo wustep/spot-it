@@ -372,7 +372,7 @@ function MainContent() {
 				data-scroll-container="main"
 			>
 				{/* Main Layout */}
-				<div className="container mx-auto px-4 py-6">
+				<div className="container mx-auto px-4 pt-8 pb-6 sm:py-6">
 					<main className="flex justify-center min-h-0">
 						{viewMode === "game" ? <GameMode /> : <VisualizerMode />}
 					</main>
