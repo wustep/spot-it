@@ -133,20 +133,20 @@ export function DebugPanel() {
 									emoji="😎"
 									style="openmoji"
 									size="1em"
-									className="mr-2"
+									className="mr-1"
 								/>
 								OpenMoji
 							</SelectItem>
 							<SelectItem value="twemoji">
-								<Emoji emoji="😎" style="twemoji" size="1em" className="mr-2" />
+								<Emoji emoji="😎" style="twemoji" size="1em" className="mr-1" />
 								Twemoji
 							</SelectItem>
 							<SelectItem value="system">
-								<Emoji emoji="😎" style="system" size="1em" className="mr-2" />
+								<Emoji emoji="😎" style="system" size="1em" className="mr-1" />
 								System
 							</SelectItem>
 							<SelectItem value="numbers">
-								<span className="mr-2 inline-flex w-[1.25em] items-center justify-center font-mono text-[0.75em] leading-none">
+								<span className="mr-1 inline-flex w-[1.5em] items-center justify-center font-mono text-[0.75em] leading-none">
 									123
 								</span>
 								Numbers

@@ -209,8 +209,13 @@ export function VisualizerMode() {
 			<div className="text-center space-y-2">
 				<h2 className="text-2xl font-bold tracking-tight">Deck Visualizer</h2>
 				<p className="text-muted-foreground max-w-xl mx-auto">
-					Explore the mathematical structure of the Spot It deck. Hover to
-					preview connections, click to pin a selection.
+					Explore the mathematical structure of the Spot It deck.
+					<br />
+					Scroll down to see the{" "}
+					<a href="#matrix" className="text-primary">
+						incidence matrix
+					</a>
+					.
 				</p>
 			</div>
 
@@ -266,8 +271,7 @@ export function VisualizerMode() {
 										"border hover:scale-110",
 										isActive &&
 											"bg-yellow-100 dark:bg-yellow-900/50 border-yellow-400 scale-110",
-									isPinned &&
-										"border-purple-600",
+										isPinned && "border-purple-600",
 										isInCard &&
 											!isActive &&
 											"bg-blue-100 dark:bg-blue-900/50 border-blue-400",
@@ -339,8 +343,7 @@ export function VisualizerMode() {
 										hardMode={hardMode}
 										className={cn(
 											hasSymbol && !isActive && "border-yellow-400/50",
-											isPinned &&
-												"border-purple-600"
+											isPinned && "border-purple-600"
 										)}
 									/>
 								</div>
@@ -351,7 +354,7 @@ export function VisualizerMode() {
 			</div>
 
 			{/* Incidence Matrix (for decks up to n=7, which has 57 cards) */}
-			<section ref={matrixSectionRef} aria-label="Incidence matrix">
+			<section id="matrix" ref={matrixSectionRef} aria-label="Incidence matrix">
 				<IncidenceMatrix
 					pinnedSymbol={pinnedSymbol}
 					pinnedCard={pinnedCard}
