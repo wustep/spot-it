@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
-import { Geist_Mono, Figtree } from "next/font/google"
+import { Geist_Mono, Nunito } from "next/font/google"
 import "./globals.css"
 
-const figtree = Figtree({
+const nunito = Nunito({
 	subsets: ["latin"],
-	variable: "--font-fig-tree",
+	variable: "--font-nunito",
 })
 
 const geistMono = Geist_Mono({
@@ -41,7 +41,7 @@ export default function RootLayout({
 				/>
 			</head>
 			<body
-				className={`${figtree.className} ${figtree.variable} ${geistMono.variable} antialiased`}
+				className={`${nunito.className} ${nunito.variable} ${geistMono.variable} antialiased`}
 			>
 				{children}
 			</body>
