@@ -446,6 +446,14 @@ export function SpotCard({
 		return generateEasyModePositions(card.symbols.length, card.id)
 	}, [hardMode, card.symbols.length, card.id])
 
+	// Check if className contains border color classes for selection
+	const hasSelectionBorder =
+		className?.includes("border-purple-600") ||
+		className?.includes("border-yellow-400") ||
+		className?.includes("border-rose-500") ||
+		className?.includes("border-sky-500")
+	const hasRing = className?.includes("ring-") && !hasSelectionBorder
+
 	return (
 		<div
 			className={cn(
@@ -453,9 +461,12 @@ export function SpotCard({
 				"shadow-[inset_0_2px_4px_rgba(0,0,0,0.02),inset_0_-1px_2px_rgba(255,255,255,0.5),0_1px_3px_rgba(0,0,0,0.1)]",
 				"dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.15),inset_0_-1px_2px_rgba(255,255,255,0.02),0_1px_3px_rgba(0,0,0,0.3)]",
 				onClick && "cursor-pointer",
-				isSelected
-					? "ring-2 ring-primary/30 scale-110"
-					: "border-zinc-300 dark:border-zinc-600 hover:border-primary/50 hover:shadow-lg",
+				!hasSelectionBorder &&
+					!hasRing &&
+					"border-zinc-300 dark:border-zinc-600 hover:border-primary/50 hover:shadow-md",
+				isSelected && !hasSelectionBorder && !hasRing
+					? "border-primary/50"
+					: "",
 				config.card,
 				className
 			)}

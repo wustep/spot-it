@@ -169,7 +169,7 @@ export function IncidenceMatrix({
 											"relative w-8 h-8 flex items-center justify-center text-sm cursor-pointer transition-colors",
 											index !== 0 && "border-l border-border/30",
 											isActive && "bg-yellow-200 dark:bg-yellow-900/70",
-											isPinned && "ring-1 ring-inset ring-primary"
+											isPinned && "ring-1 ring-inset ring-purple-600"
 										)}
 										onMouseEnter={() => handleSymbolHover(symbol.id)}
 										onMouseLeave={() => handleSymbolHover(null)}
@@ -196,7 +196,7 @@ export function IncidenceMatrix({
 									className={cn(
 										"relative w-12 h-8 flex items-center justify-center text-xs font-mono text-muted-foreground cursor-pointer transition-colors",
 										isCardActive && "bg-blue-100 dark:bg-blue-900/50",
-										isCardPinned && "ring-1 ring-inset ring-primary"
+										isCardPinned && "ring-1 ring-inset ring-purple-600"
 									)}
 									onMouseEnter={() => handleCardHover(card.id)}
 									onMouseLeave={() => handleCardHover(null)}

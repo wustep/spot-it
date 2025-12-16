@@ -173,7 +173,7 @@ function Landing() {
 				</div>
 
 				<div className="mt-10 flex flex-col items-center text-center">
-					<h1 className="text-3xl sm:text-4xl font-bold tracking-tight flex items-center gap-2">
+					<h1 className="text-3xl sm:text-4xl font-bold tracking-tight flex items-center gap-2 text-[var(--primary-dark)] dark:text-[var(--primary-dark)]">
 						<Logo size={40} />
 						Spot it!
 					</h1>
@@ -284,7 +284,7 @@ function MainContent() {
 						<div className="min-w-0">
 							<Link href="/" className="inline-flex items-center gap-2">
 								<Logo size={28} className="hidden min-[500px]:inline-block" />
-								<h1 className="text-lg sm:text-xl font-bold tracking-tight whitespace-nowrap">
+								<h1 className="text-lg sm:text-xl font-bold tracking-tight whitespace-nowrap text-[var(--primary-dark)] dark:text-[var(--primary-dark)]">
 									Spot it!
 								</h1>
 							</Link>

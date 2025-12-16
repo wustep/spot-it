@@ -22,7 +22,7 @@ export function MatrixMode() {
 						<div className="min-w-0">
 							<Link href="/" className="inline-flex items-center gap-2">
 								<Logo size={28} className="hidden min-[500px]:inline-block" />
-								<h1 className="text-lg sm:text-xl font-bold tracking-tight whitespace-nowrap">
+								<h1 className="text-lg sm:text-xl font-bold tracking-tight whitespace-nowrap text-[var(--primary-dark)] dark:text-[var(--primary-dark)]">
 									Spot it!
 								</h1>
 							</Link>

@@ -266,8 +266,8 @@ export function VisualizerMode() {
 										"border hover:scale-110",
 										isActive &&
 											"bg-yellow-100 dark:bg-yellow-900/50 border-yellow-400 scale-110",
-										isPinned &&
-											"ring-2 ring-primary ring-offset-1 ring-offset-background",
+									isPinned &&
+										"border-purple-600",
 										isInCard &&
 											!isActive &&
 											"bg-blue-100 dark:bg-blue-900/50 border-blue-400",
@@ -338,9 +338,9 @@ export function VisualizerMode() {
 										size="md"
 										hardMode={hardMode}
 										className={cn(
-											hasSymbol && !isActive && "ring-2 ring-yellow-400/50",
+											hasSymbol && !isActive && "border-yellow-400/50",
 											isPinned &&
-												"ring-2 ring-primary ring-offset-2 ring-offset-background"
+												"border-purple-600"
 										)}
 									/>
 								</div>

@@ -368,7 +368,7 @@ function PracticeMode({
 				</div>
 				<div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 md:gap-8 px-4">
 					{/* Skeleton Card 1 */}
-					<div className="w-56 h-56 rounded-full bg-gradient-to-br from-muted to-muted/50 ring-2 ring-rose-500/30 relative overflow-hidden">
+					<div className="w-56 h-56 rounded-full bg-gradient-to-br from-muted to-muted/50 border-2 border-rose-500/30 relative overflow-hidden">
 						{skeletonPositions.map((pos, i) => (
 							<div
 								key={i}
@@ -388,7 +388,7 @@ function PracticeMode({
 					<div className="text-3xl font-bold text-muted-foreground/30">vs</div>
 
 					{/* Skeleton Card 2 */}
-					<div className="w-56 h-56 rounded-full bg-gradient-to-br from-muted to-muted/50 ring-2 ring-sky-500/30 relative overflow-hidden">
+					<div className="w-56 h-56 rounded-full bg-gradient-to-br from-muted to-muted/50 border-2 border-sky-500/30 relative overflow-hidden">
 						{skeletonPositions.map((pos, i) => (
 							<div
 								key={i}
@@ -444,7 +444,7 @@ function PracticeMode({
 						onSymbolClick={feedback === "none" ? handleSymbolClick : undefined}
 						size={cardSize}
 						hardMode={hardMode}
-						className="ring-2 ring-rose-500 scale-105"
+						className="border-rose-500"
 					/>
 				</div>
 
@@ -462,7 +462,7 @@ function PracticeMode({
 						onSymbolClick={feedback === "none" ? handleSymbolClick : undefined}
 						size={cardSize}
 						hardMode={hardMode}
-						className="ring-2 ring-sky-500 scale-105"
+						className="border-sky-500"
 					/>
 				</div>
 			</div>
@@ -512,8 +512,8 @@ function PracticeMode({
 								size={gridCardSize}
 								hardMode={hardMode}
 								className={cn(
-									isCard1 && "ring-2 ring-rose-500",
-									isCard2 && !isCard1 && "ring-2 ring-sky-500"
+									isCard1 && "border-rose-500",
+									isCard2 && !isCard1 && "border-sky-500"
 								)}
 							/>
 						)
