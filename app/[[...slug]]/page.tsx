@@ -281,7 +281,7 @@ function MainContent() {
 			<header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50 shadow-[0_1px_2px_rgba(0,0,0,0.02),0_2px_6px_rgba(0,0,0,0.015)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.15),0_3px_8px_rgba(0,0,0,0.08)]">
 				<div className="container mx-auto px-3 sm:px-4 py-4">
 					<div className="flex items-center gap-3">
-						<div className="min-w-0">
+						<div className="min-w-0 flex items-center">
 							<Link href="/" className="inline-flex items-center gap-2">
 								<Logo size={28} className="hidden min-[500px]:inline-block" />
 								<h1 className="text-lg sm:text-xl font-bold tracking-tight whitespace-nowrap text-[var(--primary-dark)] dark:text-[var(--primary-dark)]">
