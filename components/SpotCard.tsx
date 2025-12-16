@@ -460,10 +460,11 @@ export function SpotCard({
 				"relative rounded-full bg-gradient-to-br from-white to-zinc-50 dark:from-zinc-800 dark:to-zinc-900 border-2 shadow-sm flex items-center justify-center transition-all duration-200",
 				"shadow-[inset_0_2px_4px_rgba(0,0,0,0.02),inset_0_-1px_2px_rgba(255,255,255,0.5),0_1px_3px_rgba(0,0,0,0.1)]",
 				"dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.15),inset_0_-1px_2px_rgba(255,255,255,0.02),0_1px_3px_rgba(0,0,0,0.3)]",
+				"hover:shadow-md",
 				onClick && "cursor-pointer",
 				!hasSelectionBorder &&
 					!hasRing &&
-					"border-zinc-300 dark:border-zinc-600 hover:border-primary/50 hover:shadow-md",
+					"border-zinc-300 dark:border-zinc-600 hover:border-primary/50",
 				isSelected && !hasSelectionBorder && !hasRing
 					? "border-primary/50"
 					: "",
