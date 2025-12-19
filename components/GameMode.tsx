@@ -387,8 +387,8 @@ function PracticeMode({
 
 					<div className="text-3xl font-bold text-muted-foreground/30">vs</div>
 
-				{/* Skeleton Card 2 */}
-				<div className="w-56 h-56 rounded-full bg-gradient-to-br from-muted to-muted/50 border-2 border-teal-500/30 relative overflow-hidden">
+					{/* Skeleton Card 2 */}
+					<div className="w-56 h-56 rounded-full bg-gradient-to-br from-muted to-muted/50 border-2 border-teal-500/30 relative overflow-hidden">
 						{skeletonPositions.map((pos, i) => (
 							<div
 								key={i}
