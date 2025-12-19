@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { useGame } from "@/lib/store"
 import { Emoji } from "./Emoji"
 import { cn } from "@/lib/utils"
@@ -52,22 +52,6 @@ export function IncidenceMatrix({
 	const [showMatrixLabels, setShowMatrixLabels] = useState(false)
 	const isEmojiMode = symbolStyle !== "numbers"
 
-	// Find cards that contain the highlighted symbol
-	const cardsWithSymbol = useMemo(() => {
-		if (activeSymbol === null) return new Set<number>()
-		const cards = deck.cards.filter((c) =>
-			c.symbols.includes(activeSymbol ?? 0)
-		)
-		return new Set(cards.map((c) => c.id))
-	}, [deck, activeSymbol])
-
-	// Find symbols in the highlighted card
-	const symbolsInCard = useMemo(() => {
-		if (activeCard === null) return new Set<number>()
-		const card = deck.cards.find((c) => c.id === activeCard)
-		return new Set(card?.symbols ?? [])
-	}, [deck, activeCard])
-
 	// Handlers that work in both controlled and uncontrolled modes
 	const handleSymbolHover = (id: number | null) => {
 		if (isControlled) {
@@ -101,19 +85,7 @@ export function IncidenceMatrix({
 		<div className={className}>
 			<div className="flex items-center justify-between mb-4">
 				{showTitle && (
-					<h3 className="text-lg font-semibold">
-						Incidence Matrix
-						{activeSymbol !== null && (
-							<span className="ml-2 text-sm font-normal text-muted-foreground">
-								— Symbol appears on {cardsWithSymbol.size} cards
-							</span>
-						)}
-						{activeCard !== null && (
-							<span className="ml-2 text-sm font-normal text-muted-foreground">
-								— Card #{activeCard ?? 0 + 1} has {symbolsInCard.size} symbols
-							</span>
-						)}
-					</h3>
+					<h3 className="text-lg font-semibold">Incidence Matrix</h3>
 				)}
 				<div className="flex items-center gap-1.5">
 					<div

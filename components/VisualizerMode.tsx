@@ -246,16 +246,11 @@ export function VisualizerMode() {
 				<StatBox label="Total Cards & Symbols" value={stats.totalCards} />
 			</div>
 
-			<div className="grid lg:grid-cols-2 gap-8">
+			<div className="grid lg:grid-cols-[30%_70%] gap-8">
 				{/* Symbol Legend */}
-				<div>
+				<div className="lg:sticky lg:top-24 lg:self-start lg:border-r lg:pr-6 lg:border-border/50">
 					<h3 className="text-lg font-semibold mb-4">
 						Symbols ({deck.symbols.length})
-						{activeSymbol !== null && (
-							<span className="ml-2 text-sm font-normal text-muted-foreground">
-								— appears on {cardsWithSymbol.size} cards
-							</span>
-						)}
 					</h3>
 					<div className="flex flex-wrap gap-2">
 						{deck.symbols.map((symbol) => {
@@ -312,7 +307,7 @@ export function VisualizerMode() {
 							</span>
 						)}
 					</h3>
-					<div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+					<div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
 						{deck.cards.map((card) => {
 							const isActive = activeCard === card.id
 							const isPinned = pinnedCard === card.id
