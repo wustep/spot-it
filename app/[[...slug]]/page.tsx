@@ -30,6 +30,11 @@ function ControlPanelButton() {
 	const timeoutRef = useRef<number | null>(null)
 	const containerRef = useRef<HTMLDivElement>(null)
 
+	const closePanel = useCallback(() => {
+		setIsPinned(false)
+		setIsOpen(false)
+	}, [])
+
 	const handleMouseEnter = useCallback(() => {
 		if (timeoutRef.current) {
 			window.clearTimeout(timeoutRef.current)
@@ -59,6 +64,38 @@ function ControlPanelButton() {
 			setIsOpen(true)
 		}
 	}, [isPinned])
+
+	// Close on Escape key
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.key === "Escape" && (isOpen || isPinned)) {
+				closePanel()
+			}
+		}
+		document.addEventListener("keydown", handleKeyDown)
+		return () => document.removeEventListener("keydown", handleKeyDown)
+	}, [isOpen, isPinned, closePanel])
+
+	// Close on click outside (but not on Radix portals like dropdowns)
+	useEffect(() => {
+		const handleClickOutside = (e: MouseEvent) => {
+			const target = e.target as Element
+			// Check if click is inside a Radix portal (dropdown, tooltip, etc.)
+			const isInsideRadixPortal = target.closest(
+				"[data-radix-popper-content-wrapper], [data-radix-select-viewport], [role='listbox']"
+			)
+			if (
+				containerRef.current &&
+				!containerRef.current.contains(target) &&
+				!isInsideRadixPortal &&
+				(isOpen || isPinned)
+			) {
+				closePanel()
+			}
+		}
+		document.addEventListener("mousedown", handleClickOutside)
+		return () => document.removeEventListener("mousedown", handleClickOutside)
+	}, [isOpen, isPinned, closePanel])
 
 	useEffect(() => {
 		return () => {
