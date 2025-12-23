@@ -28,6 +28,7 @@ import {
 
 // Helper to update URL without navigation
 function updateURL(viewMode: ViewMode, gameSubMode: GameSubMode) {
+	if (typeof window === "undefined") return
 	let newURL = "/"
 	if (viewMode === "home") {
 		newURL = "/"
@@ -198,13 +199,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
 	const hasMountedRef = useRef(false)
 
 	// Initialize state from URL path (runs on server with no localStorage access)
+	// Always use defaults for initial state to ensure server/client match
 	const [state, setState] = useState<GameState>(() => {
-		const saved = loadControlPanelSettings()
-		const initialState = createInitialState(saved.order ?? 7, saved.symbolStyle)
-		// Use saved value if available, otherwise keep createInitialState's default (true)
-		if (typeof saved.hardMode === "boolean") {
-			initialState.hardMode = saved.hardMode
-		}
+		const initialState = createInitialState(7, "openmoji")
 		const { viewMode, gameSubMode } = parsePathname(pathname)
 		initialState.viewMode = viewMode
 		initialState.gameSubMode = gameSubMode
@@ -223,15 +220,22 @@ export function GameProvider({ children }: { children: ReactNode }) {
 				updates.hardMode = saved.hardMode
 				needsUpdate = true
 			}
+			
+			const newOrder = saved.order && saved.order !== prev.order ? saved.order : prev.order
+			const newSymbolStyle = saved.symbolStyle && saved.symbolStyle !== prev.symbolStyle ? saved.symbolStyle : prev.symbolStyle
+			
 			if (saved.order && saved.order !== prev.order) {
 				updates.order = saved.order
-				updates.deck = generateDeck(saved.order, prev.symbolStyle !== "numbers")
 				needsUpdate = true
 			}
 			if (saved.symbolStyle && saved.symbolStyle !== prev.symbolStyle) {
 				updates.symbolStyle = saved.symbolStyle
-				updates.deck = generateDeck(prev.order, saved.symbolStyle !== "numbers")
 				needsUpdate = true
+			}
+			
+			// Generate deck once with final values if order or symbolStyle changed
+			if (needsUpdate && (newOrder !== prev.order || newSymbolStyle !== prev.symbolStyle)) {
+				updates.deck = generateDeck(newOrder, newSymbolStyle !== "numbers")
 			}
 
 			if (needsUpdate) {
