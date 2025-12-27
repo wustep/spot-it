@@ -60,8 +60,8 @@ export function Emoji({ emoji, size = "1em", style, className }: EmojiProps) {
 			<span
 				className={cn(
 					"select-none inline-flex items-center justify-center leading-none max-w-none",
-					// White text stroke for dark mode visibility of dark symbols
-					"dark:[text-shadow:_-1px_-1px_0_#fff,_1px_-1px_0_#fff,_-1px_1px_0_#fff,_1px_1px_0_#fff]",
+					// Soft white glow for dark mode visibility of dark symbols
+					"dark:[text-shadow:_0_0_3px_rgba(255,255,255,0.9),_0_0_6px_rgba(255,255,255,0.5)]",
 					className
 				)}
 				style={{ fontSize: size }}
@@ -96,8 +96,8 @@ export function Emoji({ emoji, size = "1em", style, className }: EmojiProps) {
 			alt={emoji}
 			className={cn(
 				"inline-block select-none max-w-none",
-				// White drop-shadow stroke for dark mode visibility of dark symbols
-				"dark:[filter:_drop-shadow(-1px_-1px_0_#fff)_drop-shadow(1px_-1px_0_#fff)_drop-shadow(-1px_1px_0_#fff)_drop-shadow(1px_1px_0_#fff)]",
+				// Soft white glow for dark mode visibility of dark symbols
+				"dark:[filter:_drop-shadow(0_0_2px_rgba(255,255,255,0.9))_drop-shadow(0_0_4px_rgba(255,255,255,0.4))]",
 				className
 			)}
 			style={{
