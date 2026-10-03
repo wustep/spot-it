@@ -13,8 +13,10 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
+	metadataBase: new URL("https://spot-its.vercel.app"),
 	title: "Spot it!",
-	description: "Interactive visualization of the Spot it!",
+	description:
+		"An exploration of Spot it!, the symbols matching game and its mathematical properties.",
 }
 
 export default function RootLayout({
