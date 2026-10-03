@@ -13,11 +13,6 @@ const HOME_IMAGE = {
 	alt: "Two Spot it! cards with their one shared symbol, a heart, highlighted.",
 }
 
-const DECK_IMAGE = {
-	url: "/og-visualizer.png",
-	alt: "The 57 × 57 incidence matrix of the Spot it! deck, with two cards and their shared symbol highlighted.",
-}
-
 const HOME: RouteMeta = {
 	title: "Spot it!",
 	description:
@@ -44,19 +39,19 @@ const ROUTES: Record<string, RouteMeta> = {
 		title: "Deck Visualizer — Spot it!",
 		description:
 			"Explore the mathematical structure of the Spot it! deck: 57 cards, 57 symbols, and every pair of cards shares exactly one.",
-		image: DECK_IMAGE,
+		image: HOME_IMAGE,
 	},
 	matrix: {
 		title: "Incidence Matrix — Spot it!",
 		description:
 			"57 cards × 57 symbols: the incidence matrix behind the Spot it! deck.",
-		image: DECK_IMAGE,
+		image: HOME_IMAGE,
 	},
 	article: {
 		title: "The Mathematics Behind Spot it!",
 		description:
 			"Every pair of Spot it! cards shares exactly one symbol. The guarantee comes from a finite projective plane.",
-		image: DECK_IMAGE,
+		image: HOME_IMAGE,
 	},
 }
 
