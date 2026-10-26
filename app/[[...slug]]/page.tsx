@@ -12,6 +12,7 @@ import { MatrixMode } from "@/components/MatrixMode"
 import { ArticlePage } from "@/components/ArticlePage"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { Logo } from "@/components/Logo"
+import { SpotCard } from "@/components/SpotCard"
 import { useGame } from "@/lib/store"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -22,7 +23,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select"
-import { Eye, Gamepad2, Settings2, Timer } from "lucide-react"
+import { ChevronRight, Eye, Gamepad2, Settings2, Timer } from "lucide-react"
 
 function ControlPanelButton() {
 	const [isOpen, setIsOpen] = useState(false)
@@ -147,142 +148,118 @@ function ControlPanelButton() {
 	)
 }
 
-function Landing() {
-	const MODE_COPY = {
-		practice: {
-			description: "Match cards freely and explore the deck.",
-		},
-		timed: {
-			description: "Race the clock and test your speed.",
-		},
-		visualizer: {
-			description: "Visualize how the deck is constructed.",
-		},
-	} as const
+const MODES = [
+	{
+		href: "/practice",
+		label: "Practice",
+		description: "Match cards freely and explore the deck.",
+		Icon: Gamepad2,
+	},
+	{
+		href: "/timed",
+		label: "Timed",
+		description: "Race the clock and test your speed.",
+		Icon: Timer,
+	},
+	{
+		href: "/visualizer",
+		label: "Visualizer",
+		description: "Visualize how the deck is constructed.",
+		Icon: Eye,
+	},
+] as const
 
-	const [highlightedMode, setHighlightedMode] = useState<
-		keyof typeof MODE_COPY | null
-	>(null)
-
-	const highlightTimeoutRef = useRef<number | null>(null)
-
-	const scheduleHighlightMode = useRef(
-		(mode: keyof typeof MODE_COPY | null) => {
-			if (highlightTimeoutRef.current !== null) {
-				window.clearTimeout(highlightTimeoutRef.current)
-			}
-			highlightTimeoutRef.current = window.setTimeout(() => {
-				setHighlightedMode(mode)
-			}, 140)
-		}
-	).current
-
-	useEffect(() => {
-		return () => {
-			if (highlightTimeoutRef.current !== null) {
-				window.clearTimeout(highlightTimeoutRef.current)
-			}
-		}
-	}, [])
-
-	const primaryHover =
-		"hover:bg-primary hover:text-primary-foreground hover:border-primary dark:hover:bg-primary dark:hover:text-primary-foreground dark:hover:border-primary transition-all duration-200 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
+// Two real cards from the deck, overlapped, with their one shared symbol lit
+function HeroCards() {
+	const { deck, hardMode } = useGame()
+	const [a, b] = [deck.cards[0], deck.cards[deck.cards.length - 1]]
+	if (!a || !b) return null
+	const shared = a.symbols.find((s) => b.symbols.includes(s)) ?? null
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30 relative overflow-hidden">
-			{/* Decorative background elements */}
-			<div className="absolute inset-0 pointer-events-none overflow-hidden">
-				{/* Large gradient orb */}
-				<div className="absolute top-24 left-1/2 -translate-x-1/2 w-[28rem] h-[28rem] bg-gradient-to-b from-primary/30 to-primary/5 dark:from-primary/15 dark:to-primary/5 rounded-full blur-3xl" />
-				{/* Subtle grid pattern */}
-				<div
-					className="absolute inset-0 opacity-[0.015] dark:opacity-[0.03]"
-					style={{
-						backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
-						backgroundSize: "32px 32px",
-					}}
-				/>
-			</div>
+		<div className="relative h-[14rem] w-[16rem] sm:h-[21rem] sm:w-[24rem] shrink-0">
+			<SpotCard
+				card={a}
+				symbols={deck.symbols}
+				sharedSymbol={shared}
+				size="xl"
+				hardMode={hardMode}
+				className="absolute left-0 top-0 w-44 h-44 sm:w-64 sm:h-64 border-[3px] border-card-a -rotate-6"
+			/>
+			<SpotCard
+				card={b}
+				symbols={deck.symbols}
+				sharedSymbol={shared}
+				size="xl"
+				hardMode={hardMode}
+				className="absolute right-0 bottom-0 w-44 h-44 sm:w-64 sm:h-64 border-[3px] border-card-b rotate-6"
+			/>
+		</div>
+	)
+}
 
-			<div className="container mx-auto px-4 py-10 relative">
+function Landing() {
+	return (
+		<div className="min-h-screen bg-background relative overflow-hidden">
+			{/* Faint dot grid, like the felt of a game table */}
+			<div
+				aria-hidden="true"
+				className="absolute inset-0 pointer-events-none opacity-[0.05] dark:opacity-[0.06] text-primary"
+				style={{
+					backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
+					backgroundSize: "28px 28px",
+				}}
+			/>
+
+			<div className="container mx-auto px-4 py-6 sm:py-10 relative">
 				<div className="flex items-center justify-end">
 					<ThemeToggle />
 				</div>
 
-				<div className="mt-10 flex flex-col items-center text-center">
-					<h1 className="text-3xl sm:text-4xl font-bold tracking-tight flex items-center gap-2 text-[var(--primary-dark)] dark:text-[var(--primary-dark)]">
-						<Logo size={40} />
-						Spot it!
-					</h1>
-					<p className="mt-2 text-muted-foreground h-6">
-						{highlightedMode
-							? MODE_COPY[highlightedMode].description
-							: "Choose a mode to get started."}
-					</p>
+				<div className="mt-6 sm:mt-12 md:mt-0 md:min-h-[calc(100svh-8rem)] flex flex-col md:flex-row items-center justify-center gap-10 md:gap-16 lg:gap-24">
+					<HeroCards />
 
-					<div className="mt-10 w-full max-w-xl grid gap-4">
-						<Link
-							href="/practice"
-							className="w-full group"
-							onMouseEnter={() => scheduleHighlightMode("practice")}
-							onMouseLeave={() => scheduleHighlightMode(null)}
-							onFocus={() => scheduleHighlightMode("practice")}
-							onBlur={() => scheduleHighlightMode(null)}
-						>
-							<Button
-								variant="outline"
-								className={`w-full h-16 text-lg ${primaryHover}`}
-							>
-								<span className="inline-flex items-center justify-center gap-2">
-									<Gamepad2
-										className="h-5 w-5 transition-transform group-hover:scale-110"
+					<div className="w-full max-w-md flex flex-col items-center md:items-start text-center md:text-left">
+						<h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight flex items-center gap-3 text-[var(--primary-dark)]">
+							<Logo size={52} />
+							Spot it!
+						</h1>
+						<p className="mt-3 text-lg text-muted-foreground max-w-sm">
+							Every pair of cards shares exactly one symbol. Find it, then
+							see why.
+						</p>
+
+						<nav aria-label="Modes" className="mt-8 w-full grid gap-3">
+							{MODES.map(({ href, label, description, Icon }) => (
+								<Link
+									key={href}
+									href={href}
+									className="group flex items-center gap-4 rounded-2xl border bg-card px-4 py-3.5 text-left shadow-[0_1px_2px_rgba(61,51,70,0.05)] transition-[border-color,box-shadow,translate] duration-200 ease-out hover:-translate-y-0.5 hover:border-primary/60 hover:shadow-[0_10px_24px_-12px_rgba(61,51,70,0.35)] focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+								>
+									<span className="grid size-11 shrink-0 place-items-center rounded-full bg-primary/12 text-[var(--primary-dark)] transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+										<Icon className="h-5 w-5" aria-hidden="true" />
+									</span>
+									<span className="min-w-0 flex-1">
+										<span className="block font-display text-xl font-bold leading-tight">
+											{label}
+										</span>
+										<span className="block text-sm text-muted-foreground">
+											{description}
+										</span>
+									</span>
+									<ChevronRight
+										className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground"
 										aria-hidden="true"
 									/>
-									Practice
-								</span>
-							</Button>
-						</Link>
+								</Link>
+							))}
+						</nav>
+
 						<Link
-							href="/timed"
-							className="w-full group"
-							onMouseEnter={() => scheduleHighlightMode("timed")}
-							onMouseLeave={() => scheduleHighlightMode(null)}
-							onFocus={() => scheduleHighlightMode("timed")}
-							onBlur={() => scheduleHighlightMode(null)}
+							href="/article"
+							className="mt-6 text-sm font-semibold text-[var(--primary-dark)] underline decoration-primary/40 hover:decoration-primary"
 						>
-							<Button
-								variant="outline"
-								className={`w-full h-16 text-lg ${primaryHover}`}
-							>
-								<span className="inline-flex items-center justify-center gap-2">
-									<Timer
-										className="h-5 w-5 transition-transform group-hover:scale-110"
-										aria-hidden="true"
-									/>
-									Timed
-								</span>
-							</Button>
-						</Link>
-						<Link
-							href="/visualizer"
-							className="w-full group"
-							onMouseEnter={() => scheduleHighlightMode("visualizer")}
-							onMouseLeave={() => scheduleHighlightMode(null)}
-							onFocus={() => scheduleHighlightMode("visualizer")}
-							onBlur={() => scheduleHighlightMode(null)}
-						>
-							<Button
-								variant="outline"
-								className={`w-full h-16 text-lg ${primaryHover}`}
-							>
-								<span className="inline-flex items-center justify-center gap-2">
-									<Eye
-										className="h-5 w-5 transition-transform group-hover:scale-110"
-										aria-hidden="true"
-									/>
-									Visualizer
-								</span>
-							</Button>
+							The mathematics behind Spot it!
 						</Link>
 					</div>
 				</div>
@@ -321,7 +298,7 @@ function MainContent() {
 						<div className="min-w-0 flex items-center">
 							<Link href="/" className="inline-flex items-center gap-2">
 								<Logo size={28} className="hidden min-[500px]:inline-block" />
-								<h1 className="text-lg sm:text-xl font-bold tracking-tight whitespace-nowrap text-[var(--primary-dark)] dark:text-[var(--primary-dark)]">
+								<h1 className="text-xl sm:text-2xl font-extrabold tracking-tight whitespace-nowrap pt-0.5 text-[var(--primary-dark)]">
 									Spot it!
 								</h1>
 							</Link>

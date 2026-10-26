@@ -246,7 +246,7 @@ export function VisualizerMode() {
 				<StatBox label="Total Cards & Symbols" value={stats.totalCards} />
 			</div>
 
-			<div className="grid lg:grid-cols-[30%_70%] gap-8">
+			<div className="grid lg:grid-cols-[3fr_7fr] gap-8">
 				{/* Symbol Legend */}
 				<div className="lg:sticky lg:top-24 lg:self-start lg:border-r lg:pr-6 lg:border-border/50">
 					<h3 className="text-lg font-semibold mb-4">

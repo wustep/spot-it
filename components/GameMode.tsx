@@ -364,11 +364,11 @@ function PracticeMode({
 		return (
 			<div className="flex flex-col items-center gap-6">
 				<div className="text-center">
-					<h2 className="text-2xl font-bold tracking-tight">Practice Mode</h2>
+					<h2 className="text-3xl font-extrabold tracking-tight">Practice Mode</h2>
 				</div>
 				<div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 md:gap-8 px-4">
 					{/* Skeleton Card 1 */}
-					<div className="w-56 h-56 rounded-full bg-gradient-to-br from-muted to-muted/50 border-2 border-violet-500/30 relative overflow-hidden">
+					<div className="w-56 h-56 rounded-full bg-gradient-to-br from-muted to-muted/50 border-2 border-card-a/30 relative overflow-hidden">
 						{skeletonPositions.map((pos, i) => (
 							<div
 								key={i}
@@ -385,10 +385,10 @@ function PracticeMode({
 						))}
 					</div>
 
-					<div className="text-3xl font-bold text-muted-foreground/30">vs</div>
+					<VsBadge muted />
 
 					{/* Skeleton Card 2 */}
-					<div className="w-56 h-56 rounded-full bg-gradient-to-br from-muted to-muted/50 border-2 border-teal-500/30 relative overflow-hidden">
+					<div className="w-56 h-56 rounded-full bg-gradient-to-br from-muted to-muted/50 border-2 border-card-b/30 relative overflow-hidden">
 						{skeletonPositions.map((pos, i) => (
 							<div
 								key={i}
@@ -417,15 +417,15 @@ function PracticeMode({
 			{/* Instructions / Feedback */}
 			<div className="text-center">
 				{feedback === "none" && (
-					<h2 className="text-2xl font-bold tracking-tight">Practice Mode</h2>
+					<h2 className="text-3xl font-extrabold tracking-tight">Practice Mode</h2>
 				)}
 				{feedback === "correct" && (
-					<h2 className="text-2xl font-bold tracking-tight text-green-500">
+					<h2 className="text-2xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
 						Correct!
 					</h2>
 				)}
 				{feedback === "wrong" && (
-					<h2 className="text-2xl font-bold tracking-tight text-red-500">
+					<h2 className="text-2xl font-bold tracking-tight text-red-600 dark:text-red-400">
 						Try again!
 					</h2>
 				)}
@@ -444,12 +444,12 @@ function PracticeMode({
 						onSymbolClick={feedback === "none" ? handleSymbolClick : undefined}
 						size={cardSize}
 						hardMode={hardMode}
-						className="border-violet-500"
+						className="border-card-a"
 					/>
 				</div>
 
 				{/* VS */}
-				<div className="text-3xl font-bold text-muted-foreground/50">vs</div>
+				<VsBadge />
 
 				{/* Card 2 */}
 				<div className="flex flex-col items-center gap-2">
@@ -462,28 +462,26 @@ function PracticeMode({
 						onSymbolClick={feedback === "none" ? handleSymbolClick : undefined}
 						size={cardSize}
 						hardMode={hardMode}
-						className="border-teal-500"
+						className="border-card-b"
 					/>
 				</div>
 			</div>
 
 			{/* Actions */}
 			<div className="flex gap-3">
-				<Button
-					onClick={pickRandomCards}
-					variant="secondary"
-					size="icon"
-					className="w-24"
-					aria-label="New cards"
-				>
+				<Button onClick={pickRandomCards} variant="outline" className="px-5">
 					<Shuffle className="h-4 w-4" aria-hidden="true" />
+					New cards
 				</Button>
 			</div>
 
 			{/* Card Grid */}
 			<div className="mt-4">
-				<h3 className="text-lg font-semibold mb-4 text-center">
-					All Cards ({deck.cards.length})
+				<h3 className="text-xl font-bold mb-4 text-center">
+					All Cards{" "}
+					<span className="text-muted-foreground font-semibold tabular-nums">
+						{deck.cards.length}
+					</span>
 				</h3>
 				<div className="grid gap-3 grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
 					{deck.cards.map((card, index) => {
@@ -512,8 +510,8 @@ function PracticeMode({
 								size={gridCardSize}
 								hardMode={hardMode}
 								className={cn(
-									isCard1 && "border-violet-500",
-									isCard2 && !isCard1 && "border-teal-500"
+									isCard1 && "border-card-a",
+									isCard2 && !isCard1 && "border-card-b"
 								)}
 							/>
 						)
@@ -617,7 +615,7 @@ function TimedMode({
 		return (
 			<div className="flex flex-col items-center gap-6">
 				<div className="text-center space-y-2">
-					<h2 className="text-2xl font-bold tracking-tight pb-2">Timed Mode</h2>
+					<h2 className="text-3xl font-extrabold tracking-tight pb-1">Timed Mode</h2>
 					<p className="text-muted-foreground max-w-md">
 						Click the matching symbol as fast as you can! Track your accuracy
 						and speed.
@@ -632,7 +630,7 @@ function TimedMode({
 						</div>
 						<div className="grid grid-cols-2 gap-4 text-sm">
 							<div>
-								<div className="text-2xl font-bold text-emerald-500">
+								<div className="text-2xl font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
 									{sessionStats.bestTime !== null
 										? formatTimeDecimal(sessionStats.bestTime)
 										: "—"}
@@ -640,7 +638,7 @@ function TimedMode({
 								<div className="text-muted-foreground">Best Time</div>
 							</div>
 							<div>
-								<div className="text-2xl font-bold text-blue-500">
+								<div className="text-2xl font-bold tabular-nums text-sky-600 dark:text-sky-400">
 									{liveAvgTime > 0 ? formatTimeDecimal(liveAvgTime) : "—"}
 								</div>
 								<div className="text-muted-foreground">Avg Time</div>
@@ -660,19 +658,19 @@ function TimedMode({
 						</div>
 						<div className="grid grid-cols-3 gap-4 text-sm">
 							<div>
-								<div className="text-2xl font-bold text-green-500">
+								<div className="text-2xl font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
 									{stats.correct}
 								</div>
 								<div className="text-muted-foreground">Correct</div>
 							</div>
 							<div>
-								<div className="text-2xl font-bold text-red-500">
+								<div className="text-2xl font-bold tabular-nums text-red-600 dark:text-red-400">
 									{stats.wrong}
 								</div>
 								<div className="text-muted-foreground">Wrong</div>
 							</div>
 							<div>
-								<div className="text-2xl font-bold text-yellow-500">
+								<div className="text-2xl font-bold tabular-nums text-amber-600 dark:text-amber-400">
 									{stats.bestStreak}
 								</div>
 								<div className="text-muted-foreground">Best Streak</div>
@@ -689,7 +687,11 @@ function TimedMode({
 					</div>
 				)}
 
-				<Button onClick={startGame} size="lg" className="text-lg px-8">
+				<Button
+					onClick={startGame}
+					size="lg"
+					className="h-12 rounded-full px-10 text-lg font-bold shadow-[0_6px_16px_-6px_var(--primary)] hover:-translate-y-px"
+				>
 					Start
 				</Button>
 			</div>
@@ -701,17 +703,17 @@ function TimedMode({
 			{/* Stats bar */}
 			<div className="flex items-center gap-6 text-sm">
 				<div className="flex items-center gap-2">
-					<span className="text-green-500 font-bold text-xl">
+					<span className="text-emerald-600 dark:text-emerald-400 font-bold text-xl tabular-nums">
 						{stats.correct}
 					</span>
 					<span className="text-muted-foreground">correct</span>
 				</div>
 				<div className="flex items-center gap-2">
-					<span className="text-red-500 font-bold text-xl">{stats.wrong}</span>
+					<span className="text-red-600 dark:text-red-400 font-bold text-xl tabular-nums">{stats.wrong}</span>
 					<span className="text-muted-foreground">wrong</span>
 				</div>
 				<div className="flex items-center gap-2">
-					<span className="text-yellow-500 font-bold text-xl">
+					<span className="text-amber-600 dark:text-amber-400 font-bold text-xl tabular-nums">
 						{stats.streak}
 					</span>
 					<span className="text-muted-foreground">streak</span>
@@ -737,7 +739,7 @@ function TimedMode({
 				{liveBestTime !== null && (
 					<div className="flex items-center gap-2 border-l pl-4">
 						<span className="text-muted-foreground">Best:</span>
-						<span className="font-mono font-medium text-emerald-500">
+						<span className="font-mono font-medium text-emerald-600 dark:text-emerald-400">
 							{formatTimeDecimal(liveBestTime)}
 						</span>
 					</div>
@@ -747,12 +749,12 @@ function TimedMode({
 			{/* Feedback with last round time */}
 			<div className="h-10 flex items-center justify-center">
 				{feedbackState === "correct" && lastRoundTime !== null && (
-					<div className="text-green-500 font-bold text-xl animate-in fade-in zoom-in duration-200">
+					<div className="text-emerald-600 dark:text-emerald-400 font-bold text-xl animate-in fade-in zoom-in duration-200">
 						{formatTimeDecimal(lastRoundTime)}
 					</div>
 				)}
 				{feedbackState === "wrong" && (
-					<div className="text-red-500 font-bold text-xl animate-in fade-in shake duration-200">
+					<div className="text-red-600 dark:text-red-400 font-bold text-xl animate-in fade-in shake duration-200">
 						Wrong!
 					</div>
 				)}
@@ -769,9 +771,10 @@ function TimedMode({
 						onSymbolClick={feedbackState === "none" ? handleGuess : undefined}
 						size={cardSize}
 						hardMode={hardMode}
+						className="border-card-a"
 					/>
 				)}
-				<div className="text-3xl font-bold text-muted-foreground/50">vs</div>
+				<VsBadge />
 				{card2 && (
 					<SpotCard
 						card={card2}
@@ -781,6 +784,7 @@ function TimedMode({
 						onSymbolClick={feedbackState === "none" ? handleGuess : undefined}
 						size={cardSize}
 						hardMode={hardMode}
+						className="border-card-b"
 					/>
 				)}
 			</div>
@@ -826,7 +830,7 @@ function CountdownMode({
 		return (
 			<div className="flex flex-col items-center gap-6">
 				<div className="text-center space-y-2">
-					<h2 className="text-2xl font-bold tracking-tight pb-2">
+					<h2 className="text-3xl font-extrabold tracking-tight pb-1">
 						Countdown Mode
 					</h2>
 					<p className="text-muted-foreground max-w-md">
@@ -853,7 +857,11 @@ function CountdownMode({
 					</Select>
 				</div>
 
-				<Button onClick={startGame} size="lg" className="text-lg px-8">
+				<Button
+					onClick={startGame}
+					size="lg"
+					className="h-12 rounded-full px-10 text-lg font-bold shadow-[0_6px_16px_-6px_var(--primary)] hover:-translate-y-px"
+				>
 					Start
 				</Button>
 			</div>
@@ -888,7 +896,7 @@ function CountdownMode({
 						<div
 							className={cn(
 								"text-6xl font-bold tabular-nums transition-colors duration-300",
-								countdown <= 1 ? "text-red-500" : "text-foreground"
+								countdown <= 1 ? "text-red-600 dark:text-red-400" : "text-foreground"
 							)}
 						>
 							{countdown}
@@ -908,9 +916,10 @@ function CountdownMode({
 						sharedSymbol={isRevealed ? revealedSymbol : null}
 						size={cardSize}
 						hardMode={hardMode}
+						className="border-card-a"
 					/>
 				)}
-				<div className="text-3xl font-bold text-muted-foreground/50">vs</div>
+				<VsBadge />
 				{card2 && (
 					<SpotCard
 						card={card2}
@@ -919,6 +928,7 @@ function CountdownMode({
 						sharedSymbol={isRevealed ? revealedSymbol : null}
 						size={cardSize}
 						hardMode={hardMode}
+						className="border-card-b"
 					/>
 				)}
 			</div>
@@ -927,6 +937,21 @@ function CountdownMode({
 			<Button onClick={stopGame} variant="outline">
 				Stop
 			</Button>
+		</div>
+	)
+}
+
+// Divider between the two cards in play
+function VsBadge({ muted = false }: { muted?: boolean }) {
+	return (
+		<div
+			aria-hidden="true"
+			className={cn(
+				"font-display text-base font-extrabold uppercase tracking-wide size-11 shrink-0 rounded-full border-2 border-border bg-card grid place-items-center pt-0.5 text-muted-foreground shadow-[0_2px_6px_-2px_rgba(61,51,70,0.18)]",
+				muted && "opacity-40"
+			)}
+		>
+			vs
 		</div>
 	)
 }

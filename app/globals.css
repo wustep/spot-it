@@ -7,7 +7,12 @@
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
 	--font-sans: var(--font-nunito);
-	--font-mono: var(--font-geist-mono);
+	--font-mono: var(--font-plex-mono);
+	--font-display: var(--font-baloo);
+	--color-card-a: var(--card-a);
+	--color-card-b: var(--card-b);
+	--color-spot-face: var(--spot-face);
+	--color-spot-face-edge: var(--spot-face-edge);
 	--color-sidebar-ring: var(--sidebar-ring);
 	--color-sidebar-border: var(--sidebar-border);
 	--color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -57,16 +62,21 @@
 	--primary: #9879b0;
 	--primary-dark: #4a3459;
 	--primary-foreground: oklch(0.98 0.02 201);
-	--secondary: oklch(0.967 0.001 286.375);
-	--secondary-foreground: oklch(0.21 0.006 285.885);
+	--secondary: oklch(0.955 0.012 320);
+	--secondary-foreground: #3d3346;
 	--muted: #faf5f2;
-	--muted-foreground: #7d7183;
-	--accent: oklch(0.97 0 0);
-	--accent-foreground: oklch(0.205 0 0);
+	--muted-foreground: #74687a;
+	--accent: oklch(0.955 0.012 320);
+	--accent-foreground: #3d3346;
 	--destructive: oklch(0.58 0.22 27);
-	--border: oklch(0.922 0 0);
-	--input: oklch(0.922 0 0);
-	--ring: oklch(0.708 0 0);
+	--border: oklch(0.91 0.012 320);
+	--input: oklch(0.89 0.014 320);
+	--ring: oklch(0.62 0.11 305);
+	/* The two cards in play: violet on the left, teal on the right */
+	--card-a: oklch(0.58 0.17 300);
+	--card-b: oklch(0.62 0.11 185);
+	--spot-face: #ffffff;
+	--spot-face-edge: #f6f0ec;
 	--chart-1: #dccfed;
 	--chart-2: #c4addc;
 	--chart-3: #ac93ca;
@@ -77,45 +87,49 @@
 	--sidebar-foreground: #3d3346;
 	--sidebar-primary: #9879b0;
 	--sidebar-primary-foreground: oklch(0.98 0.02 201);
-	--sidebar-accent: oklch(0.97 0 0);
-	--sidebar-accent-foreground: oklch(0.205 0 0);
-	--sidebar-border: oklch(0.922 0 0);
-	--sidebar-ring: oklch(0.708 0 0);
+	--sidebar-accent: oklch(0.955 0.012 320);
+	--sidebar-accent-foreground: #3d3346;
+	--sidebar-border: oklch(0.91 0.012 320);
+	--sidebar-ring: oklch(0.62 0.11 305);
 }
 
 .dark {
-	--background: oklch(0.145 0 0);
+	--background: oklch(0.165 0.014 305);
 	--foreground: #f5f0ed;
-	--card: oklch(0.205 0 0);
+	--card: oklch(0.215 0.016 305);
 	--card-foreground: #f5f0ed;
-	--popover: oklch(0.205 0 0);
+	--popover: oklch(0.215 0.016 305);
 	--popover-foreground: #f5f0ed;
 	--primary: #c084fc;
 	--primary-dark: #b574f0;
 	--primary-foreground: #1b1224;
-	--secondary: oklch(0.274 0.006 286.033);
-	--secondary-foreground: oklch(0.985 0 0);
-	--muted: oklch(0.269 0 0);
-	--muted-foreground: #a8a0ad;
-	--accent: oklch(0.371 0 0);
-	--accent-foreground: oklch(0.985 0 0);
+	--secondary: oklch(0.27 0.018 305);
+	--secondary-foreground: oklch(0.97 0.006 305);
+	--muted: oklch(0.255 0.016 305);
+	--muted-foreground: #b0a7b6;
+	--accent: oklch(0.32 0.02 305);
+	--accent-foreground: oklch(0.97 0.006 305);
 	--destructive: oklch(0.704 0.191 22.216);
-	--border: oklch(1 0 0 / 10%);
-	--input: oklch(1 0 0 / 15%);
-	--ring: oklch(0.556 0 0);
+	--border: oklch(0.92 0.03 305 / 11%);
+	--input: oklch(0.92 0.03 305 / 16%);
+	--ring: oklch(0.68 0.13 305);
+	--card-a: oklch(0.72 0.16 305);
+	--card-b: oklch(0.77 0.11 185);
+	--spot-face: oklch(0.255 0.016 305);
+	--spot-face-edge: oklch(0.215 0.014 305);
 	--chart-1: #f2ddff;
 	--chart-2: #ddb5ff;
 	--chart-3: #cb96ff;
 	--chart-4: #c084fc;
 	--chart-5: #9f4cf3;
-	--sidebar: oklch(0.205 0 0);
+	--sidebar: oklch(0.215 0.016 305);
 	--sidebar-foreground: #f5f0ed;
 	--sidebar-primary: #c084fc;
 	--sidebar-primary-foreground: #1b1224;
-	--sidebar-accent: oklch(0.269 0 0);
-	--sidebar-accent-foreground: oklch(0.985 0 0);
-	--sidebar-border: oklch(1 0 0 / 10%);
-	--sidebar-ring: oklch(0.556 0 0);
+	--sidebar-accent: oklch(0.27 0.018 305);
+	--sidebar-accent-foreground: oklch(0.97 0.006 305);
+	--sidebar-border: oklch(0.92 0.03 305 / 11%);
+	--sidebar-ring: oklch(0.68 0.13 305);
 }
 
 @layer base {
@@ -126,6 +140,70 @@
 		@apply bg-background text-foreground;
 		/* Make the default font explicit (don't rely on utilities being generated/used) */
 		font-family: var(--font-nunito);
+		caret-color: var(--primary);
+		scrollbar-color: color-mix(in oklch, var(--primary) 35%, transparent)
+			transparent;
+	}
+	h1,
+	h2,
+	h3 {
+		font-family: var(--font-baloo), var(--font-nunito), sans-serif;
+		text-wrap: balance;
+		/* Baloo sits high in its em box; trim the extra top space */
+		line-height: 1.15;
+	}
+	p {
+		text-wrap: pretty;
+	}
+	::selection {
+		background: color-mix(in oklch, var(--primary) 30%, transparent);
+		color: inherit;
+	}
+	a {
+		text-underline-offset: 0.2em;
+	}
+}
+
+/* Found it: the shared symbol springs up on both cards at once */
+@keyframes match-pop {
+	0% {
+		scale: 1;
+	}
+	45% {
+		scale: 1.55;
+	}
+	100% {
+		scale: 1.3;
+	}
+}
+
+@keyframes match-ring {
+	from {
+		opacity: 0.9;
+		scale: 0.6;
+	}
+	to {
+		opacity: 0;
+		scale: 1.9;
+	}
+}
+
+.animate-match-pop {
+	animation: match-pop 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-match-ring {
+	animation: match-ring 650ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.animate-match-pop {
+		animation: none;
+		scale: 1.3;
+	}
+	.animate-match-ring {
+		animation: none;
+		opacity: 0;
 	}
 }
 

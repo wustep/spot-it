@@ -71,6 +71,11 @@ function seededRandom(seed: number) {
 	return x - Math.floor(x)
 }
 
+// Fixed precision so server- and client-rendered styles match on hydration
+function round(n: number) {
+	return Math.round(n * 1000) / 1000
+}
+
 // Golden angle for optimal spiral distribution
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5))
 
@@ -457,14 +462,15 @@ export function SpotCard({
 	return (
 		<div
 			className={cn(
-				"relative rounded-full bg-gradient-to-br from-white to-zinc-50 dark:from-zinc-800 dark:to-zinc-900 border-2 shadow-sm flex items-center justify-center transition-all duration-200",
-				"shadow-[inset_0_2px_4px_rgba(0,0,0,0.02),inset_0_-1px_2px_rgba(255,255,255,0.5),0_1px_3px_rgba(0,0,0,0.1)]",
-				"dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.15),inset_0_-1px_2px_rgba(255,255,255,0.02),0_1px_3px_rgba(0,0,0,0.3)]",
-				"hover:shadow-md",
-				onClick && "cursor-pointer",
+				"relative rounded-full bg-gradient-to-br from-spot-face to-spot-face-edge border-2 flex items-center justify-center transition-[border-color,box-shadow,translate] duration-200 ease-out",
+				// Printed-card depth: a soft cast shadow plus a faint inner rim
+				"shadow-[inset_0_-2px_0_rgba(61,51,70,0.04),0_1px_2px_rgba(61,51,70,0.06),0_6px_16px_-6px_rgba(61,51,70,0.14)]",
+				"dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_1px_2px_rgba(0,0,0,0.3),0_8px_20px_-8px_rgba(0,0,0,0.6)]",
+				onClick &&
+					"cursor-pointer hover:-translate-y-0.5 hover:shadow-[0_2px_4px_rgba(61,51,70,0.06),0_12px_24px_-10px_rgba(61,51,70,0.22)] dark:hover:shadow-[0_2px_4px_rgba(0,0,0,0.3),0_14px_28px_-10px_rgba(0,0,0,0.7)]",
 				!hasSelectionBorder &&
 					!hasRing &&
-					"border-zinc-300 dark:border-zinc-600 hover:border-primary/50",
+					"border-foreground/15 hover:border-primary/50",
 				isSelected && !hasSelectionBorder && !hasRing
 					? "border-primary/50"
 					: "",
@@ -485,16 +491,16 @@ export function SpotCard({
 				if (hardMode && scatteredPositions) {
 					const pos = scatteredPositions[index]
 					style = {
-						left: `${pos.x}%`,
-						top: `${pos.y}%`,
-						transform: `translate(-50%, -50%) rotate(${pos.rotation}deg)`,
+						left: `${round(pos.x)}%`,
+						top: `${round(pos.y)}%`,
+						transform: `translate(-50%, -50%) rotate(${round(pos.rotation)}deg)`,
 					}
 					sizeClass = config.symbolHard[pos.sizeIndex]
 				} else if (easyModePositions) {
 					const pos = easyModePositions[index]
 					style = {
-						left: `${pos.x}%`,
-						top: `${pos.y}%`,
+						left: `${round(pos.x)}%`,
+						top: `${round(pos.y)}%`,
 					}
 					sizeClass = config.symbol
 				} else {
@@ -516,7 +522,7 @@ export function SpotCard({
 							!hardMode && "transform -translate-x-1/2 -translate-y-1/2 p-0.5",
 							hardMode && "p-0.5",
 							sizeClass,
-							isShared && "scale-125 animate-pulse",
+							isShared && "z-10 animate-match-pop bg-primary/15",
 							isHighlighted &&
 								"scale-125 ring-2 ring-yellow-400 bg-yellow-100 dark:bg-yellow-900/50",
 							!isShared &&
@@ -534,6 +540,12 @@ export function SpotCard({
 						}}
 						disabled={!onSymbolClick}
 					>
+						{isShared && (
+							<span
+								aria-hidden="true"
+								className="absolute inset-0 rounded-full border-2 border-primary animate-match-ring pointer-events-none"
+							/>
+						)}
 						{symbol?.emoji ? (
 							<Emoji
 								emoji={symbol.emoji}
