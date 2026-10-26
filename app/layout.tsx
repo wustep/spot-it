@@ -7,12 +7,12 @@ const nunito = Nunito({
 	variable: "--font-nunito",
 })
 
-// Chunky rounded display face for the wordmark and headings, echoing the
-// printed game's lettering. Nunito stays the reading face.
+// Rounded face for the "Spot it!" wordmark only, echoing the printed game's
+// lettering. Everything else is set in Nunito.
 const baloo = Baloo_2({
 	variable: "--font-baloo",
 	subsets: ["latin"],
-	weight: ["600", "700", "800"],
+	weight: ["700"],
 })
 
 const plexMono = IBM_Plex_Mono({

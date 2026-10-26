@@ -364,7 +364,7 @@ function PracticeMode({
 		return (
 			<div className="flex flex-col items-center gap-6">
 				<div className="text-center">
-					<h2 className="text-3xl font-extrabold tracking-tight">Practice Mode</h2>
+					<h2 className="text-2xl font-bold tracking-tight">Practice Mode</h2>
 				</div>
 				<div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 md:gap-8 px-4">
 					{/* Skeleton Card 1 */}
@@ -417,7 +417,7 @@ function PracticeMode({
 			{/* Instructions / Feedback */}
 			<div className="text-center">
 				{feedback === "none" && (
-					<h2 className="text-3xl font-extrabold tracking-tight">Practice Mode</h2>
+					<h2 className="text-2xl font-bold tracking-tight">Practice Mode</h2>
 				)}
 				{feedback === "correct" && (
 					<h2 className="text-2xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
@@ -477,9 +477,9 @@ function PracticeMode({
 
 			{/* Card Grid */}
 			<div className="mt-4">
-				<h3 className="text-xl font-bold mb-4 text-center">
+				<h3 className="text-lg font-semibold mb-4 text-center">
 					All Cards{" "}
-					<span className="text-muted-foreground font-semibold tabular-nums">
+					<span className="text-muted-foreground font-normal tabular-nums">
 						{deck.cards.length}
 					</span>
 				</h3>
@@ -615,7 +615,7 @@ function TimedMode({
 		return (
 			<div className="flex flex-col items-center gap-6">
 				<div className="text-center space-y-2">
-					<h2 className="text-3xl font-extrabold tracking-tight pb-1">Timed Mode</h2>
+					<h2 className="text-2xl font-bold tracking-tight pb-1">Timed Mode</h2>
 					<p className="text-muted-foreground max-w-md">
 						Click the matching symbol as fast as you can! Track your accuracy
 						and speed.
@@ -679,7 +679,7 @@ function TimedMode({
 						{avgTime > 0 && (
 							<div className="pt-2 border-t">
 								<span className="text-muted-foreground">Avg time: </span>
-								<span className="font-mono font-bold">
+								<span className="font-semibold tabular-nums">
 									{formatTimeDecimal(avgTime)}
 								</span>
 							</div>
@@ -690,7 +690,7 @@ function TimedMode({
 				<Button
 					onClick={startGame}
 					size="lg"
-					className="h-12 rounded-full px-10 text-lg font-bold shadow-[0_6px_16px_-6px_var(--primary)] hover:-translate-y-px"
+					className="h-11 rounded-full px-10 text-base font-semibold"
 				>
 					Start
 				</Button>
@@ -724,14 +724,14 @@ function TimedMode({
 			<div className="flex items-center gap-4 text-sm bg-muted/50 rounded-lg px-4 py-2">
 				<div className="flex items-center gap-2">
 					<span className="text-muted-foreground">Time:</span>
-					<span className="font-mono font-bold text-lg text-right">
+					<span className="font-bold text-lg tabular-nums text-right">
 						{formatTime(elapsedTime)}
 					</span>
 				</div>
 				{avgTime > 0 && (
 					<div className="flex items-center gap-2 border-l pl-4">
 						<span className="text-muted-foreground">Avg:</span>
-						<span className="font-mono font-medium">
+						<span className="font-semibold tabular-nums">
 							{formatTimeDecimal(avgTime)}
 						</span>
 					</div>
@@ -739,7 +739,7 @@ function TimedMode({
 				{liveBestTime !== null && (
 					<div className="flex items-center gap-2 border-l pl-4">
 						<span className="text-muted-foreground">Best:</span>
-						<span className="font-mono font-medium text-emerald-600 dark:text-emerald-400">
+						<span className="font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
 							{formatTimeDecimal(liveBestTime)}
 						</span>
 					</div>
@@ -830,7 +830,7 @@ function CountdownMode({
 		return (
 			<div className="flex flex-col items-center gap-6">
 				<div className="text-center space-y-2">
-					<h2 className="text-3xl font-extrabold tracking-tight pb-1">
+					<h2 className="text-2xl font-bold tracking-tight pb-1">
 						Countdown Mode
 					</h2>
 					<p className="text-muted-foreground max-w-md">
@@ -860,7 +860,7 @@ function CountdownMode({
 				<Button
 					onClick={startGame}
 					size="lg"
-					className="h-12 rounded-full px-10 text-lg font-bold shadow-[0_6px_16px_-6px_var(--primary)] hover:-translate-y-px"
+					className="h-11 rounded-full px-10 text-base font-semibold"
 				>
 					Start
 				</Button>
@@ -947,7 +947,7 @@ function VsBadge({ muted = false }: { muted?: boolean }) {
 		<div
 			aria-hidden="true"
 			className={cn(
-				"font-display text-base font-extrabold uppercase tracking-wide size-11 shrink-0 rounded-full border-2 border-border bg-card grid place-items-center pt-0.5 text-muted-foreground shadow-[0_2px_6px_-2px_rgba(61,51,70,0.18)]",
+				"text-xs font-bold uppercase tracking-wider size-10 shrink-0 rounded-full border bg-card grid place-items-center text-muted-foreground",
 				muted && "opacity-40"
 			)}
 		>

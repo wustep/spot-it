@@ -177,11 +177,12 @@ function HeroCards() {
 	const shared = a.symbols.find((s) => b.symbols.includes(s)) ?? null
 
 	return (
-		<div className="relative h-[14rem] w-[16rem] sm:h-[21rem] sm:w-[24rem] shrink-0">
+		<div className="relative h-[14rem] w-[17rem] sm:h-[20rem] sm:w-[27rem] shrink-0">
 			<SpotCard
 				card={a}
 				symbols={deck.symbols}
 				sharedSymbol={shared}
+				dimOthers={false}
 				size="xl"
 				hardMode={hardMode}
 				className="absolute left-0 top-0 w-44 h-44 sm:w-64 sm:h-64 border-[3px] border-card-a -rotate-6"
@@ -190,6 +191,7 @@ function HeroCards() {
 				card={b}
 				symbols={deck.symbols}
 				sharedSymbol={shared}
+				dimOthers={false}
 				size="xl"
 				hardMode={hardMode}
 				className="absolute right-0 bottom-0 w-44 h-44 sm:w-64 sm:h-64 border-[3px] border-card-b rotate-6"
@@ -220,13 +222,13 @@ function Landing() {
 					<HeroCards />
 
 					<div className="w-full max-w-md flex flex-col items-center md:items-start text-center md:text-left">
-						<h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight flex items-center gap-3 text-[var(--primary-dark)]">
-							<Logo size={52} />
+						<h1 className="font-display text-4xl sm:text-5xl font-bold leading-none flex items-center gap-3 text-[var(--primary-dark)]">
+							<Logo size={44} />
 							Spot it!
 						</h1>
 						<p className="mt-3 text-lg text-muted-foreground max-w-sm">
-							Every pair of cards shares exactly one symbol. Find it, then
-							see why.
+							Every pair of cards shares exactly one symbol. Can you spot
+							it first?
 						</p>
 
 						<nav aria-label="Modes" className="mt-8 w-full grid gap-3">
@@ -240,7 +242,7 @@ function Landing() {
 										<Icon className="h-5 w-5" aria-hidden="true" />
 									</span>
 									<span className="min-w-0 flex-1">
-										<span className="block font-display text-xl font-bold leading-tight">
+										<span className="block text-base font-bold leading-snug">
 											{label}
 										</span>
 										<span className="block text-sm text-muted-foreground">
@@ -298,7 +300,7 @@ function MainContent() {
 						<div className="min-w-0 flex items-center">
 							<Link href="/" className="inline-flex items-center gap-2">
 								<Logo size={28} className="hidden min-[500px]:inline-block" />
-								<h1 className="text-xl sm:text-2xl font-extrabold tracking-tight whitespace-nowrap pt-0.5 text-[var(--primary-dark)]">
+								<h1 className="font-display text-xl sm:text-2xl font-bold leading-none whitespace-nowrap pt-1 text-[var(--primary-dark)]">
 									Spot it!
 								</h1>
 							</Link>

@@ -11,6 +11,8 @@ interface SpotCardProps {
 	isSelected?: boolean
 	highlightedSymbol?: number | null
 	sharedSymbol?: number | null
+	// Fade the other symbols once the shared one is shown
+	dimOthers?: boolean
 	onClick?: () => void
 	onSymbolClick?: (symbolId: number) => void
 	size?: "sm" | "md" | "lg" | "xl"
@@ -429,6 +431,7 @@ export function SpotCard({
 	isSelected = false,
 	highlightedSymbol = null,
 	sharedSymbol = null,
+	dimOthers = true,
 	onClick,
 	onSymbolClick,
 	size = "md",
@@ -458,6 +461,8 @@ export function SpotCard({
 		className?.includes("border-rose-500") ||
 		className?.includes("border-sky-500")
 	const hasRing = className?.includes("ring-") && !hasSelectionBorder
+	// Cards in play keep their violet/teal rim on hover
+	const hasIdentityBorder = className?.includes("border-card-")
 
 	return (
 		<div
@@ -470,7 +475,11 @@ export function SpotCard({
 					"cursor-pointer hover:-translate-y-0.5 hover:shadow-[0_2px_4px_rgba(61,51,70,0.06),0_12px_24px_-10px_rgba(61,51,70,0.22)] dark:hover:shadow-[0_2px_4px_rgba(0,0,0,0.3),0_14px_28px_-10px_rgba(0,0,0,0.7)]",
 				!hasSelectionBorder &&
 					!hasRing &&
-					"border-foreground/15 hover:border-primary/50",
+					"border-foreground/15",
+				!hasSelectionBorder &&
+					!hasRing &&
+					!hasIdentityBorder &&
+					"hover:border-primary/50",
 				isSelected && !hasSelectionBorder && !hasRing
 					? "border-primary/50"
 					: "",
@@ -522,7 +531,12 @@ export function SpotCard({
 							!hardMode && "transform -translate-x-1/2 -translate-y-1/2 p-0.5",
 							hardMode && "p-0.5",
 							sizeClass,
-							isShared && "z-10 animate-match-pop bg-primary/15",
+							isShared && "z-10 animate-match-pop",
+							// Once the match is shown, the rest of the card steps back
+							dimOthers &&
+								sharedSymbol !== null &&
+								!isShared &&
+								"opacity-45 saturate-50 transition-[opacity,filter] duration-300 ease-out",
 							isHighlighted &&
 								"scale-125 ring-2 ring-yellow-400 bg-yellow-100 dark:bg-yellow-900/50",
 							!isShared &&
@@ -540,22 +554,16 @@ export function SpotCard({
 						}}
 						disabled={!onSymbolClick}
 					>
-						{isShared && (
-							<span
-								aria-hidden="true"
-								className="absolute inset-0 rounded-full border-2 border-primary animate-match-ring pointer-events-none"
-							/>
-						)}
 						{symbol?.emoji ? (
 							<Emoji
 								emoji={symbol.emoji}
 								size="1.2em"
-								className={cn(isShared && "drop-shadow-lg")}
+								className={cn(isShared && "drop-shadow-md")}
 							/>
 						) : (
 							<span
 								className={cn(
-									isShared && "drop-shadow-lg",
+									isShared && "drop-shadow-md",
 									"select-none leading-none"
 								)}
 							>

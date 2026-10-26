@@ -56,7 +56,7 @@ function StatBox({
 			<div className="text-xs text-muted-foreground uppercase tracking-wider">
 				{label}
 			</div>
-			<div className="text-xl font-bold font-mono">{value}</div>
+			<div className="text-xl font-bold tabular-nums">{value}</div>
 		</div>
 	)
 }
