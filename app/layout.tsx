@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Geist_Mono, Nunito } from "next/font/google"
+import { IBM_Plex_Mono, Nunito } from "next/font/google"
 import "./globals.css"
 
 const nunito = Nunito({
@@ -7,9 +7,10 @@ const nunito = Nunito({
 	variable: "--font-nunito",
 })
 
-const geistMono = Geist_Mono({
-	variable: "--font-geist-mono",
+const plexMono = IBM_Plex_Mono({
+	variable: "--font-plex-mono",
 	subsets: ["latin"],
+	weight: ["400", "500", "600"],
 })
 
 export const metadata: Metadata = {
@@ -43,7 +44,7 @@ export default function RootLayout({
 				/>
 			</head>
 			<body
-				className={`${nunito.className} ${nunito.variable} ${geistMono.variable} antialiased`}
+				className={`${nunito.className} ${nunito.variable} ${plexMono.variable} antialiased`}
 			>
 				{children}
 			</body>
