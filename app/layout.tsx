@@ -1,18 +1,10 @@
 import type { Metadata } from "next"
-import { Baloo_2, IBM_Plex_Mono, Nunito } from "next/font/google"
+import { IBM_Plex_Mono, Nunito } from "next/font/google"
 import "./globals.css"
 
 const nunito = Nunito({
 	subsets: ["latin"],
 	variable: "--font-nunito",
-})
-
-// Rounded face for the "Spot it!" wordmark only, echoing the printed game's
-// lettering. Everything else is set in Nunito.
-const baloo = Baloo_2({
-	variable: "--font-baloo",
-	subsets: ["latin"],
-	weight: ["700"],
 })
 
 const plexMono = IBM_Plex_Mono({
@@ -52,7 +44,7 @@ export default function RootLayout({
 				/>
 			</head>
 			<body
-				className={`${nunito.className} ${nunito.variable} ${baloo.variable} ${plexMono.variable} antialiased`}
+				className={`${nunito.className} ${nunito.variable} ${plexMono.variable} antialiased`}
 			>
 				{children}
 			</body>

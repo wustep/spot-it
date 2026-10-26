@@ -222,7 +222,7 @@ function Landing() {
 					<HeroCards />
 
 					<div className="w-full max-w-md flex flex-col items-center md:items-start text-center md:text-left">
-						<h1 className="font-display text-4xl sm:text-5xl font-bold leading-none flex items-center gap-3 text-[var(--primary-dark)]">
+						<h1 className="text-4xl sm:text-5xl font-bold leading-none flex items-center gap-3 text-[var(--primary-dark)]">
 							<Logo size={44} />
 							Spot it!
 						</h1>
@@ -300,7 +300,7 @@ function MainContent() {
 						<div className="min-w-0 flex items-center">
 							<Link href="/" className="inline-flex items-center gap-2">
 								<Logo size={28} className="hidden min-[500px]:inline-block" />
-								<h1 className="font-display text-xl sm:text-2xl font-bold leading-none whitespace-nowrap pt-1 text-[var(--primary-dark)]">
+								<h1 className="text-xl sm:text-2xl font-bold leading-none whitespace-nowrap pt-1 text-[var(--primary-dark)]">
 									Spot it!
 								</h1>
 							</Link>
